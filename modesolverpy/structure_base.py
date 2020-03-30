@@ -1,193 +1,183 @@
+import abc
+import os
+import subprocess
+import sys
+
+import matplotlib.pylab as plt
 import numpy as np
 from scipy import interpolate
-import os
-import sys
-import subprocess
-import abc
 from six import with_metaclass
 
-try:
-    devnull = open(os.devnull, 'w')
-    subprocess.call(['gnuplot', '--version'], stdout=devnull, stderr=devnull)
-    import gnuplotpy as gp
-    MPL = False
-except:
-    import matplotlib.pylab as plt
-    MPL = True
-
-def use_gnuplot():
-    """
-    Use gnuplot as the plotting tool for any structure related outputs.
-    """
-    global gp
-    import gnuplotpy as gp
-    global MPL
-    MPL = False
-
-def use_matplotlib():
-    """
-    Use matplotlib as the plotting tool for any structure related outputs.
-    """
-    global plt
-    import matplotlib.pylab as plt
-    global MPL
-    MPL = True
 
 class _AbstractStructure(with_metaclass(abc.ABCMeta)):
     @abc.abstractproperty
     def n(self):
-        '''
+        """
         np.array: A grid of refractive indices representing
         the refractive index profile of the structure.
-        '''
+        """
         pass
 
     @property
     def x_pts(self):
-        '''
+        """
         int: The number of grid points in x.
-        '''
+        """
         return int((self.x_max - self.x_min) / self.x_step + 1)
 
     @property
     def y_pts(self):
-        '''
+        """
         int: The number of grid points in y.
-        '''
+        """
         return int((self.y_max - self.y_min) / self.y_step)
 
     @property
     def x_ctr(self):
-        '''
+        """
         float: The centre distance in x.
-        '''
-        return 0.5*(self.x_max + self.x_min)
+        """
+        return 0.5 * (self.x_max + self.x_min)
 
     @property
     def y_ctr(self):
-        '''
+        """
         float: The centre distance in y
-        '''
-        return 0.5*(self.y_max + self.y_min)
+        """
+        return 0.5 * (self.y_max + self.y_min)
 
     @property
     def xc(self):
-        '''
+        """
         np.array: The centre points of the x points.
-        '''
-        return 0.5*(self.x[1:] + self.x[:-1])
+        """
+        return 0.5 * (self.x[1:] + self.x[:-1])
 
     @property
     def yc(self):
-        '''
+        """
         np.array: The centre points of the y points.
-        '''
-        return 0.5*(self.y[1:] + self.y[:-1])
+        """
+        return 0.5 * (self.y[1:] + self.y[:-1])
 
     @property
     def xc_pts(self):
-        '''
+        """
         int: The number of points in `xc`.
-        '''
+        """
         return self.x_pts - 1
 
     @property
     def yc_pts(self):
-        '''
+        """
         int: The number of points in `yc`.
-        '''
+        """
         return self.y_pts - 1
 
     @property
     def xc_min(self):
-        '''
+        """
         float: The minimum value of `xc`.
-        '''
+        """
         return self.xc[0]
 
     @property
     def xc_max(self):
-        '''
+        """
         float: The maximum value of `xc`.
-        '''
+        """
         return self.xc[-1]
 
     @property
     def yc_min(self):
-        '''
+        """
         float: The minimum value of `yc`.
-        '''
+        """
         return self.yc[0]
 
     @property
     def yc_max(self):
-        '''
+        """
         float: The maximum value of `yc`.
-        '''
+        """
         return self.yc[-1]
 
     @property
     def x(self):
-        '''
+        """
         np.array: The grid points in x.
-        '''
-        if None not in (self.x_min, self.x_max, self.x_step) and \
-                self.x_min != self.x_max:
-            x = np.arange(self.x_min, self.x_max+self.x_step-self.y_step*0.1, self.x_step)
+        """
+        if (
+            None not in (self.x_min, self.x_max, self.x_step)
+            and self.x_min != self.x_max
+        ):
+            x = np.arange(
+                self.x_min, self.x_max + self.x_step - self.y_step * 0.1, self.x_step
+            )
         else:
             x = np.array([])
         return x
 
     @property
     def y(self):
-        '''
+        """
         np.array: The grid points in y.
-        '''
-        if None not in (self.y_min, self.y_max, self.y_step) and \
-                self.y_min != self.y_max:
-            y = np.arange(self.y_min, self.y_max-self.y_step*0.1, self.y_step)
+        """
+        if (
+            None not in (self.y_min, self.y_max, self.y_step)
+            and self.y_min != self.y_max
+        ):
+            y = np.arange(self.y_min, self.y_max - self.y_step * 0.1, self.y_step)
         else:
             y = np.array([])
         return y
 
     @property
     def eps(self):
-        '''
+        """
         np.array: A grid of permittivies representing
         the permittivity profile of the structure.
-        '''
-        return self.n**2
+        """
+        return self.n ** 2
 
     @property
     def eps_func(self):
-        '''
+        """
         function: a function that when passed a `x` and `y` values,
             returns the permittivity profile of the structure,
             interpolating if necessary.
-        '''
+        """
         interp_real = interpolate.interp2d(self.x, self.y, self.eps.real)
         interp_imag = interpolate.interp2d(self.x, self.y, self.eps.imag)
-        interp = lambda x, y: interp_real(x, y) + 1.j*interp_imag(x, y)
+        interp = lambda x, y: interp_real(x, y) + 1.0j * interp_imag(x, y)
         return interp
 
     @property
     def n_func(self):
-        '''
+        """
         function: a function that when passed a `x` and `y` values,
             returns the refractive index profile of the structure,
             interpolating if necessary.
-        '''
+        """
         return interpolate.interp2d(self.x, self.y, self.n)
 
-    def _add_triangular_sides(self, xy_mask, angle, y_top_right, y_bot_left,
-                              x_top_right, x_bot_left, n_material):
+    def _add_triangular_sides(
+        self,
+        xy_mask,
+        angle,
+        y_top_right,
+        y_bot_left,
+        x_top_right,
+        x_bot_left,
+        n_material,
+    ):
         angle = np.radians(angle)
         trap_len = (y_top_right - y_bot_left) / np.tan(angle)
         num_x_iterations = trap_len / self.x_step
-        y_per_iteration =  num_x_iterations / self.y_pts
+        y_per_iteration = num_x_iterations / self.y_pts
 
-        lhs_x_start_index = int(x_bot_left/ self.x_step + 0.5)
-        rhs_x_stop_index = int(x_top_right/ self.x_step + 1 + 0.5)
+        lhs_x_start_index = int(x_bot_left / self.x_step + 0.5)
+        rhs_x_stop_index = int(x_top_right / self.x_step + 1 + 0.5)
 
         running_removal_float = y_per_iteration
         for i, _ in enumerate(xy_mask):
@@ -204,9 +194,10 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
         self.n[xy_mask] = n_material
         return self.n
 
-    def _add_material(self, x_bot_left, y_bot_left, x_top_right, y_top_right,
-                     n_material, angle=0):
-        '''
+    def _add_material(
+        self, x_bot_left, y_bot_left, x_top_right, y_top_right, n_material, angle=0
+    ):
+        """
         A low-level function that allows writing a rectangle refractive
         index profile to a `Structure`.
 
@@ -225,21 +216,28 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
                 of the defined rectangle.  Default is 0.  This
                 is useful for creating a ridge with angled
                 sidewalls.
-        '''
-        x_mask = np.logical_and(x_bot_left<=self.x, self.x<=x_top_right)
-        y_mask = np.logical_and(y_bot_left<=self.y, self.y<=y_top_right)
+        """
+        x_mask = np.logical_and(x_bot_left <= self.x, self.x <= x_top_right)
+        y_mask = np.logical_and(y_bot_left <= self.y, self.y <= y_top_right)
 
         xy_mask = np.kron(y_mask, x_mask).reshape((y_mask.size, x_mask.size))
         self.n[xy_mask] = n_material
 
         if angle:
-            self._add_triangular_sides(xy_mask, angle, y_top_right, y_bot_left,
-                                       x_top_right, x_bot_left, n_material)
+            self._add_triangular_sides(
+                xy_mask,
+                angle,
+                y_top_right,
+                y_bot_left,
+                x_top_right,
+                x_bot_left,
+                n_material,
+            )
 
         return self.n
 
-    def write_to_file(self, filename='material_index.dat', plot=True):
-        '''
+    def write_to_file(self, filename="material_index.dat", plot=True):
+        """
         Write the refractive index profile to file.
 
         Args:
@@ -247,49 +245,49 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
                 index data should be saved to.
             plot (bool): `True` if plots should be generates,
                 otherwise `False`.  Default is `True`.
-        '''
-        path = os.path.dirname(sys.modules[__name__].__file__) + '/'
+        """
 
-        with open(filename, 'w') as fs:
+        with open(filename, "w") as fs:
             for n_row in np.abs(self.n[::-1]):
-                n_str = ','.join([str(v) for v in n_row])
-                fs.write(n_str+'\n')
+                n_str = ",".join([str(v) for v in n_row])
+                fs.write(n_str + "\n")
 
         if plot:
             filename_image_prefix, _ = os.path.splitext(filename)
-            filename_image = filename_image_prefix + '.png'
+            filename_image = filename_image_prefix + ".png"
             args = {
-                'title': 'Refractive Index Profile',
-                'x_pts': self.x_pts,
-                'y_pts': self.y_pts,
-                'x_min': self.x_min,
-                'x_max': self.x_max,
-                'y_min': self.y_min,
-                'y_max': self.y_max,
-                'filename_data': filename,
-                'filename_image': filename_image
+                "title": "Refractive Index Profile",
+                "x_pts": self.x_pts,
+                "y_pts": self.y_pts,
+                "x_min": self.x_min,
+                "x_max": self.x_max,
+                "y_min": self.y_min,
+                "y_max": self.y_max,
+                "filename_data": filename,
+                "filename_image": filename_image,
             }
 
-            if MPL:
-                heatmap = np.loadtxt(args['filename_data'], delimiter=',')
-                plt.clf()
-                plt.title(args['title'])
-                plt.xlabel('$x$')
-                plt.ylabel('$y$')
-                plt.imshow(np.flipud(heatmap),
-                           extent=(args['x_min'], args['x_max'], args['y_min'], args['y_max']),
-                           aspect="auto")
-                plt.colorbar()
-                plt.savefig(filename_image)
-            else:
-                gp.gnuplot(path+'structure.gpi', args)
+            heatmap = np.loadtxt(args["filename_data"], delimiter=",")
+            plt.clf()
+            plt.title(args["title"])
+            plt.xlabel("$x$")
+            plt.ylabel("$y$")
+            plt.imshow(
+                np.flipud(heatmap),
+                extent=(args["x_min"], args["x_max"], args["y_min"], args["y_max"]),
+                aspect="auto",
+            )
+            plt.colorbar()
+            plt.savefig(filename_image)
 
     def __str__(self):
         return self.n.__str__()
 
+
 class Structure(_AbstractStructure):
-    def __init__(self, x_step, y_step, x_max, y_max, x_min=0., y_min=0.,
-                 n_background=1.):
+    def __init__(
+        self, x_step, y_step, x_max, y_max, x_min=0.0, y_min=0.0, n_background=1.0
+    ):
         self.x_min = x_min
         self.x_max = x_max
         self.y_min = y_min
@@ -297,14 +295,15 @@ class Structure(_AbstractStructure):
         self.x_step = x_step
         self.y_step = y_step
         self.n_background = n_background
-        self._n = np.ones((self.y.size,self.x.size), 'complex_') * n_background
+        self._n = np.ones((self.y.size, self.x.size), "complex_") * n_background
 
     @property
     def n(self):
         return self._n
 
+
 class Slabs(_AbstractStructure):
-    '''
+    """
     Class to implement device refractive index
     profile cross-section designs.
 
@@ -333,8 +332,9 @@ class Slabs(_AbstractStructure):
             and the value is the :class:`Slab` object.
         slab_count (int): The number of :class:`Slab` objects
             added so far.
-    '''
-    def __init__(self, wavelength, y_step, x_step, x_max, x_min=0.):
+    """
+
+    def __init__(self, wavelength, y_step, x_step, x_max, x_min=0.0):
         _AbstractStructure.__init__(self)
 
         self._wl = wavelength
@@ -346,10 +346,10 @@ class Slabs(_AbstractStructure):
 
         self.slabs = {}
         self.slab_count = 0
-        self._next_start = 0.
+        self._next_start = 0.0
 
-    def add_slab(self, height, n_background=1., position='top'):
-        '''
+    def add_slab(self, height, n_background=1.0, position="top"):
+        """
         Creates and adds a :class:`Slab` object.
 
         Args:
@@ -359,38 +359,50 @@ class Slabs(_AbstractStructure):
 
         Returns:
             str: The name of the slab.
-        '''
-        assert position in ('top', 'bottom')
+        """
+        assert position in ("top", "bottom")
 
         name = str(self.slab_count)
 
         if not callable(n_background):
-            n_back = lambda wl: n_background
+
+            def n_back(wl):
+                return n_background
+
         else:
             n_back = n_background
 
-        height_discretised = self.y_step*((height // self.y_step) + 1)
+        height_discretised = self.y_step * ((height // self.y_step) + 1)
 
         y_min = self._next_start
         y_max = y_min + height_discretised
-        self.slabs[name] = Slab(name, self.x_step, self.y_step, self.x_max,
-                                 y_max, self.x_min, y_min, n_back, self._wl)
+        self.slabs[name] = Slab(
+            name,
+            self.x_step,
+            self.y_step,
+            self.x_max,
+            y_max,
+            self.x_min,
+            y_min,
+            n_back,
+            self._wl,
+        )
 
         self.y_max = y_max
         self._next_start = y_min + height_discretised
         self.slab_count += 1
 
-        if position == 'bottom':
+        if position == "bottom":
             slabs = {}
             for k in self.slabs.keys():
-                slabs[str(int(k)+1)] = self.slabs[k]
-            slabs['0'] = slabs.pop(str(self.slab_count))
+                slabs[str(int(k) + 1)] = self.slabs[k]
+            slabs["0"] = slabs.pop(str(self.slab_count))
             self.slabs = slabs
 
         return name
 
     def change_wavelength(self, wavelength):
-        '''
+        """
         Changes the wavelength of the structure.
 
         This will affect the mode solver and potentially
@@ -399,7 +411,7 @@ class Slabs(_AbstractStructure):
 
         Args:
             wavelength (float): The new wavelength.
-        '''
+        """
         for name, slab in self.slabs.items():
             const_args = slab._const_args
             mat_args = slab._mat_params
@@ -416,12 +428,12 @@ class Slabs(_AbstractStructure):
 
     @property
     def n(self):
-        '''
+        """
         np.array: The refractive index profile matrix
         of the current slab.
-        '''
+        """
         try:
-            n_mat = self.slabs['0'].n
+            n_mat = self.slabs["0"].n
             for s in range(1, self.slab_count):
                 n_mat = np.vstack((self.slabs[str(s)].n, n_mat))
         except KeyError:
@@ -431,8 +443,9 @@ class Slabs(_AbstractStructure):
     def __getitem__(self, slab_name):
         return self.slabs[str(slab_name)]
 
+
 class Slab(Structure):
-    '''
+    """
     A :class:`Slab` represents a horizontal slice of
     the refractive index profile.
 
@@ -460,24 +473,37 @@ class Slab(Structure):
         name (str): The name of the :class:`Slab` object.
         position (int): A unique identifier for the
         :class:`Slab` object.
-    '''
+    """
+
     position = 0
 
-    def __init__(self, name, x_step, y_step, x_max, y_max, x_min, y_min,
-                 n_background, wavelength):
+    def __init__(
+        self, name, x_step, y_step, x_max, y_max, x_min, y_min, n_background, wavelength
+    ):
         self._wl = wavelength
         self.name = name
         self.position = Slab.position
         Slab.position += 1
 
-        Structure.__init__(self, x_step, y_step, x_max, y_max, x_min, y_min,
-                           n_background(self._wl))
+        Structure.__init__(
+            self, x_step, y_step, x_max, y_max, x_min, y_min, n_background(self._wl)
+        )
 
-        self._const_args = [name, x_step, y_step, x_max, y_max, x_min, y_min, n_background, wavelength]
+        self._const_args = [
+            name,
+            x_step,
+            y_step,
+            x_max,
+            y_max,
+            x_min,
+            y_min,
+            n_background,
+            wavelength,
+        ]
         self._mat_params = []
 
     def add_material(self, x_min, x_max, n, angle=0):
-        '''
+        """
         Add a refractive index between two x-points.
 
         Args:
@@ -493,7 +519,7 @@ class Slab(Structure):
             angle (float): Angle in degrees of the slope of the
                 sidewalls at `x_min` and `x_max`.  This is useful
                 for defining a ridge with angled sidewalls.
-        '''
+        """
         self._mat_params.append([x_min, x_max, n, angle])
 
         if not callable(n):
@@ -501,10 +527,13 @@ class Slab(Structure):
         else:
             n_mat = n
 
-        Structure._add_material(self, x_min, self.y_min, x_max, self.y_max, n_mat(self._wl), angle)
+        Structure._add_material(
+            self, x_min, self.y_min, x_max, self.y_max, n_mat(self._wl), angle
+        )
         return self.n
 
-class StructureAni():
+
+class StructureAni:
     r"""
     Anisottropic structure object.
 
@@ -541,17 +570,29 @@ class StructureAni():
             as `structure_xx`, but with different refractive index
             parameters.  Default is `None`.
     """
-    def __init__(self, structure_xx, structure_yy, structure_zz,
-                 structure_xy=None, structure_yx=None):
+
+    def __init__(
+        self,
+        structure_xx,
+        structure_yy,
+        structure_zz,
+        structure_xy=None,
+        structure_yx=None,
+    ):
         self.xx = structure_xx
         self.yy = structure_yy
         self.zz = structure_zz
 
         if not structure_xy or not structure_yx:
-            struct_dummy = Structure(self.xx.x_step, self.xx.y_step,
-                                     self.xx.x_max, self.xx.y_max,
-                                     self.xx.x_min, self.xx.y_min,
-                                     n_background=0.)
+            struct_dummy = Structure(
+                self.xx.x_step,
+                self.xx.y_step,
+                self.xx.x_max,
+                self.xx.y_max,
+                self.xx.x_min,
+                self.xx.y_min,
+                n_background=0.0,
+            )
             struct_dummy._wl = self.xx._wl
 
         if structure_xy:
@@ -564,13 +605,12 @@ class StructureAni():
         else:
             self.yx = struct_dummy
 
-        assert self.xx._wl == self.xy._wl == self.yx._wl == \
-               self.yy._wl == self.zz._wl
+        assert self.xx._wl == self.xy._wl == self.yx._wl == self.yy._wl == self.zz._wl
 
         self._wl = structure_xx._wl
 
         self.axes = (self.xx, self.xy, self.yx, self.yy, self.zz)
-        self.axes_str = ('xx', 'xy', 'yx', 'yy', 'zz')
+        self.axes_str = ("xx", "xy", "yx", "yy", "zz")
 
     @property
     def n(self):
@@ -594,19 +634,19 @@ class StructureAni():
 
     @property
     def x_ctr(self):
-        return 0.5*(self.xx.x_max + self.xx.x_min)
+        return 0.5 * (self.xx.x_max + self.xx.x_min)
 
     @property
     def y_ctr(self):
-        return 0.5*(self.xx.y_max + self.xx.y_min)
+        return 0.5 * (self.xx.y_max + self.xx.y_min)
 
     @property
     def xc(self):
-        return 0.5*(self.xx.x[1:] + self.xx.x[:-1])
+        return 0.5 * (self.xx.x[1:] + self.xx.x[:-1])
 
     @property
     def yc(self):
-        return 0.5*(self.xx.y[1:] + self.xx.y[:-1])
+        return 0.5 * (self.xx.y[1:] + self.xx.y[:-1])
 
     @property
     def xc_pts(self):
@@ -634,37 +674,47 @@ class StructureAni():
 
     @property
     def x(self):
-        if None not in (self.xx.x_min, self.xx.x_max, self.xx.x_step) and \
-                self.xx.x_min != self.xx.x_max:
-            x = np.arange(self.xx.x_min, self.xx.x_max+self.xx.x_step-self.xx.y_step*0.1, self.xx.x_step)
+        if (
+            None not in (self.xx.x_min, self.xx.x_max, self.xx.x_step)
+            and self.xx.x_min != self.xx.x_max
+        ):
+            x = np.arange(
+                self.xx.x_min,
+                self.xx.x_max + self.xx.x_step - self.xx.y_step * 0.1,
+                self.xx.x_step,
+            )
         else:
             x = np.array([])
         return x
 
     @property
     def y(self):
-        if None not in (self.xx.y_min, self.xx.y_max, self.xx.y_step) and \
-                self.xx.y_min != self.xx.y_max:
-            y = np.arange(self.xx.y_min, self.xx.y_max-self.xx.y_step*0.1, self.xx.y_step)
+        if (
+            None not in (self.xx.y_min, self.xx.y_max, self.xx.y_step)
+            and self.xx.y_min != self.xx.y_max
+        ):
+            y = np.arange(
+                self.xx.y_min, self.xx.y_max - self.xx.y_step * 0.1, self.xx.y_step
+            )
         else:
             y = np.array([])
         return y
 
     @property
     def eps(self):
-        eps_ani = [a.n**2 for a in self.axes]
+        eps_ani = [a.n ** 2 for a in self.axes]
         return eps_ani
 
     @property
     def eps_func(self):
-        return lambda x,y: tuple(axis.eps_func(x,y) for axis in self.axes)
+        return lambda x, y: tuple(axis.eps_func(x, y) for axis in self.axes)
 
     @property
     def n_func(self):
-        return lambda x,y: tuple(axis.n_func(x,y) for axis in self.axes)
+        return lambda x, y: tuple(axis.n_func(x, y) for axis in self.axes)
 
-    def write_to_file(self, filename='material_index.dat', plot=True):
-        '''
+    def write_to_file(self, filename="material_index.dat", plot=True):
+        """
         Write the refractive index profile to file.
 
         Args:
@@ -672,51 +722,53 @@ class StructureAni():
                 index data should be saved to.
             plot (bool): `True` if plots should be generates,
                 otherwise `False`.  Default is `True`.
-        '''
-        path = os.path.dirname(sys.modules[__name__].__file__) + '/'
-
-        dir_plot = 'material_index/'
+        """
+        dir_plot = "material_index/"
         if not os.path.exists(dir_plot):
             os.makedirs(dir_plot)
 
         for axis, name in zip(self.axes, self.axes_str):
             root, ext = os.path.splitext(filename)
-            fn = dir_plot + root + '_'+ name + ext
-            with open(fn, 'w') as fs:
+            fn = dir_plot + root + "_" + name + ext
+            with open(fn, "w") as fs:
                 for n_row in np.abs(axis.n[::-1]):
-                    n_str = ','.join([str(v) for v in n_row])
-                    fs.write(n_str+'\n')
+                    n_str = ",".join([str(v) for v in n_row])
+                    fs.write(n_str + "\n")
 
             if plot:
                 filename_image_prefix, _ = os.path.splitext(fn)
-                filename_image = filename_image_prefix + '.png'
+                filename_image = filename_image_prefix + ".png"
                 args = {
-                    'title': 'Refractive Index Profile: %s' % name,
-                    'x_pts': self.xx.x_pts,
-                    'y_pts': self.xx.y_pts,
-                    'x_min': self.xx.x_min,
-                    'x_max': self.xx.x_max,
-                    'y_min': self.xx.y_min,
-                    'y_max': self.xx.y_max,
-                    'filename_data': fn,
-                    'filename_image': filename_image
+                    "title": "Refractive Index Profile: %s" % name,
+                    "x_pts": self.xx.x_pts,
+                    "y_pts": self.xx.y_pts,
+                    "x_min": self.xx.x_min,
+                    "x_max": self.xx.x_max,
+                    "y_min": self.xx.y_min,
+                    "y_max": self.xx.y_max,
+                    "filename_data": fn,
+                    "filename_image": filename_image,
                 }
-                if MPL:
-                    heatmap = np.loadtxt(args['filename_data'], delimiter=',')
-                    plt.clf()
-                    plt.title(args['title'])
-                    plt.xlabel('$x$')
-                    plt.ylabel('$y$')
-                    plt.imshow(np.flipud(heatmap),
-                               extent=(args['x_min'], args['x_max'], args['y_min'], args['y_max']),
-                               aspect="auto")
-                    plt.colorbar()
-                    plt.savefig(filename_image)
-                else:
-                    gp.gnuplot(path+'structure.gpi', args, silent=False)
+                heatmap = np.loadtxt(args["filename_data"], delimiter=",")
+                plt.clf()
+                plt.title(args["title"])
+                plt.xlabel("$x$")
+                plt.ylabel("$y$")
+                plt.imshow(
+                    np.flipud(heatmap),
+                    extent=(
+                        args["x_min"],
+                        args["x_max"],
+                        args["y_min"],
+                        args["y_max"],
+                    ),
+                    aspect="auto",
+                )
+                plt.colorbar()
+                plt.savefig(filename_image)
 
     def change_wavelength(self, wavelength):
-        '''
+        """
         Changes the wavelength of the structure.
 
         This will affect the mode solver and potentially
@@ -725,7 +777,7 @@ class StructureAni():
 
         Args:
             wavelength (float): The new wavelength.
-        '''
+        """
         for axis in self.axes:
             if issubclass(type(axis), Slabs):
                 axis.change_wavelength(wavelength)

@@ -1,9 +1,9 @@
-import numpy as np
+import modesolverpy.design as de
 import modesolverpy.mode_solver as ms
 import modesolverpy.structure as st
-import modesolverpy.design as de
-import opticalmaterialspy as mat
 import modesolverpy.structure_base as stb
+import numpy as np
+import opticalmaterialspy as mat
 
 wls = [1.5, 1.55, 1.6]
 x_step = 0.05
@@ -11,10 +11,10 @@ y_step = 0.05
 etch_depth = 0.07
 wg_width = 10
 sub_height = 0.5
-sub_width = 14.
+sub_width = 14.0
 clad_height = 0.5
 film_thickness = 0.22
-polarisation = 'TE'
+polarisation = "TE"
 dcs = np.linspace(20, 80, 61) / 100
 incidence_angle_deg = 8
 
@@ -29,10 +29,23 @@ periods.append(dcs)
 for wl in wls:
     ngc = []
     for ed, ft in [(ed1, ft1), (ed2, ft2)]:
+
         def struct_func(n_sub, n_wg, n_clad):
-            return st.RidgeWaveguide(wl, x_step, y_step, ed, wg_width,
-                                     sub_height, sub_width, clad_height,
-                                     n_sub, n_wg, None, n_clad, ft)
+            return st.RidgeWaveguide(
+                wl,
+                x_step,
+                y_step,
+                ed,
+                wg_width,
+                sub_height,
+                sub_width,
+                clad_height,
+                n_sub,
+                n_wg,
+                None,
+                n_clad,
+                ft,
+            )
 
         n_sub = mat.SiO2().n(wl)
         n_wg_xx = 3.46
@@ -45,20 +58,35 @@ for wl in wls:
         struct_zz = struct_func(n_sub, n_wg_zz, n_clad)
 
         struct_ani = stb.StructureAni(struct_xx, struct_yy, struct_zz)
-        #struct_ani.write_to_file()
+        # struct_ani.write_to_file()
 
         solver = ms.ModeSolverFullyVectorial(4)
         solver.solve(struct_ani)
-        #solver.write_modes_to_file()
+        # solver.write_modes_to_file()
 
-        if polarisation == 'TE':
+        if polarisation == "TE":
             ngc.append(np.round(np.real(solver.n_effs_te), 4)[0])
-        elif polarisation == 'TM':
+        elif polarisation == "TM":
             ngc.append(np.round(np.real(solver.n_effs_tm), 4)[0])
 
-    period = de.grating_coupler_period(wl, dcs*ngc[0]+(1-dcs)*ngc[1], n_clad, incidence_angle_deg=incidence_angle_deg, diffration_order=1)
+    period = de.grating_coupler_period(
+        wl,
+        dcs * ngc[0] + (1 - dcs) * ngc[1],
+        n_clad,
+        incidence_angle_deg=incidence_angle_deg,
+        diffration_order=1,
+    )
     periods.append(period)
 
-filename = 'gc-sweep-%s-%inm-etch-%i-film.dat' % (polarisation, etch_depth*1000, film_thickness*1000)
-np.savetxt(filename, np.array(periods).T, delimiter=',', header=','.join([str(val) for val in wls]))
+filename = "gc-sweep-%s-%inm-etch-%i-film.dat" % (
+    polarisation,
+    etch_depth * 1000,
+    film_thickness * 1000,
+)
+np.savetxt(
+    filename,
+    np.array(periods).T,
+    delimiter=",",
+    header=",".join([str(val) for val in wls]),
+)
 print(np.c_[periods])

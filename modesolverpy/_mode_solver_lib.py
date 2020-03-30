@@ -9,27 +9,30 @@
 
 """
 from __future__ import print_function
-from builtins import zip
-from builtins import str
-from builtins import range
+
+import collections as col
+from builtins import range, zip
 
 import numpy
 import scipy
 import scipy.optimize
+from scipy.interpolate import interp2d
 
-import collections as col
 
 def trapz2(f, x=None, y=None, dx=1.0, dy=1.0):
     """Double integrate."""
     return numpy.trapz(numpy.trapz(f, x=y, dx=dy), x=x, dx=dx)
 
+
 def centered1d(x):
-    return (x[1:] + x[:-1]) / 2.
+    return (x[1:] + x[:-1]) / 2.0
+
 
 def centered2d(x):
-    return (x[1:, 1:] + x[1:, :-1] + x[:-1, 1:] + x[:-1, :-1]) / 4.
+    return (x[1:, 1:] + x[1:, :-1] + x[:-1, 1:] + x[:-1, :-1]) / 4.0
 
-class _ModeSolverSemiVectorial():
+
+class _ModeSolverSemiVectorial:
     """
     This function calculates the modes of a dielectric waveguide
     using the semivectorial finite difference method.
@@ -77,13 +80,13 @@ class _ModeSolverSemiVectorial():
 
     """
 
-    def __init__(self, wl, structure, boundary='0000', method='Ex'):
+    def __init__(self, wl, structure, boundary="0000", method="Ex"):
         # Polarisation bug fix.
-        assert method in ('Ex', 'Ey'), 'Invalid polarisation method.'
-        if method == 'Ex':
-            method = 'Ey'
-        elif method == 'Ey':
-            method = 'Ex'
+        assert method in ("Ex", "Ey"), "Invalid polarisation method."
+        if method == "Ex":
+            method = "Ey"
+        elif method == "Ey":
+            method = "Ex"
 
         self.wl = wl
         self.x = structure.y
@@ -142,35 +145,67 @@ class _ModeSolverSemiVectorial():
 
         # three methods: Ex, Ey and scalar
 
-        if method == 'Ex':
+        if method == "Ex":
 
             # Ex
 
             An = 2 / n / (n + s)
             As = 2 / s / (n + s)
-            Ae = 8 * (p * (ep - ew) + 2 * w * ew) * ee / \
-                ((p * (ep - ee) + 2 * e * ee) * (p ** 2 * (ep - ew) + 4 * w ** 2 * ew) +
-                 (p * (ep - ew) + 2 * w * ew) * (p ** 2 * (ep - ee) + 4 * e ** 2 * ee))
-            Aw = 8 * (p * (ep - ee) + 2 * e * ee) * ew / \
-                ((p * (ep - ee) + 2 * e * ee) * (p ** 2 * (ep - ew) + 4 * w ** 2 * ew) +
-                 (p * (ep - ew) + 2 * w * ew) * (p ** 2 * (ep - ee) + 4 * e ** 2 * ee))
+            Ae = (
+                8
+                * (p * (ep - ew) + 2 * w * ew)
+                * ee
+                / (
+                    (p * (ep - ee) + 2 * e * ee)
+                    * (p ** 2 * (ep - ew) + 4 * w ** 2 * ew)
+                    + (p * (ep - ew) + 2 * w * ew)
+                    * (p ** 2 * (ep - ee) + 4 * e ** 2 * ee)
+                )
+            )
+            Aw = (
+                8
+                * (p * (ep - ee) + 2 * e * ee)
+                * ew
+                / (
+                    (p * (ep - ee) + 2 * e * ee)
+                    * (p ** 2 * (ep - ew) + 4 * w ** 2 * ew)
+                    + (p * (ep - ew) + 2 * w * ew)
+                    * (p ** 2 * (ep - ee) + 4 * e ** 2 * ee)
+                )
+            )
             Ap = ep * k ** 2 - An - As - Ae * ep / ee - Aw * ep / ew
 
-        elif method == 'Ey':
+        elif method == "Ey":
 
             # Ey
 
-            An = 8 * (q * (ep - es) + 2 * s * es) * en / \
-                ((q * (ep - en) + 2 * n * en) * (q ** 2 * (ep - es) + 4 * s ** 2 * es) +
-                 (q * (ep - es) + 2 * s * es) * (q ** 2 * (ep - en) + 4 * n ** 2 * en))
-            As = 8 * (q * (ep - en) + 2 * n * en) * es / \
-                ((q * (ep - en) + 2 * n * en) * (q ** 2 * (ep - es) + 4 * s ** 2 * es) +
-                 (q * (ep - es) + 2 * s * es) * (q ** 2 * (ep - en) + 4 * n ** 2 * en))
+            An = (
+                8
+                * (q * (ep - es) + 2 * s * es)
+                * en
+                / (
+                    (q * (ep - en) + 2 * n * en)
+                    * (q ** 2 * (ep - es) + 4 * s ** 2 * es)
+                    + (q * (ep - es) + 2 * s * es)
+                    * (q ** 2 * (ep - en) + 4 * n ** 2 * en)
+                )
+            )
+            As = (
+                8
+                * (q * (ep - en) + 2 * n * en)
+                * es
+                / (
+                    (q * (ep - en) + 2 * n * en)
+                    * (q ** 2 * (ep - es) + 4 * s ** 2 * es)
+                    + (q * (ep - es) + 2 * s * es)
+                    * (q ** 2 * (ep - en) + 4 * n ** 2 * en)
+                )
+            )
             Ae = 2 / e / (e + w)
             Aw = 2 / w / (e + w)
             Ap = ep * k ** 2 - An * ep / en - As * ep / es - Ae - Aw
 
-        elif method == 'scalar':
+        elif method == "scalar":
 
             # scalar
 
@@ -182,42 +217,42 @@ class _ModeSolverSemiVectorial():
 
         else:
 
-            raise ValueError('unknown method')
+            raise ValueError("unknown method")
 
         ii = numpy.arange(nx * ny).reshape(nx, ny)
 
         # north boundary
         ib = ii[:, -1]
-        if boundary[0] == 'S':
+        if boundary[0] == "S":
             Ap[ib] += An[ib]
-        elif boundary[0] == 'A':
+        elif boundary[0] == "A":
             Ap[ib] -= An[ib]
         # else:
         #     raise ValueError('unknown boundary')
 
         # south
         ib = ii[:, 0]
-        if boundary[1] == 'S':
+        if boundary[1] == "S":
             Ap[ib] += As[ib]
-        elif boundary[1] == 'A':
+        elif boundary[1] == "A":
             Ap[ib] -= As[ib]
         # else:
         #     raise ValueError('unknown boundary')
 
         # east
         ib = ii[-1, :]
-        if boundary[2] == 'S':
+        if boundary[2] == "S":
             Ap[ib] += Ae[ib]
-        elif boundary[2] == 'A':
+        elif boundary[2] == "A":
             Ap[ib] -= Ae[ib]
         # else:
         #     raise ValueError('unknown boundary')
 
         # west
         ib = ii[0, :]
-        if boundary[3] == 'S':
+        if boundary[3] == "S":
             Ap[ib] += Aw[ib]
-        elif boundary[3] == 'A':
+        elif boundary[3] == "A":
             Ap[ib] -= Aw[ib]
         # else:
         #     raise ValueError('unknown boundary')
@@ -245,13 +280,15 @@ class _ModeSolverSemiVectorial():
 
         A = self.build_matrix()
 
-        eigs = eigen.eigs(A,
-                          k=neigs,
-                          which='LR',
-                          tol=0.001,
-                          ncv=None,
-                          v0 = initial_mode_guess,
-                          return_eigenvectors=mode_profiles)
+        eigs = eigen.eigs(
+            A,
+            k=neigs,
+            which="LR",
+            tol=0.001,
+            ncv=None,
+            v0=initial_mode_guess,
+            return_eigenvectors=mode_profiles,
+        )
         if mode_profiles:
             eigvals, eigvecs = eigs
         else:
@@ -273,22 +310,24 @@ class _ModeSolverSemiVectorial():
             for i in idx:
                 tmp.append(phi[i])
 
-            if self.method == 'scalar':
+            if self.method == "scalar":
                 self.phi = tmp
-            elif self.method == 'Ex':
+            elif self.method == "Ex":
                 self.Ex = tmp
-            elif self.method == 'Ey':
+            elif self.method == "Ey":
                 self.Ey = tmp
             self.modes = tmp
 
         return self
 
     def __str__(self):
-        descr = 'Semi-Vectorial Finite Difference Modesolver\n\tmethod: %s\n' % self.method
+        descr = (
+            "Semi-Vectorial Finite Difference Modesolver\n\tmethod: %s\n" % self.method
+        )
         return descr
 
 
-class _ModeSolverVectorial():
+class _ModeSolverVectorial:
 
     """
     The VFDModeSolver class computes the electric and magnetic fields for modes of a dielectric
@@ -413,24 +452,36 @@ class _ModeSolverVectorial():
         ew14 = e * exx1 + w * exx4
         ew23 = e * exx2 + w * exx3
 
-        axxn = ((2 * eyy4 * e - eyx4 * n) * (eyy3 / ezz4) / ns34 +
-                (2 * eyy1 * w + eyx1 * n) * (eyy2 / ezz1) / ns21) / (n * (e + w))
-        axxs = ((2 * eyy3 * e + eyx3 * s) * (eyy4 / ezz3) / ns34 +
-                (2 * eyy2 * w - eyx2 * s) * (eyy1 / ezz2) / ns21) / (s * (e + w))
-        ayye = (2 * n * exx4 - e * exy4) * exx1 / ezz4 / e / ew14 / \
-            (n + s) + (2 * s * exx3 + e * exy3) * \
-            exx2 / ezz3 / e / ew23 / (n + s)
-        ayyw = (2 * exx1 * n + exy1 * w) * exx4 / ezz1 / w / ew14 / \
-            (n + s) + (2 * exx2 * s - exy2 * w) * \
-            exx3 / ezz2 / w / ew23 / (n + s)
-        axxe = 2 / (e * (e + w)) + \
-            (eyy4 * eyx3 / ezz3 - eyy3 * eyx4 / ezz4) / (e + w) / ns34
-        axxw = 2 / (w * (e + w)) + \
-            (eyy2 * eyx1 / ezz1 - eyy1 * eyx2 / ezz2) / (e + w) / ns21
-        ayyn = 2 / (n * (n + s)) + \
-            (exx4 * exy1 / ezz1 - exx1 * exy4 / ezz4) / (n + s) / ew14
-        ayys = 2 / (s * (n + s)) + \
-            (exx2 * exy3 / ezz3 - exx3 * exy2 / ezz2) / (n + s) / ew23
+        axxn = (
+            (2 * eyy4 * e - eyx4 * n) * (eyy3 / ezz4) / ns34
+            + (2 * eyy1 * w + eyx1 * n) * (eyy2 / ezz1) / ns21
+        ) / (n * (e + w))
+        axxs = (
+            (2 * eyy3 * e + eyx3 * s) * (eyy4 / ezz3) / ns34
+            + (2 * eyy2 * w - eyx2 * s) * (eyy1 / ezz2) / ns21
+        ) / (s * (e + w))
+        ayye = (2 * n * exx4 - e * exy4) * exx1 / ezz4 / e / ew14 / (n + s) + (
+            2 * s * exx3 + e * exy3
+        ) * exx2 / ezz3 / e / ew23 / (n + s)
+        ayyw = (2 * exx1 * n + exy1 * w) * exx4 / ezz1 / w / ew14 / (n + s) + (
+            2 * exx2 * s - exy2 * w
+        ) * exx3 / ezz2 / w / ew23 / (n + s)
+        axxe = (
+            2 / (e * (e + w))
+            + (eyy4 * eyx3 / ezz3 - eyy3 * eyx4 / ezz4) / (e + w) / ns34
+        )
+        axxw = (
+            2 / (w * (e + w))
+            + (eyy2 * eyx1 / ezz1 - eyy1 * eyx2 / ezz2) / (e + w) / ns21
+        )
+        ayyn = (
+            2 / (n * (n + s))
+            + (exx4 * exy1 / ezz1 - exx1 * exy4 / ezz4) / (n + s) / ew14
+        )
+        ayys = (
+            2 / (s * (n + s))
+            + (exx2 * exy3 / ezz3 - exx3 * exy2 / ezz2) / (n + s) / ew23
+        )
 
         axxne = +eyx4 * eyy3 / ezz4 / (e + w) / ns34
         axxse = -eyx3 * eyy4 / ezz3 / (e + w) / ns34
@@ -442,48 +493,106 @@ class _ModeSolverVectorial():
         ayynw = -exy1 * exx4 / ezz1 / (n + s) / ew14
         ayysw = +exy2 * exx3 / ezz2 / (n + s) / ew23
 
-        axxp = -axxn - axxs - axxe - axxw - axxne - axxse - axxnw - axxsw + k ** 2 * \
-            (n + s) * \
-            (eyy4 * eyy3 * e / ns34 + eyy1 * eyy2 * w / ns21) / (e + w)
-        ayyp = -ayyn - ayys - ayye - ayyw - ayyne - ayyse - ayynw - ayysw + k ** 2 * \
-            (e + w) * \
-            (exx1 * exx4 * n / ew14 + exx2 * exx3 * s / ew23) / (n + s)
-        axyn = (eyy3 * eyy4 / ezz4 / ns34 - eyy2 * eyy1 / ezz1 /
-                ns21 + s * (eyy2 * eyy4 - eyy1 * eyy3) / ns21 / ns34) / (e + w)
-        axys = (eyy1 * eyy2 / ezz2 / ns21 - eyy4 * eyy3 / ezz3 /
-                ns34 + n * (eyy2 * eyy4 - eyy1 * eyy3) / ns21 / ns34) / (e + w)
-        ayxe = (exx1 * exx4 / ezz4 / ew14 - exx2 * exx3 / ezz3 /
-                ew23 + w * (exx2 * exx4 - exx1 * exx3) / ew23 / ew14) / (n + s)
-        ayxw = (exx3 * exx2 / ezz2 / ew23 - exx4 * exx1 / ezz1 /
-                ew14 + e * (exx4 * exx2 - exx1 * exx3) / ew23 / ew14) / (n + s)
+        axxp = (
+            -axxn
+            - axxs
+            - axxe
+            - axxw
+            - axxne
+            - axxse
+            - axxnw
+            - axxsw
+            + k ** 2
+            * (n + s)
+            * (eyy4 * eyy3 * e / ns34 + eyy1 * eyy2 * w / ns21)
+            / (e + w)
+        )
+        ayyp = (
+            -ayyn
+            - ayys
+            - ayye
+            - ayyw
+            - ayyne
+            - ayyse
+            - ayynw
+            - ayysw
+            + k ** 2
+            * (e + w)
+            * (exx1 * exx4 * n / ew14 + exx2 * exx3 * s / ew23)
+            / (n + s)
+        )
+        axyn = (
+            eyy3 * eyy4 / ezz4 / ns34
+            - eyy2 * eyy1 / ezz1 / ns21
+            + s * (eyy2 * eyy4 - eyy1 * eyy3) / ns21 / ns34
+        ) / (e + w)
+        axys = (
+            eyy1 * eyy2 / ezz2 / ns21
+            - eyy4 * eyy3 / ezz3 / ns34
+            + n * (eyy2 * eyy4 - eyy1 * eyy3) / ns21 / ns34
+        ) / (e + w)
+        ayxe = (
+            exx1 * exx4 / ezz4 / ew14
+            - exx2 * exx3 / ezz3 / ew23
+            + w * (exx2 * exx4 - exx1 * exx3) / ew23 / ew14
+        ) / (n + s)
+        ayxw = (
+            exx3 * exx2 / ezz2 / ew23
+            - exx4 * exx1 / ezz1 / ew14
+            + e * (exx4 * exx2 - exx1 * exx3) / ew23 / ew14
+        ) / (n + s)
 
-        axye = (eyy4 * (1 + eyy3 / ezz4) - eyy3 * (1 + eyy4 / ezz4)) / ns34 / (e + w) - \
-               (2 * eyx1 * eyy2 / ezz1 * n * w / ns21 +
-                2 * eyx2 * eyy1 / ezz2 * s * w / ns21 +
-                2 * eyx4 * eyy3 / ezz4 * n * e / ns34 +
-                2 * eyx3 * eyy4 / ezz3 * s * e / ns34 +
-                2 * eyy1 * eyy2 * (1. / ezz1 - 1. / ezz2) * w ** 2 / ns21) / e / (e + w) ** 2
+        axye = (
+            (eyy4 * (1 + eyy3 / ezz4) - eyy3 * (1 + eyy4 / ezz4)) / ns34 / (e + w)
+            - (
+                2 * eyx1 * eyy2 / ezz1 * n * w / ns21
+                + 2 * eyx2 * eyy1 / ezz2 * s * w / ns21
+                + 2 * eyx4 * eyy3 / ezz4 * n * e / ns34
+                + 2 * eyx3 * eyy4 / ezz3 * s * e / ns34
+                + 2 * eyy1 * eyy2 * (1.0 / ezz1 - 1.0 / ezz2) * w ** 2 / ns21
+            )
+            / e
+            / (e + w) ** 2
+        )
 
-        axyw = (eyy2 * (1 + eyy1 / ezz2) - eyy1 * (1 + eyy2 / ezz2)) / ns21 / (e + w) - \
-               (2 * eyx1 * eyy2 / ezz1 * n * e / ns21 +
-                2 * eyx2 * eyy1 / ezz2 * s * e / ns21 +
-                2 * eyx4 * eyy3 / ezz4 * n * w / ns34 +
-                2 * eyx3 * eyy4 / ezz3 * s * w / ns34 +
-                2 * eyy3 * eyy4 * (1. / ezz3 - 1. / ezz4) * e ** 2 / ns34) / w / (e + w) ** 2
+        axyw = (
+            (eyy2 * (1 + eyy1 / ezz2) - eyy1 * (1 + eyy2 / ezz2)) / ns21 / (e + w)
+            - (
+                2 * eyx1 * eyy2 / ezz1 * n * e / ns21
+                + 2 * eyx2 * eyy1 / ezz2 * s * e / ns21
+                + 2 * eyx4 * eyy3 / ezz4 * n * w / ns34
+                + 2 * eyx3 * eyy4 / ezz3 * s * w / ns34
+                + 2 * eyy3 * eyy4 * (1.0 / ezz3 - 1.0 / ezz4) * e ** 2 / ns34
+            )
+            / w
+            / (e + w) ** 2
+        )
 
-        ayxn = (exx4 * (1 + exx1 / ezz4) - exx1 * (1 + exx4 / ezz4)) / ew14 / (n + s) - \
-               (2 * exy3 * exx2 / ezz3 * e * s / ew23 +
-                2 * exy2 * exx3 / ezz2 * w * n / ew23 +
-                2 * exy4 * exx1 / ezz4 * e * s / ew14 +
-                2 * exy1 * exx4 / ezz1 * w * n / ew14 +
-                2 * exx3 * exx2 * (1. / ezz3 - 1. / ezz2) * s ** 2 / ew23) / n / (n + s) ** 2
+        ayxn = (
+            (exx4 * (1 + exx1 / ezz4) - exx1 * (1 + exx4 / ezz4)) / ew14 / (n + s)
+            - (
+                2 * exy3 * exx2 / ezz3 * e * s / ew23
+                + 2 * exy2 * exx3 / ezz2 * w * n / ew23
+                + 2 * exy4 * exx1 / ezz4 * e * s / ew14
+                + 2 * exy1 * exx4 / ezz1 * w * n / ew14
+                + 2 * exx3 * exx2 * (1.0 / ezz3 - 1.0 / ezz2) * s ** 2 / ew23
+            )
+            / n
+            / (n + s) ** 2
+        )
 
-        ayxs = (exx2 * (1 + exx3 / ezz2) - exx3 * (1 + exx2 / ezz2)) / ew23 / (n + s) - \
-               (2 * exy3 * exx2 / ezz3 * e * n / ew23 +
-                2 * exy2 * exx3 / ezz2 * w * n / ew23 +
-                2 * exy4 * exx1 / ezz4 * e * s / ew14 +
-                2 * exy1 * exx4 / ezz1 * w * s / ew14 +
-                2 * exx1 * exx4 * (1. / ezz1 - 1. / ezz4) * n ** 2 / ew14) / s / (n + s) ** 2
+        ayxs = (
+            (exx2 * (1 + exx3 / ezz2) - exx3 * (1 + exx2 / ezz2)) / ew23 / (n + s)
+            - (
+                2 * exy3 * exx2 / ezz3 * e * n / ew23
+                + 2 * exy2 * exx3 / ezz2 * w * n / ew23
+                + 2 * exy4 * exx1 / ezz4 * e * s / ew14
+                + 2 * exy1 * exx4 / ezz1 * w * s / ew14
+                + 2 * exx1 * exx4 * (1.0 / ezz1 - 1.0 / ezz4) * n ** 2 / ew14
+            )
+            / s
+            / (n + s) ** 2
+        )
 
         axyne = +eyy3 * (1 - eyy4 / ezz4) / (e + w) / ns34
         axyse = -eyy4 * (1 - eyy3 / ezz3) / (e + w) / ns34
@@ -495,10 +604,14 @@ class _ModeSolverVectorial():
         ayxnw = -exx4 * (1 - exx1 / ezz1) / (n + s) / ew14
         ayxsw = +exx3 * (1 - exx2 / ezz2) / (n + s) / ew23
 
-        axyp = -(axyn + axys + axye + axyw + axyne + axyse + axynw + axysw) - k ** 2 * (w * (n * eyx1 *
-                                                                                             eyy2 + s * eyx2 * eyy1) / ns21 + e * (s * eyx3 * eyy4 + n * eyx4 * eyy3) / ns34) / (e + w)
-        ayxp = -(ayxn + ayxs + ayxe + ayxw + ayxne + ayxse + ayxnw + ayxsw) - k ** 2 * (n * (w * exy1 *
-                                                                                             exx4 + e * exy4 * exx1) / ew14 + s * (w * exy2 * exx3 + e * exy3 * exx2) / ew23) / (n + s)
+        axyp = -(axyn + axys + axye + axyw + axyne + axyse + axynw + axysw) - k ** 2 * (
+            w * (n * eyx1 * eyy2 + s * eyx2 * eyy1) / ns21
+            + e * (s * eyx3 * eyy4 + n * eyx4 * eyy3) / ns34
+        ) / (e + w)
+        ayxp = -(ayxn + ayxs + ayxe + ayxw + ayxne + ayxse + ayxnw + ayxsw) - k ** 2 * (
+            n * (w * exy1 * exx4 + e * exy4 * exx1) / ew14
+            + s * (w * exy2 * exx3 + e * exy3 * exx2) / ew23
+        ) / (n + s)
 
         ii = numpy.arange(nx * ny).reshape(nx, ny)
 
@@ -506,14 +619,14 @@ class _ModeSolverVectorial():
 
         ib = ii[:, -1]
 
-        if boundary[0] == 'S':
+        if boundary[0] == "S":
             sign = 1
-        elif boundary[0] == 'A':
+        elif boundary[0] == "A":
             sign = -1
-        elif boundary[0] == '0':
+        elif boundary[0] == "0":
             sign = 0
         else:
-            raise ValueError('unknown boundary conditions')
+            raise ValueError("unknown boundary conditions")
 
         axxs[ib] += sign * axxn[ib]
         axxse[ib] += sign * axxne[ib]
@@ -532,14 +645,14 @@ class _ModeSolverVectorial():
 
         ib = ii[:, 0]
 
-        if boundary[1] == 'S':
+        if boundary[1] == "S":
             sign = 1
-        elif boundary[1] == 'A':
+        elif boundary[1] == "A":
             sign = -1
-        elif boundary[1] == '0':
+        elif boundary[1] == "0":
             sign = 0
         else:
-            raise ValueError('unknown boundary conditions')
+            raise ValueError("unknown boundary conditions")
 
         axxn[ib] += sign * axxs[ib]
         axxne[ib] += sign * axxse[ib]
@@ -558,14 +671,14 @@ class _ModeSolverVectorial():
 
         ib = ii[-1, :]
 
-        if boundary[2] == 'S':
+        if boundary[2] == "S":
             sign = 1
-        elif boundary[2] == 'A':
+        elif boundary[2] == "A":
             sign = -1
-        elif boundary[2] == '0':
+        elif boundary[2] == "0":
             sign = 0
         else:
-            raise ValueError('unknown boundary conditions')
+            raise ValueError("unknown boundary conditions")
 
         axxw[ib] += sign * axxe[ib]
         axxnw[ib] += sign * axxne[ib]
@@ -584,14 +697,14 @@ class _ModeSolverVectorial():
 
         ib = ii[0, :]
 
-        if boundary[3] == 'S':
+        if boundary[3] == "S":
             sign = 1
-        elif boundary[3] == 'A':
+        elif boundary[3] == "A":
             sign = -1
-        elif boundary[3] == '0':
+        elif boundary[3] == "0":
             sign = 0
         else:
-            raise ValueError('unknown boundary conditions')
+            raise ValueError("unknown boundary conditions")
 
         axxe[ib] += sign * axxw[ib]
         axxne[ib] += sign * axxnw[ib]
@@ -620,27 +733,59 @@ class _ModeSolverVectorial():
 
         Ixx = numpy.r_[iall, i_w, i_e, i_s, i_n, i_ne, i_se, i_sw, i_nw]
         Jxx = numpy.r_[iall, i_e, i_w, i_n, i_s, i_sw, i_nw, i_ne, i_se]
-        Vxx = numpy.r_[axxp[iall], axxe[i_w], axxw[i_e], axxn[i_s], axxs[
-            i_n], axxsw[i_ne], axxnw[i_se], axxne[i_sw], axxse[i_nw]]
+        Vxx = numpy.r_[
+            axxp[iall],
+            axxe[i_w],
+            axxw[i_e],
+            axxn[i_s],
+            axxs[i_n],
+            axxsw[i_ne],
+            axxnw[i_se],
+            axxne[i_sw],
+            axxse[i_nw],
+        ]
 
         Ixy = numpy.r_[iall, i_w, i_e, i_s, i_n, i_ne, i_se, i_sw, i_nw]
-        Jxy = numpy.r_[
-            iall, i_e, i_w, i_n, i_s, i_sw, i_nw, i_ne, i_se] + nx * ny
-        Vxy = numpy.r_[axyp[iall], axye[i_w], axyw[i_e], axyn[i_s], axys[
-            i_n], axysw[i_ne], axynw[i_se], axyne[i_sw], axyse[i_nw]]
+        Jxy = numpy.r_[iall, i_e, i_w, i_n, i_s, i_sw, i_nw, i_ne, i_se] + nx * ny
+        Vxy = numpy.r_[
+            axyp[iall],
+            axye[i_w],
+            axyw[i_e],
+            axyn[i_s],
+            axys[i_n],
+            axysw[i_ne],
+            axynw[i_se],
+            axyne[i_sw],
+            axyse[i_nw],
+        ]
 
-        Iyx = numpy.r_[
-            iall, i_w, i_e, i_s, i_n, i_ne, i_se, i_sw, i_nw] + nx * ny
+        Iyx = numpy.r_[iall, i_w, i_e, i_s, i_n, i_ne, i_se, i_sw, i_nw] + nx * ny
         Jyx = numpy.r_[iall, i_e, i_w, i_n, i_s, i_sw, i_nw, i_ne, i_se]
-        Vyx = numpy.r_[ayxp[iall], ayxe[i_w], ayxw[i_e], ayxn[i_s], ayxs[
-            i_n], ayxsw[i_ne], ayxnw[i_se], ayxne[i_sw], ayxse[i_nw]]
+        Vyx = numpy.r_[
+            ayxp[iall],
+            ayxe[i_w],
+            ayxw[i_e],
+            ayxn[i_s],
+            ayxs[i_n],
+            ayxsw[i_ne],
+            ayxnw[i_se],
+            ayxne[i_sw],
+            ayxse[i_nw],
+        ]
 
-        Iyy = numpy.r_[
-            iall, i_w, i_e, i_s, i_n, i_ne, i_se, i_sw, i_nw] + nx * ny
-        Jyy = numpy.r_[
-            iall, i_e, i_w, i_n, i_s, i_sw, i_nw, i_ne, i_se] + nx * ny
-        Vyy = numpy.r_[ayyp[iall], ayye[i_w], ayyw[i_e], ayyn[i_s], ayys[
-            i_n], ayysw[i_ne], ayynw[i_se], ayyne[i_sw], ayyse[i_nw]]
+        Iyy = numpy.r_[iall, i_w, i_e, i_s, i_n, i_ne, i_se, i_sw, i_nw] + nx * ny
+        Jyy = numpy.r_[iall, i_e, i_w, i_n, i_s, i_sw, i_nw, i_ne, i_se] + nx * ny
+        Vyy = numpy.r_[
+            ayyp[iall],
+            ayye[i_w],
+            ayyw[i_e],
+            ayyn[i_s],
+            ayys[i_n],
+            ayysw[i_ne],
+            ayynw[i_se],
+            ayyne[i_sw],
+            ayyse[i_nw],
+        ]
 
         I = numpy.r_[Ixx, Ixy, Iyx, Iyy]
         J = numpy.r_[Jxx, Jxy, Jyx, Jyy]
@@ -725,59 +870,1011 @@ class _ModeSolverVectorial():
 
             b = neff * k
 
-            bzxne = (0.5 * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2) * eyx4 / ezz4 / (n * eyy3 + s * eyy4) / ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy3 * eyy1 * w * eyy2 +
-                     0.5 * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e) * (1 - exx4 / ezz4) / ezz3 / ezz2 / (w * exx3 + e * exx2) / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * exx1 * s) / b
+            bzxne = (
+                0.5
+                * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2)
+                * eyx4
+                / ezz4
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy3
+                * eyy1
+                * w
+                * eyy2
+                + 0.5
+                * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e)
+                * (1 - exx4 / ezz4)
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * exx1
+                * s
+            ) / b
 
-            bzxse = (-0.5 * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2) * eyx3 / ezz3 / (n * eyy3 + s * eyy4) / ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy1 * w * eyy2 +
-                     0.5 * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e) * (1 - exx3 / ezz3) / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx2 * n * exx1 * exx4) / b
+            bzxse = (
+                -0.5
+                * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2)
+                * eyx3
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy1
+                * w
+                * eyy2
+                + 0.5
+                * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e)
+                * (1 - exx3 / ezz3)
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * n
+                * exx1
+                * exx4
+            ) / b
 
-            bzxnw = (-0.5 * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3) * eyx1 / ezz4 / ezz3 / (n * eyy3 + s * eyy4) / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 * eyy2 * e -
-                     0.5 * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e) * (1 - exx1 / ezz1) / ezz3 / ezz2 / (w * exx3 + e * exx2) / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * exx4 * s) / b
+            bzxnw = (
+                -0.5
+                * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3)
+                * eyx1
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy2
+                * e
+                - 0.5
+                * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e)
+                * (1 - exx1 / ezz1)
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * exx4
+                * s
+            ) / b
 
-            bzxsw = (0.5 * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3) * eyx2 / ezz4 / ezz3 / (n * eyy3 + s * eyy4) / ezz2 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 * eyy1 * e -
-                     0.5 * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e) * (1 - exx2 / ezz2) / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx3 * n * exx1 * exx4) / b
+            bzxsw = (
+                0.5
+                * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3)
+                * eyx2
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy1
+                * e
+                - 0.5
+                * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e)
+                * (1 - exx2 / ezz2)
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx3
+                * n
+                * exx1
+                * exx4
+            ) / b
 
-            bzxn = ((0.5 * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3) * n * ezz1 * ezz2 / eyy1 * (2 * eyy1 / ezz1 / n ** 2 + eyx1 / ezz1 / n / w) + 0.5 * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2) * n * ezz4 * ezz3 / eyy4 * (2 * eyy4 / ezz4 / n ** 2 - eyx4 / ezz4 / n / e)) / ezz4 / ezz3 / (n * eyy3 + s * eyy4) / ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 * eyy1 * w * eyy2 * e + ((ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e) * (0.5 * ezz4 * ((1 - exx1 / ezz1) / n / w - exy1 / ezz1 *
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 (2. / n ** 2 - 2 / n ** 2 * s / (n + s))) / exx1 * ezz1 * w + (ezz4 - ezz1) * s / n / (n + s) + 0.5 * ezz1 * (-(1 - exx4 / ezz4) / n / e - exy4 / ezz4 * (2. / n ** 2 - 2 / n ** 2 * s / (n + s))) / exx4 * ezz4 * e) - (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e) * (-ezz3 * exy2 / n / (n + s) / exx2 * w + (ezz3 - ezz2) * s / n / (n + s) - ezz2 * exy3 / n / (n + s) / exx3 * e)) / ezz3 / ezz2 / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * n * exx1 * exx4 * s) / b
+            bzxn = (
+                (
+                    0.5
+                    * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3)
+                    * n
+                    * ezz1
+                    * ezz2
+                    / eyy1
+                    * (2 * eyy1 / ezz1 / n ** 2 + eyx1 / ezz1 / n / w)
+                    + 0.5
+                    * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2)
+                    * n
+                    * ezz4
+                    * ezz3
+                    / eyy4
+                    * (2 * eyy4 / ezz4 / n ** 2 - eyx4 / ezz4 / n / e)
+                )
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy1
+                * w
+                * eyy2
+                * e
+                + (
+                    (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e)
+                    * (
+                        0.5
+                        * ezz4
+                        * (
+                            (1 - exx1 / ezz1) / n / w
+                            - exy1 / ezz1 * (2.0 / n ** 2 - 2 / n ** 2 * s / (n + s))
+                        )
+                        / exx1
+                        * ezz1
+                        * w
+                        + (ezz4 - ezz1) * s / n / (n + s)
+                        + 0.5
+                        * ezz1
+                        * (
+                            -(1 - exx4 / ezz4) / n / e
+                            - exy4 / ezz4 * (2.0 / n ** 2 - 2 / n ** 2 * s / (n + s))
+                        )
+                        / exx4
+                        * ezz4
+                        * e
+                    )
+                    - (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e)
+                    * (
+                        -ezz3 * exy2 / n / (n + s) / exx2 * w
+                        + (ezz3 - ezz2) * s / n / (n + s)
+                        - ezz2 * exy3 / n / (n + s) / exx3 * e
+                    )
+                )
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * n
+                * exx1
+                * exx4
+                * s
+            ) / b
 
-            bzxs = ((0.5 * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3) * s * ezz2 * ezz1 / eyy2 * (2 * eyy2 / ezz2 / s ** 2 - eyx2 / ezz2 / s / w) + 0.5 * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2) * s * ezz3 * ezz4 / eyy3 * (2 * eyy3 / ezz3 / s ** 2 + eyx3 / ezz3 / s / e)) / ezz4 / ezz3 / (n * eyy3 + s * eyy4) / ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 * eyy1 * w * eyy2 * e + ((ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e) * (-ezz4 * exy1 / s / (n + s) / exx1 * w - (ezz4 - ezz1)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   * n / s / (n + s) - ezz1 * exy4 / s / (n + s) / exx4 * e) - (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e) * (0.5 * ezz3 * (-(1 - exx2 / ezz2) / s / w - exy2 / ezz2 * (2. / s ** 2 - 2 / s ** 2 * n / (n + s))) / exx2 * ezz2 * w - (ezz3 - ezz2) * n / s / (n + s) + 0.5 * ezz2 * ((1 - exx3 / ezz3) / s / e - exy3 / ezz3 * (2. / s ** 2 - 2 / s ** 2 * n / (n + s))) / exx3 * ezz3 * e)) / ezz3 / ezz2 / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * n * exx1 * exx4 * s) / b
+            bzxs = (
+                (
+                    0.5
+                    * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3)
+                    * s
+                    * ezz2
+                    * ezz1
+                    / eyy2
+                    * (2 * eyy2 / ezz2 / s ** 2 - eyx2 / ezz2 / s / w)
+                    + 0.5
+                    * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2)
+                    * s
+                    * ezz3
+                    * ezz4
+                    / eyy3
+                    * (2 * eyy3 / ezz3 / s ** 2 + eyx3 / ezz3 / s / e)
+                )
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy1
+                * w
+                * eyy2
+                * e
+                + (
+                    (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e)
+                    * (
+                        -ezz4 * exy1 / s / (n + s) / exx1 * w
+                        - (ezz4 - ezz1) * n / s / (n + s)
+                        - ezz1 * exy4 / s / (n + s) / exx4 * e
+                    )
+                    - (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e)
+                    * (
+                        0.5
+                        * ezz3
+                        * (
+                            -(1 - exx2 / ezz2) / s / w
+                            - exy2 / ezz2 * (2.0 / s ** 2 - 2 / s ** 2 * n / (n + s))
+                        )
+                        / exx2
+                        * ezz2
+                        * w
+                        - (ezz3 - ezz2) * n / s / (n + s)
+                        + 0.5
+                        * ezz2
+                        * (
+                            (1 - exx3 / ezz3) / s / e
+                            - exy3 / ezz3 * (2.0 / s ** 2 - 2 / s ** 2 * n / (n + s))
+                        )
+                        / exx3
+                        * ezz3
+                        * e
+                    )
+                )
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * n
+                * exx1
+                * exx4
+                * s
+            ) / b
 
-            bzxe = ((n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2) * (0.5 * n * ezz4 * ezz3 / eyy4 * (2. / e ** 2 - eyx4 / ezz4 / n / e) + 0.5 * s * ezz3 * ezz4 / eyy3 * (2. / e ** 2 + eyx3 / ezz3 / s / e)) / ezz4 / ezz3 / (n * eyy3 + s * eyy4) / ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 * eyy1 * w * eyy2 * e +
-                    (-0.5 * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e) * ezz1 * (1 - exx4 / ezz4) / n / exx4 * ezz4 - 0.5 * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e) * ezz2 * (1 - exx3 / ezz3) / s / exx3 * ezz3) / ezz3 / ezz2 / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * n * exx1 * exx4 * s) / b
+            bzxe = (
+                (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2)
+                * (
+                    0.5 * n * ezz4 * ezz3 / eyy4 * (2.0 / e ** 2 - eyx4 / ezz4 / n / e)
+                    + 0.5
+                    * s
+                    * ezz3
+                    * ezz4
+                    / eyy3
+                    * (2.0 / e ** 2 + eyx3 / ezz3 / s / e)
+                )
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy1
+                * w
+                * eyy2
+                * e
+                + (
+                    -0.5
+                    * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e)
+                    * ezz1
+                    * (1 - exx4 / ezz4)
+                    / n
+                    / exx4
+                    * ezz4
+                    - 0.5
+                    * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e)
+                    * ezz2
+                    * (1 - exx3 / ezz3)
+                    / s
+                    / exx3
+                    * ezz3
+                )
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * n
+                * exx1
+                * exx4
+                * s
+            ) / b
 
-            bzxw = ((-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3) * (0.5 * n * ezz1 * ezz2 / eyy1 * (2. / w ** 2 + eyx1 / ezz1 / n / w) + 0.5 * s * ezz2 * ezz1 / eyy2 * (2. / w ** 2 - eyx2 / ezz2 / s / w)) / ezz4 / ezz3 / (n * eyy3 + s * eyy4) / ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 * eyy1 * w * eyy2 * e +
-                    (0.5 * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e) * ezz4 * (1 - exx1 / ezz1) / n / exx1 * ezz1 + 0.5 * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e) * ezz3 * (1 - exx2 / ezz2) / s / exx2 * ezz2) / ezz3 / ezz2 / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * n * exx1 * exx4 * s) / b
+            bzxw = (
+                (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3)
+                * (
+                    0.5 * n * ezz1 * ezz2 / eyy1 * (2.0 / w ** 2 + eyx1 / ezz1 / n / w)
+                    + 0.5
+                    * s
+                    * ezz2
+                    * ezz1
+                    / eyy2
+                    * (2.0 / w ** 2 - eyx2 / ezz2 / s / w)
+                )
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy1
+                * w
+                * eyy2
+                * e
+                + (
+                    0.5
+                    * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e)
+                    * ezz4
+                    * (1 - exx1 / ezz1)
+                    / n
+                    / exx1
+                    * ezz1
+                    + 0.5
+                    * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e)
+                    * ezz3
+                    * (1 - exx2 / ezz2)
+                    / s
+                    / exx2
+                    * ezz2
+                )
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * n
+                * exx1
+                * exx4
+                * s
+            ) / b
 
-            bzxp = (((-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3) * (0.5 * n * ezz1 * ezz2 / eyy1 * (-2. / w ** 2 - 2 * eyy1 / ezz1 / n ** 2 + k ** 2 * eyy1 - eyx1 / ezz1 / n / w) + 0.5 * s * ezz2 * ezz1 / eyy2 * (-2. / w ** 2 - 2 * eyy2 / ezz2 / s ** 2 + k ** 2 * eyy2 + eyx2 / ezz2 / s / w)) + (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2) * (0.5 * n * ezz4 * ezz3 / eyy4 * (-2. / e ** 2 - 2 * eyy4 / ezz4 / n ** 2 + k ** 2 * eyy4 + eyx4 / ezz4 / n / e) + 0.5 * s * ezz3 * ezz4 / eyy3 * (-2. / e ** 2 - 2 * eyy3 / ezz3 / s ** 2 + k ** 2 * eyy3 - eyx3 / ezz3 / s / e))) / ezz4 / ezz3 / (n * eyy3 + s * eyy4) / ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 * eyy1 * w * eyy2 * e + ((ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e) * (0.5 * ezz4 * (-k **
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     2 * exy1 - (1 - exx1 / ezz1) / n / w - exy1 / ezz1 * (-2. / n ** 2 - 2 / n ** 2 * (n - s) / s)) / exx1 * ezz1 * w + (ezz4 - ezz1) * (n - s) / n / s + 0.5 * ezz1 * (-k ** 2 * exy4 + (1 - exx4 / ezz4) / n / e - exy4 / ezz4 * (-2. / n ** 2 - 2 / n ** 2 * (n - s) / s)) / exx4 * ezz4 * e) - (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e) * (0.5 * ezz3 * (-k ** 2 * exy2 + (1 - exx2 / ezz2) / s / w - exy2 / ezz2 * (-2. / s ** 2 + 2 / s ** 2 * (n - s) / n)) / exx2 * ezz2 * w + (ezz3 - ezz2) * (n - s) / n / s + 0.5 * ezz2 * (-k ** 2 * exy3 - (1 - exx3 / ezz3) / s / e - exy3 / ezz3 * (-2. / s ** 2 + 2 / s ** 2 * (n - s) / n)) / exx3 * ezz3 * e)) / ezz3 / ezz2 / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * n * exx1 * exx4 * s) / b
+            bzxp = (
+                (
+                    (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3)
+                    * (
+                        0.5
+                        * n
+                        * ezz1
+                        * ezz2
+                        / eyy1
+                        * (
+                            -2.0 / w ** 2
+                            - 2 * eyy1 / ezz1 / n ** 2
+                            + k ** 2 * eyy1
+                            - eyx1 / ezz1 / n / w
+                        )
+                        + 0.5
+                        * s
+                        * ezz2
+                        * ezz1
+                        / eyy2
+                        * (
+                            -2.0 / w ** 2
+                            - 2 * eyy2 / ezz2 / s ** 2
+                            + k ** 2 * eyy2
+                            + eyx2 / ezz2 / s / w
+                        )
+                    )
+                    + (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2)
+                    * (
+                        0.5
+                        * n
+                        * ezz4
+                        * ezz3
+                        / eyy4
+                        * (
+                            -2.0 / e ** 2
+                            - 2 * eyy4 / ezz4 / n ** 2
+                            + k ** 2 * eyy4
+                            + eyx4 / ezz4 / n / e
+                        )
+                        + 0.5
+                        * s
+                        * ezz3
+                        * ezz4
+                        / eyy3
+                        * (
+                            -2.0 / e ** 2
+                            - 2 * eyy3 / ezz3 / s ** 2
+                            + k ** 2 * eyy3
+                            - eyx3 / ezz3 / s / e
+                        )
+                    )
+                )
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy1
+                * w
+                * eyy2
+                * e
+                + (
+                    (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e)
+                    * (
+                        0.5
+                        * ezz4
+                        * (
+                            -(k ** 2) * exy1
+                            - (1 - exx1 / ezz1) / n / w
+                            - exy1 / ezz1 * (-2.0 / n ** 2 - 2 / n ** 2 * (n - s) / s)
+                        )
+                        / exx1
+                        * ezz1
+                        * w
+                        + (ezz4 - ezz1) * (n - s) / n / s
+                        + 0.5
+                        * ezz1
+                        * (
+                            -(k ** 2) * exy4
+                            + (1 - exx4 / ezz4) / n / e
+                            - exy4 / ezz4 * (-2.0 / n ** 2 - 2 / n ** 2 * (n - s) / s)
+                        )
+                        / exx4
+                        * ezz4
+                        * e
+                    )
+                    - (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e)
+                    * (
+                        0.5
+                        * ezz3
+                        * (
+                            -(k ** 2) * exy2
+                            + (1 - exx2 / ezz2) / s / w
+                            - exy2 / ezz2 * (-2.0 / s ** 2 + 2 / s ** 2 * (n - s) / n)
+                        )
+                        / exx2
+                        * ezz2
+                        * w
+                        + (ezz3 - ezz2) * (n - s) / n / s
+                        + 0.5
+                        * ezz2
+                        * (
+                            -(k ** 2) * exy3
+                            - (1 - exx3 / ezz3) / s / e
+                            - exy3 / ezz3 * (-2.0 / s ** 2 + 2 / s ** 2 * (n - s) / n)
+                        )
+                        / exx3
+                        * ezz3
+                        * e
+                    )
+                )
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * n
+                * exx1
+                * exx4
+                * s
+            ) / b
 
-            bzyne = (0.5 * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2) * (1 - eyy4 / ezz4) / (n * eyy3 + s * eyy4) / ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy3 * eyy1 * w *
-                     eyy2 + 0.5 * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e) * exy4 / ezz3 / ezz2 / (w * exx3 + e * exx2) / ezz4 / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * exx1 * s) / b
+            bzyne = (
+                0.5
+                * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2)
+                * (1 - eyy4 / ezz4)
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy3
+                * eyy1
+                * w
+                * eyy2
+                + 0.5
+                * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e)
+                * exy4
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * exx1
+                * s
+            ) / b
 
-            bzyse = (-0.5 * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2) * (1 - eyy3 / ezz3) / (n * eyy3 + s * eyy4) / ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy1 * w *
-                     eyy2 + 0.5 * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e) * exy3 / ezz3 / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx2 * n * exx1 * exx4) / b
+            bzyse = (
+                -0.5
+                * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2)
+                * (1 - eyy3 / ezz3)
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy1
+                * w
+                * eyy2
+                + 0.5
+                * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e)
+                * exy3
+                / ezz3
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * n
+                * exx1
+                * exx4
+            ) / b
 
-            bzynw = (-0.5 * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3) * (1 - eyy1 / ezz1) / ezz4 / ezz3 / (n * eyy3 + s * eyy4) / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 *
-                     eyy2 * e - 0.5 * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e) * exy1 / ezz3 / ezz2 / (w * exx3 + e * exx2) / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * exx4 * s) / b
+            bzynw = (
+                -0.5
+                * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3)
+                * (1 - eyy1 / ezz1)
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy2
+                * e
+                - 0.5
+                * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e)
+                * exy1
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * exx4
+                * s
+            ) / b
 
-            bzysw = (0.5 * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3) * (1 - eyy2 / ezz2) / ezz4 / ezz3 / (n * eyy3 + s * eyy4) / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 * eyy1 *
-                     e - 0.5 * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e) * exy2 / ezz2 / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx3 * n * exx1 * exx4) / b
+            bzysw = (
+                0.5
+                * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3)
+                * (1 - eyy2 / ezz2)
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy1
+                * e
+                - 0.5
+                * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e)
+                * exy2
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx3
+                * n
+                * exx1
+                * exx4
+            ) / b
 
-            bzyn = ((0.5 * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3) * ezz1 * ezz2 / eyy1 * (1 - eyy1 / ezz1) / w - 0.5 * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2) * ezz4 * ezz3 / eyy4 * (1 - eyy4 / ezz4) / e) / ezz4 / ezz3 / (n * eyy3 + s * eyy4) / ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 * eyy1 * w *
-                    eyy2 * e + (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e) * (0.5 * ezz4 * (2. / n ** 2 + exy1 / ezz1 / n / w) / exx1 * ezz1 * w + 0.5 * ezz1 * (2. / n ** 2 - exy4 / ezz4 / n / e) / exx4 * ezz4 * e) / ezz3 / ezz2 / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * n * exx1 * exx4 * s) / b
+            bzyn = (
+                (
+                    0.5
+                    * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3)
+                    * ezz1
+                    * ezz2
+                    / eyy1
+                    * (1 - eyy1 / ezz1)
+                    / w
+                    - 0.5
+                    * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2)
+                    * ezz4
+                    * ezz3
+                    / eyy4
+                    * (1 - eyy4 / ezz4)
+                    / e
+                )
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy1
+                * w
+                * eyy2
+                * e
+                + (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e)
+                * (
+                    0.5 * ezz4 * (2.0 / n ** 2 + exy1 / ezz1 / n / w) / exx1 * ezz1 * w
+                    + 0.5
+                    * ezz1
+                    * (2.0 / n ** 2 - exy4 / ezz4 / n / e)
+                    / exx4
+                    * ezz4
+                    * e
+                )
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * n
+                * exx1
+                * exx4
+                * s
+            ) / b
 
-            bzys = ((-0.5 * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3) * ezz2 * ezz1 / eyy2 * (1 - eyy2 / ezz2) / w + 0.5 * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2) * ezz3 * ezz4 / eyy3 * (1 - eyy3 / ezz3) / e) / ezz4 / ezz3 / (n * eyy3 + s * eyy4) / ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 * eyy1 * w *
-                    eyy2 * e - (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e) * (0.5 * ezz3 * (2. / s ** 2 - exy2 / ezz2 / s / w) / exx2 * ezz2 * w + 0.5 * ezz2 * (2. / s ** 2 + exy3 / ezz3 / s / e) / exx3 * ezz3 * e) / ezz3 / ezz2 / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * n * exx1 * exx4 * s) / b
+            bzys = (
+                (
+                    -0.5
+                    * (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3)
+                    * ezz2
+                    * ezz1
+                    / eyy2
+                    * (1 - eyy2 / ezz2)
+                    / w
+                    + 0.5
+                    * (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2)
+                    * ezz3
+                    * ezz4
+                    / eyy3
+                    * (1 - eyy3 / ezz3)
+                    / e
+                )
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy1
+                * w
+                * eyy2
+                * e
+                - (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e)
+                * (
+                    0.5 * ezz3 * (2.0 / s ** 2 - exy2 / ezz2 / s / w) / exx2 * ezz2 * w
+                    + 0.5
+                    * ezz2
+                    * (2.0 / s ** 2 + exy3 / ezz3 / s / e)
+                    / exx3
+                    * ezz3
+                    * e
+                )
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * n
+                * exx1
+                * exx4
+                * s
+            ) / b
 
-            bzye = (((-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3) * (-n * ezz2 / eyy1 * eyx1 / e / (e + w) + (ezz1 - ezz2) * w / e / (e + w) - s * ezz1 / eyy2 * eyx2 / e / (e + w)) + (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2) * (0.5 * n * ezz4 * ezz3 / eyy4 * (-(1 - eyy4 / ezz4) / n / e - eyx4 / ezz4 * (2. / e ** 2 - 2 / e ** 2 * w / (e + w))) + 0.5 * s * ezz3 * ezz4 / eyy3 * ((1 - eyy3 / ezz3) / s / e - eyx3 / ezz3 * (2. / e ** 2 - 2 / e ** 2 * w / (e + w))) + (ezz4 - ezz3) * w / e / (e + w))) / ezz4 /
-                    ezz3 / (n * eyy3 + s * eyy4) / ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 * eyy1 * w * eyy2 * e + (0.5 * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e) * ezz1 * (2 * exx4 / ezz4 / e ** 2 - exy4 / ezz4 / n / e) / exx4 * ezz4 * e - 0.5 * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e) * ezz2 * (2 * exx3 / ezz3 / e ** 2 + exy3 / ezz3 / s / e) / exx3 * ezz3 * e) / ezz3 / ezz2 / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * n * exx1 * exx4 * s) / b
+            bzye = (
+                (
+                    (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3)
+                    * (
+                        -n * ezz2 / eyy1 * eyx1 / e / (e + w)
+                        + (ezz1 - ezz2) * w / e / (e + w)
+                        - s * ezz1 / eyy2 * eyx2 / e / (e + w)
+                    )
+                    + (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2)
+                    * (
+                        0.5
+                        * n
+                        * ezz4
+                        * ezz3
+                        / eyy4
+                        * (
+                            -(1 - eyy4 / ezz4) / n / e
+                            - eyx4 / ezz4 * (2.0 / e ** 2 - 2 / e ** 2 * w / (e + w))
+                        )
+                        + 0.5
+                        * s
+                        * ezz3
+                        * ezz4
+                        / eyy3
+                        * (
+                            (1 - eyy3 / ezz3) / s / e
+                            - eyx3 / ezz3 * (2.0 / e ** 2 - 2 / e ** 2 * w / (e + w))
+                        )
+                        + (ezz4 - ezz3) * w / e / (e + w)
+                    )
+                )
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy1
+                * w
+                * eyy2
+                * e
+                + (
+                    0.5
+                    * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e)
+                    * ezz1
+                    * (2 * exx4 / ezz4 / e ** 2 - exy4 / ezz4 / n / e)
+                    / exx4
+                    * ezz4
+                    * e
+                    - 0.5
+                    * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e)
+                    * ezz2
+                    * (2 * exx3 / ezz3 / e ** 2 + exy3 / ezz3 / s / e)
+                    / exx3
+                    * ezz3
+                    * e
+                )
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * n
+                * exx1
+                * exx4
+                * s
+            ) / b
 
-            bzyw = (((-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3) * (0.5 * n * ezz1 * ezz2 / eyy1 * ((1 - eyy1 / ezz1) / n / w - eyx1 / ezz1 * (2. / w ** 2 - 2 / w ** 2 * e / (e + w))) - (ezz1 - ezz2) * e / w / (e + w) + 0.5 * s * ezz2 * ezz1 / eyy2 * (-(1 - eyy2 / ezz2) / s / w - eyx2 / ezz2 * (2. / w ** 2 - 2 / w ** 2 * e / (e + w)))) + (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2) * (-n * ezz3 / eyy4 * eyx4 / w / (e + w) - s * ezz4 / eyy3 * eyx3 / w / (e + w) - (ezz4 - ezz3) * e / w / (e + w))) / ezz4 /
-                    ezz3 / (n * eyy3 + s * eyy4) / ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 * eyy1 * w * eyy2 * e + (0.5 * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e) * ezz4 * (2 * exx1 / ezz1 / w ** 2 + exy1 / ezz1 / n / w) / exx1 * ezz1 * w - 0.5 * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e) * ezz3 * (2 * exx2 / ezz2 / w ** 2 - exy2 / ezz2 / s / w) / exx2 * ezz2 * w) / ezz3 / ezz2 / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * n * exx1 * exx4 * s) / b
+            bzyw = (
+                (
+                    (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3)
+                    * (
+                        0.5
+                        * n
+                        * ezz1
+                        * ezz2
+                        / eyy1
+                        * (
+                            (1 - eyy1 / ezz1) / n / w
+                            - eyx1 / ezz1 * (2.0 / w ** 2 - 2 / w ** 2 * e / (e + w))
+                        )
+                        - (ezz1 - ezz2) * e / w / (e + w)
+                        + 0.5
+                        * s
+                        * ezz2
+                        * ezz1
+                        / eyy2
+                        * (
+                            -(1 - eyy2 / ezz2) / s / w
+                            - eyx2 / ezz2 * (2.0 / w ** 2 - 2 / w ** 2 * e / (e + w))
+                        )
+                    )
+                    + (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2)
+                    * (
+                        -n * ezz3 / eyy4 * eyx4 / w / (e + w)
+                        - s * ezz4 / eyy3 * eyx3 / w / (e + w)
+                        - (ezz4 - ezz3) * e / w / (e + w)
+                    )
+                )
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy1
+                * w
+                * eyy2
+                * e
+                + (
+                    0.5
+                    * (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e)
+                    * ezz4
+                    * (2 * exx1 / ezz1 / w ** 2 + exy1 / ezz1 / n / w)
+                    / exx1
+                    * ezz1
+                    * w
+                    - 0.5
+                    * (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e)
+                    * ezz3
+                    * (2 * exx2 / ezz2 / w ** 2 - exy2 / ezz2 / s / w)
+                    / exx2
+                    * ezz2
+                    * w
+                )
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * n
+                * exx1
+                * exx4
+                * s
+            ) / b
 
-            bzyp = (((-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3) * (0.5 * n * ezz1 * ezz2 / eyy1 * (-k ** 2 * eyx1 - (1 - eyy1 / ezz1) / n / w - eyx1 / ezz1 * (-2. / w ** 2 + 2 / w ** 2 * (e - w) / e)) + (ezz1 - ezz2) * (e - w) / e / w + 0.5 * s * ezz2 * ezz1 / eyy2 * (-k ** 2 * eyx2 + (1 - eyy2 / ezz2) / s / w - eyx2 / ezz2 * (-2. / w ** 2 + 2 / w ** 2 * (e - w) / e))) + (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2) * (0.5 * n * ezz4 * ezz3 / eyy4 * (-k ** 2 * eyx4 + (1 - eyy4 / ezz4) / n / e - eyx4 / ezz4 * (-2. / e ** 2 - 2 / e ** 2 * (e - w) / w)) + 0.5 * s * ezz3 * ezz4 / eyy3 * (-k ** 2 * eyx3 - (1 - eyy3 / ezz3) / s / e - eyx3 / ezz3 * (-2. / e ** 2 - 2 / e ** 2 * (e - w) / w)) + (ezz4 - ezz3) * (e - w) / e / w)) / ezz4 / ezz3 / (n * eyy3 + s * eyy4) /
-                    ezz2 / ezz1 / (n * eyy2 + s * eyy1) / (e + w) * eyy4 * eyy3 * eyy1 * w * eyy2 * e + ((ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e) * (0.5 * ezz4 * (-2. / n ** 2 - 2 * exx1 / ezz1 / w ** 2 + k ** 2 * exx1 - exy1 / ezz1 / n / w) / exx1 * ezz1 * w + 0.5 * ezz1 * (-2. / n ** 2 - 2 * exx4 / ezz4 / e ** 2 + k ** 2 * exx4 + exy4 / ezz4 / n / e) / exx4 * ezz4 * e) - (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e) * (0.5 * ezz3 * (-2. / s ** 2 - 2 * exx2 / ezz2 / w ** 2 + k ** 2 * exx2 + exy2 / ezz2 / s / w) / exx2 * ezz2 * w + 0.5 * ezz2 * (-2. / s ** 2 - 2 * exx3 / ezz3 / e ** 2 + k ** 2 * exx3 - exy3 / ezz3 / s / e) / exx3 * ezz3 * e)) / ezz3 / ezz2 / (w * exx3 + e * exx2) / ezz4 / ezz1 / (w * exx4 + e * exx1) / (n + s) * exx2 * exx3 * n * exx1 * exx4 * s) / b
+            bzyp = (
+                (
+                    (-n * ezz4 * ezz3 / eyy4 - s * ezz3 * ezz4 / eyy3)
+                    * (
+                        0.5
+                        * n
+                        * ezz1
+                        * ezz2
+                        / eyy1
+                        * (
+                            -(k ** 2) * eyx1
+                            - (1 - eyy1 / ezz1) / n / w
+                            - eyx1 / ezz1 * (-2.0 / w ** 2 + 2 / w ** 2 * (e - w) / e)
+                        )
+                        + (ezz1 - ezz2) * (e - w) / e / w
+                        + 0.5
+                        * s
+                        * ezz2
+                        * ezz1
+                        / eyy2
+                        * (
+                            -(k ** 2) * eyx2
+                            + (1 - eyy2 / ezz2) / s / w
+                            - eyx2 / ezz2 * (-2.0 / w ** 2 + 2 / w ** 2 * (e - w) / e)
+                        )
+                    )
+                    + (n * ezz1 * ezz2 / eyy1 + s * ezz2 * ezz1 / eyy2)
+                    * (
+                        0.5
+                        * n
+                        * ezz4
+                        * ezz3
+                        / eyy4
+                        * (
+                            -(k ** 2) * eyx4
+                            + (1 - eyy4 / ezz4) / n / e
+                            - eyx4 / ezz4 * (-2.0 / e ** 2 - 2 / e ** 2 * (e - w) / w)
+                        )
+                        + 0.5
+                        * s
+                        * ezz3
+                        * ezz4
+                        / eyy3
+                        * (
+                            -(k ** 2) * eyx3
+                            - (1 - eyy3 / ezz3) / s / e
+                            - eyx3 / ezz3 * (-2.0 / e ** 2 - 2 / e ** 2 * (e - w) / w)
+                        )
+                        + (ezz4 - ezz3) * (e - w) / e / w
+                    )
+                )
+                / ezz4
+                / ezz3
+                / (n * eyy3 + s * eyy4)
+                / ezz2
+                / ezz1
+                / (n * eyy2 + s * eyy1)
+                / (e + w)
+                * eyy4
+                * eyy3
+                * eyy1
+                * w
+                * eyy2
+                * e
+                + (
+                    (ezz3 / exx2 * ezz2 * w + ezz2 / exx3 * ezz3 * e)
+                    * (
+                        0.5
+                        * ezz4
+                        * (
+                            -2.0 / n ** 2
+                            - 2 * exx1 / ezz1 / w ** 2
+                            + k ** 2 * exx1
+                            - exy1 / ezz1 / n / w
+                        )
+                        / exx1
+                        * ezz1
+                        * w
+                        + 0.5
+                        * ezz1
+                        * (
+                            -2.0 / n ** 2
+                            - 2 * exx4 / ezz4 / e ** 2
+                            + k ** 2 * exx4
+                            + exy4 / ezz4 / n / e
+                        )
+                        / exx4
+                        * ezz4
+                        * e
+                    )
+                    - (ezz4 / exx1 * ezz1 * w + ezz1 / exx4 * ezz4 * e)
+                    * (
+                        0.5
+                        * ezz3
+                        * (
+                            -2.0 / s ** 2
+                            - 2 * exx2 / ezz2 / w ** 2
+                            + k ** 2 * exx2
+                            + exy2 / ezz2 / s / w
+                        )
+                        / exx2
+                        * ezz2
+                        * w
+                        + 0.5
+                        * ezz2
+                        * (
+                            -2.0 / s ** 2
+                            - 2 * exx3 / ezz3 / e ** 2
+                            + k ** 2 * exx3
+                            - exy3 / ezz3 / s / e
+                        )
+                        / exx3
+                        * ezz3
+                        * e
+                    )
+                )
+                / ezz3
+                / ezz2
+                / (w * exx3 + e * exx2)
+                / ezz4
+                / ezz1
+                / (w * exx4 + e * exx1)
+                / (n + s)
+                * exx2
+                * exx3
+                * n
+                * exx1
+                * exx4
+                * s
+            ) / b
 
             ii = numpy.arange(nx * ny).reshape(nx, ny)
 
@@ -785,14 +1882,14 @@ class _ModeSolverVectorial():
 
             ib = ii[:, -1]
 
-            if boundary[0] == 'S':
+            if boundary[0] == "S":
                 sign = 1
-            elif boundary[0] == 'A':
+            elif boundary[0] == "A":
                 sign = -1
-            elif boundary[0] == '0':
+            elif boundary[0] == "0":
                 sign = 0
             else:
-                raise ValueError('unknown boundary conditions')
+                raise ValueError("unknown boundary conditions")
 
             bzxs[ib] += sign * bzxn[ib]
             bzxse[ib] += sign * bzxne[ib]
@@ -805,14 +1902,14 @@ class _ModeSolverVectorial():
 
             ib = ii[:, 0]
 
-            if boundary[1] == 'S':
+            if boundary[1] == "S":
                 sign = 1
-            elif boundary[1] == 'A':
+            elif boundary[1] == "A":
                 sign = -1
-            elif boundary[1] == '0':
+            elif boundary[1] == "0":
                 sign = 0
             else:
-                raise ValueError('unknown boundary conditions')
+                raise ValueError("unknown boundary conditions")
 
             bzxn[ib] += sign * bzxs[ib]
             bzxne[ib] += sign * bzxse[ib]
@@ -825,14 +1922,14 @@ class _ModeSolverVectorial():
 
             ib = ii[-1, :]
 
-            if boundary[2] == 'S':
+            if boundary[2] == "S":
                 sign = 1
-            elif boundary[2] == 'A':
+            elif boundary[2] == "A":
                 sign = -1
-            elif boundary[2] == '0':
+            elif boundary[2] == "0":
                 sign = 0
             else:
-                raise ValueError('unknown boundary conditions')
+                raise ValueError("unknown boundary conditions")
 
             bzxw[ib] += sign * bzxe[ib]
             bzxnw[ib] += sign * bzxne[ib]
@@ -845,14 +1942,14 @@ class _ModeSolverVectorial():
 
             ib = ii[0, :]
 
-            if boundary[3] == 'S':
+            if boundary[3] == "S":
                 sign = 1
-            elif boundary[3] == 'A':
+            elif boundary[3] == "A":
                 sign = -1
-            elif boundary[3] == '0':
+            elif boundary[3] == "0":
                 sign = 0
             else:
-                raise ValueError('unknown boundary conditions')
+                raise ValueError("unknown boundary conditions")
 
             bzxe[ib] += sign * bzxw[ib]
             bzxne[ib] += sign * bzxnw[ib]
@@ -875,14 +1972,31 @@ class _ModeSolverVectorial():
 
             Izx = numpy.r_[iall, i_w, i_e, i_s, i_n, i_ne, i_se, i_sw, i_nw]
             Jzx = numpy.r_[iall, i_e, i_w, i_n, i_s, i_sw, i_nw, i_ne, i_se]
-            Vzx = numpy.r_[bzxp[iall], bzxe[i_w], bzxw[i_e], bzxn[i_s], bzxs[
-                i_n], bzxsw[i_ne], bzxnw[i_se], bzxne[i_sw], bzxse[i_nw]]
+            Vzx = numpy.r_[
+                bzxp[iall],
+                bzxe[i_w],
+                bzxw[i_e],
+                bzxn[i_s],
+                bzxs[i_n],
+                bzxsw[i_ne],
+                bzxnw[i_se],
+                bzxne[i_sw],
+                bzxse[i_nw],
+            ]
 
             Izy = numpy.r_[iall, i_w, i_e, i_s, i_n, i_ne, i_se, i_sw, i_nw]
-            Jzy = numpy.r_[
-                iall, i_e, i_w, i_n, i_s, i_sw, i_nw, i_ne, i_se] + nx * ny
-            Vzy = numpy.r_[bzyp[iall], bzye[i_w], bzyw[i_e], bzyn[i_s], bzys[
-                i_n], bzysw[i_ne], bzynw[i_se], bzyne[i_sw], bzyse[i_nw]]
+            Jzy = numpy.r_[iall, i_e, i_w, i_n, i_s, i_sw, i_nw, i_ne, i_se] + nx * ny
+            Vzy = numpy.r_[
+                bzyp[iall],
+                bzye[i_w],
+                bzyw[i_e],
+                bzyn[i_s],
+                bzys[i_n],
+                bzysw[i_ne],
+                bzynw[i_se],
+                bzyne[i_sw],
+                bzyse[i_nw],
+            ]
 
             I = numpy.r_[Izx, Izy]
             J = numpy.r_[Jzx, Jzy]
@@ -899,18 +2013,22 @@ class _ModeSolverVectorial():
             eyx = epsyx[1:-1, 1:-1]
             eyy = epsyy[1:-1, 1:-1]
             ezz = epszz[1:-1, 1:-1]
-            edet = (exx * eyy - exy * eyx)
+            edet = exx * eyy - exy * eyx
 
             h = e.reshape(nx, ny)[:-1, :-1]
             v = n.reshape(nx, ny)[:-1, :-1]
 
             # in xc e yc
             Dx = neff * centered2d(Hy) + (
-                Hz[:-1, 1:] + Hz[1:, 1:] - Hz[:-1, :-1] - Hz[1:, :-1]) / (2j * k * v)
+                Hz[:-1, 1:] + Hz[1:, 1:] - Hz[:-1, :-1] - Hz[1:, :-1]
+            ) / (2j * k * v)
             Dy = -neff * centered2d(Hx) - (
-                Hz[1:, :-1] + Hz[1:, 1:] - Hz[:-1, 1:] - Hz[:-1, :-1]) / (2j * k * h)
-            Dz = ((Hy[1:, :-1] + Hy[1:, 1:] - Hy[:-1, 1:] - Hy[:-1, :-1]) / (2 * h) -
-                  (Hx[:-1, 1:] + Hx[1:, 1:] - Hx[:-1, :-1] - Hx[1:, :-1]) / (2 * v)) / (1j * k)
+                Hz[1:, :-1] + Hz[1:, 1:] - Hz[:-1, 1:] - Hz[:-1, :-1]
+            ) / (2j * k * h)
+            Dz = (
+                (Hy[1:, :-1] + Hy[1:, 1:] - Hy[:-1, 1:] - Hy[:-1, :-1]) / (2 * h)
+                - (Hx[:-1, 1:] + Hx[1:, 1:] - Hx[:-1, :-1] - Hx[1:, :-1]) / (2 * v)
+            ) / (1j * k)
 
             Ex = (eyy * Dx - exy * Dy) / edet
             Ey = (exx * Dy - eyx * Dx) / edet
@@ -923,7 +2041,9 @@ class _ModeSolverVectorial():
 
         return (Hzs, Exs, Eys, Ezs)
 
-    def solve(self, neigs=4, tol=0, guess=None, mode_profiles=True, initial_mode_guess=None):
+    def solve(
+        self, neigs=4, tol=0, guess=None, mode_profiles=True, initial_mode_guess=None
+    ):
         """
         This function finds the eigenmodes.
 
@@ -961,14 +2081,16 @@ class _ModeSolverVectorial():
         else:
             shift = None
 
-        [eigvals, eigvecs] = eigen.eigs(A,
-                                        k=neigs,
-                                        which='LR',
-                                        tol=0.001,
-                                        ncv=None,
-                                        v0 = initial_mode_guess,
-                                        return_eigenvectors=mode_profiles,
-                                        sigma=shift)
+        [eigvals, eigvecs] = eigen.eigs(
+            A,
+            k=neigs,
+            which="LR",
+            tol=0.001,
+            ncv=None,
+            v0=initial_mode_guess,
+            return_eigenvectors=mode_profiles,
+            sigma=shift,
+        )
 
         neffs = self.wl * scipy.sqrt(eigvals) / (2 * numpy.pi)
         if mode_profiles:
@@ -977,8 +2099,8 @@ class _ModeSolverVectorial():
             nx = self.nx
             ny = self.ny
             for ieig in range(neigs):
-                Hxs.append(eigvecs[:nx * ny, ieig].reshape(nx, ny))
-                Hys.append(eigvecs[nx * ny:, ieig].reshape(nx, ny))
+                Hxs.append(eigvecs[: nx * ny, ieig].reshape(nx, ny))
+                Hys.append(eigvecs[nx * ny :, ieig].reshape(nx, ny))
 
         # sort the modes
         idx = numpy.flipud(numpy.argsort(neffs))
@@ -996,18 +2118,23 @@ class _ModeSolverVectorial():
             [Hzs, Exs, Eys, Ezs] = self.compute_other_fields(neffs, Hxs, Hys)
 
             self.modes = []
-            for (neff, Hx, Hy, Hz, Ex, Ey, Ez) in zip(neffs, Hxs, Hys, Hzs, Exs, Eys, Ezs):
+            for (neff, Hx, Hy, Hz, Ex, Ey, Ez) in zip(
+                neffs, Hxs, Hys, Hzs, Exs, Eys, Ezs
+            ):
                 self.modes.append(
-                    FDMode(self.wl, self.x, self.y, neff, Ey, Ex, Ez, Hy, Hx, Hz).normalize())
+                    FDMode(
+                        self.wl, self.x, self.y, neff, Ey, Ex, Ez, Hy, Hx, Hz
+                    ).normalize()
+                )
 
         return self
 
     def __str__(self):
-        descr = 'Vectorial Finite Difference Modesolver\n'
+        descr = "Vectorial Finite Difference Modesolver\n"
         return descr
 
 
-class FDMode():
+class FDMode:
     def __init__(self, wl, x, y, neff, Ex, Ey, Ez, Hx, Hy, Hz):
         self.wl = wl
         self.x = x
@@ -1020,14 +2147,9 @@ class FDMode():
         self.Hy = Hy
         self.Hz = Hz
 
-        self.fields = col.OrderedDict({
-            'Ex': Ex,
-            'Ey': Ey,
-            'Ez': Ez,
-            'Hx': Hx,
-            'Hy': Hy,
-            'Hz': Hz
-        })
+        self.fields = col.OrderedDict(
+            {"Ex": Ex, "Ey": Ey, "Ez": Ez, "Hx": Hx, "Hy": Hy, "Hz": Hz}
+        )
 
     def norm(self):
         x = centered1d(self.x)
@@ -1046,18 +2168,17 @@ class FDMode():
         return self
 
     def intensityTETM(self, x=None, y=None):
-        I_TE = self.Ex * centered2d(numpy.conj(self.Hy)) / 2.
-        I_TM = -self.Ey * centered2d(numpy.conj(self.Hx)) / 2.
+        I_TE = self.Ex * centered2d(numpy.conj(self.Hy)) / 2.0
+        I_TM = -self.Ey * centered2d(numpy.conj(self.Hx)) / 2.0
         if x is None and y is None:
             return (I_TE, I_TM)
         else:
             x0 = centered1d(self.x)
             y0 = centered1d(self.y)
-            I_TE_ = interp2(x, y, x0, y0, I_TE)
-            I_TM_ = interp2(x, y, x0, y0, I_TM)
+            I_TE_ = interp2d(x, y, x0, y0, I_TE)
+            I_TM_ = interp2d(x, y, x0, y0, I_TM)
             return (I_TE_, I_TM_)
 
     def intensity(self, x=None, y=None):
         I_TE, I_TM = self.intensityTETM(x, y)
         return I_TE + I_TM
-

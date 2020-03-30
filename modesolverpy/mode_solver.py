@@ -1,45 +1,16 @@
-from __future__ import absolute_import
 import abc
 import os
 import sys
-import subprocess
-import copy
-import tqdm
+
+import matplotlib.pylab as plt
 import numpy as np
+import tqdm
 from six import with_metaclass
 
-from . import _mode_solver_lib as ms
 from . import _analyse as anal
+from . import _mode_solver_lib as ms
 from . import structure_base as stb
 
-try:
-    devnull = open(os.devnull, "w")
-    subprocess.call(["gnuplot", "--version"], stdout=devnull, stderr=devnull)
-    import gnuplotpy as gp
-
-    MPL = False
-except:
-    import matplotlib.pylab as plt
-
-    MPL = True
-
-def use_gnuplot():
-    """
-    Use gnuplot as the plotting tool for any mode related outputs.
-    """
-    global gp
-    import gnuplotpy as gp
-    global MPL
-    MPL = False
-
-def use_matplotlib():
-    """
-    Use matplotlib as the plotting tool for any mode related outputs.
-    """
-    global plt
-    import matplotlib.pylab as plt
-    global MPL
-    MPL = True
 
 class _ModeSolver(with_metaclass(abc.ABCMeta)):
     def __init__(
@@ -136,9 +107,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
             )
 
             with open(self._modes_directory + "mode_types.dat", "w") as fs:
-                header = ",".join(
-                    "Mode%i" % i for i, _ in enumerate(mode_types[0])
-                )
+                header = ",".join("Mode%i" % i for i, _ in enumerate(mode_types[0]))
                 fs.write("# " + header + "\n")
                 for mt in mode_types:
                     txt = ",".join("%s %.2f" % pair for pair in mt)
@@ -161,14 +130,14 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
                     fs.write(txt + "\n")
 
             if plot:
-                if MPL:
-                    title = "$n_{eff}$ vs %s" % x_label
-                    y_label = "$n_{eff}$"
-                else:
-                    title = "n_{effs} vs %s" % x_label
-                    y_label = "n_{eff}"
+                title = "$n_{eff}$ vs %s" % x_label
+                y_label = "$n_{eff}$"
                 self._plot_n_effs(
-                    self._modes_directory + filename, self._modes_directory + "fraction_te.dat", x_label, y_label, title
+                    self._modes_directory + filename,
+                    self._modes_directory + "fraction_te.dat",
+                    x_label,
+                    y_label,
+                    title,
                 )
 
                 title = "TE Fraction vs %s" % x_label
@@ -192,11 +161,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         return n_effs
 
     def solve_sweep_wavelength(
-        self,
-        structure,
-        wavelengths,
-        filename="wavelength_n_effs.dat",
-        plot=True,
+        self, structure, wavelengths, filename="wavelength_n_effs.dat", plot=True,
     ):
         """
         Solve for the effective indices of a fixed structure at
@@ -226,12 +191,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
                 n_effs, self._modes_directory + filename, wavelengths
             )
             if plot:
-                if MPL:
-                    title = "$n_{eff}$ vs Wavelength"
-                    y_label = "$n_{eff}$"
-                else:
-                    title = "n_{effs} vs Wavelength" % x_label
-                    y_label = "n_{eff}"
+                title = "$n_{eff}$ vs Wavelength"
                 self._plot_n_effs(
                     self._modes_directory + filename,
                     self._modes_directory + "fraction_te.dat",
@@ -239,6 +199,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
                     "n_{eff}",
                     title,
                 )
+                plt.ylabel("$n_{eff}$")
 
         return n_effs
 
@@ -275,9 +236,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
 
         n_gs = []
         for n_ctr, n_bck, n_frw in zip(n_ctrs, n_bcks, n_frws):
-            n_gs.append(
-                n_ctr - wl_nom * (n_frw - n_bck) / (2 * wavelength_step)
-            )
+            n_gs.append(n_ctr - wl_nom * (n_frw - n_bck) / (2 * wavelength_step))
 
         if filename:
             with open(self._modes_directory + filename, "w") as fs:
@@ -290,18 +249,13 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
     def _get_mode_filename(self, field_name, mode_number, filename):
         filename_prefix, filename_ext = os.path.splitext(filename)
         filename_mode = (
-            filename_prefix
-            + "_"
-            + field_name
-            + "_"
-            + str(mode_number)
-            + filename_ext
+            filename_prefix + "_" + field_name + "_" + str(mode_number) + filename_ext
         )
         return filename_mode
 
     def _write_n_effs_to_file(self, n_effs, filename, x_vals=None):
         with open(filename, "w") as fs:
-            fs.write('# Sweep param, mode 1, mode 2, ...\n')
+            fs.write("# Sweep param, mode 1, mode 2, ...\n")
             for i, n_eff in enumerate(n_effs):
                 if x_vals is not None:
                     line_start = str(x_vals[i]) + ","
@@ -318,7 +272,9 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
                 fs.write(e_str + "\n")
         return mode
 
-    def _plot_n_effs(self, filename_n_effs, filename_te_fractions, xlabel, ylabel, title):
+    def _plot_n_effs(
+        self, filename_n_effs, filename_te_fractions, xlabel, ylabel, title
+    ):
         args = {
             "titl": title,
             "xlab": xlabel,
@@ -333,24 +289,18 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         filename_image = filename_image_prefix + ".png"
         args["filename_image"] = filename_image
 
-        if MPL:
-            data = np.loadtxt(args["filename_data"], delimiter=",").T
-            plt.clf()
-            plt.title(title)
-            plt.xlabel(args["xlab"])
-            plt.ylabel(args["ylab"])
-            for i in range(args["num_modes"]):
-                plt.plot(data[0], data[i + 1], "-o")
-            plt.savefig(args["filename_image"])
-        else:
-            gp.gnuplot(self._path + "n_effs.gpi", args, silent=False)
-            gp.trim_pad_image(filename_image)
+        data = np.loadtxt(args["filename_data"], delimiter=",").T
+        plt.clf()
+        plt.title(title)
+        plt.xlabel(args["xlab"])
+        plt.ylabel(args["ylab"])
+        for i in range(args["num_modes"]):
+            plt.plot(data[0], data[i + 1], "-o")
+        plt.savefig(args["filename_image"])
 
         return args
 
-    def _plot_fraction(
-        self, filename_fraction, xlabel, ylabel, title, mode_list=[]
-    ):
+    def _plot_fraction(self, filename_fraction, xlabel, ylabel, title, mode_list=[]):
         if not mode_list:
             mode_list = range(len(self.modes))
         gp_mode_list = " ".join(str(idx) for idx in mode_list)
@@ -368,18 +318,14 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         filename_image = filename_image_prefix + ".png"
         args["filename_image"] = filename_image
 
-        if MPL:
-            data = np.loadtxt(args["filename_data"], delimiter=",").T
-            plt.clf()
-            plt.title(title)
-            plt.xlabel(args["xlab"])
-            plt.ylabel(args["ylab"])
-            for i, _ in enumerate(self.modes):
-                plt.plot(data[0], data[i + 1], "-o")
-            plt.savefig(args["filename_image"])
-        else:
-            gp.gnuplot(self._path + "fractions.gpi", args, silent=False)
-            gp.trim_pad_image(filename_image)
+        data = np.loadtxt(args["filename_data"], delimiter=",").T
+        plt.clf()
+        plt.title(title)
+        plt.xlabel(args["xlab"])
+        plt.ylabel(args["ylab"])
+        for i, _ in enumerate(self.modes):
+            plt.plot(data[0], data[i + 1], "-o")
+        plt.savefig(args["filename_image"])
 
         return args
 
@@ -398,31 +344,16 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         wavelength=None,
     ):
         fn = field_name[0] + "_{" + field_name[1:] + "}"
-        if MPL:
-            title = r"Mode %i $|%s|$ Profile" % (mode_number, fn)
-        else:
-            title = r"Mode %i |%s| Profile" % (mode_number, fn)
+        title = r"Mode %i $|%s|$ Profile" % (mode_number, fn)
         if n_eff:
-            if MPL:
-                title += r", $n_{eff}$: " + "{:.3f}".format(n_eff.real)
-            else:
-                title += ", n_{eff}: " + "{:.3f}".format(n_eff.real)
+            title += r", $n_{eff}$: " + "{:.3f}".format(n_eff.real)
         if wavelength:
-            if MPL:
-                title += r", $\lambda = %s " % "{:.3f} \mu$m".format(wavelength)
-            else:
-                title += r", $\lambda = %s " % "{:.3f} \mu$m".format(wavelength)
+            title += r", $\lambda = %s " % r"{:.3f} \mu$m".format(wavelength)
         if area:
-            if MPL:
-                title += ", $A_%s$: " % field_name[1] + "{:.1f}%".format(area)
-            else:
-                title += ", A_%s: " % field_name[1] + "{:.1f}\%".format(area)
+            title += ", $A_%s$: " % field_name[1] + "{:.1f}%".format(area)
 
         if subtitle:
-            if MPL:
-                title2 = "\n$%s$" % subtitle
-            else:
-                title += "\n{/*0.7 %s}" % subtitle
+            title2 = "\n$%s$" % subtitle
 
         args = {
             "title": title,
@@ -446,30 +377,21 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         filename_image = filename_image_prefix + ".png"
         args["filename_image"] = filename_image
 
-        if MPL:
-            heatmap = np.loadtxt(filename_mode, delimiter=",")
-            plt.clf()
-            plt.suptitle(title)
-            if subtitle:
-                plt.rcParams.update({"axes.titlesize": "small"})
-                plt.title(title2)
-            plt.xlabel("x")
-            plt.ylabel("y")
-            plt.imshow(
-                np.flipud(heatmap),
-                extent=(
-                    args["x_min"],
-                    args["x_max"],
-                    args["y_min"],
-                    args["y_max"],
-                ),
-                aspect="auto",
-            )
-            plt.colorbar()
-            plt.savefig(filename_image)
-        else:
-            gp.gnuplot(self._path + "mode.gpi", args)
-            gp.trim_pad_image(filename_image)
+        heatmap = np.loadtxt(filename_mode, delimiter=",")
+        plt.clf()
+        plt.suptitle(title)
+        if subtitle:
+            plt.rcParams.update({"axes.titlesize": "small"})
+            plt.title(title2)
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.imshow(
+            np.flipud(heatmap),
+            extent=(args["x_min"], args["x_max"], args["y_min"], args["y_max"],),
+            aspect="auto",
+        )
+        plt.colorbar()
+        plt.savefig(filename_image)
 
         return args
 
@@ -654,9 +576,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
 
     def _solve(self, structure, wavelength):
         self._structure = structure
-        self._ms = ms._ModeSolverVectorial(
-            wavelength, structure, self._boundary
-        )
+        self._ms = ms._ModeSolverVectorial(wavelength, structure, self._boundary)
         self._ms.solve(
             self._n_eigs,
             self._tol,
@@ -776,16 +696,12 @@ class ModeSolverFullyVectorial(_ModeSolver):
                 os.mkdir(mode_directory)
             filename_full = mode_directory + filename
 
-            for (field_name, field_profile), area in zip(
-                mode.fields.items(), areas
-            ):
+            for (field_name, field_profile), area in zip(mode.fields.items(), areas):
                 if field_name in fields_to_write:
                     filename_mode = self._get_mode_filename(
                         field_name, i, filename_full
                     )
-                    self._write_mode_to_file(
-                        np.real(field_profile), filename_mode
-                    )
+                    self._write_mode_to_file(np.real(field_profile), filename_mode)
                     if plot:
                         self._plot_mode(
                             field_name,
