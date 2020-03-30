@@ -1,8 +1,9 @@
+import numpy as np
 import modesolverpy.mode_solver as ms
 import modesolverpy.structure as st
 import modesolverpy.design as de
 import opticalmaterialspy as mat
-import numpy as np
+import modesolverpy.structure_base as stb
 
 wls = [1.5, 1.55, 1.6]
 x_step = 0.05
@@ -15,6 +16,7 @@ clad_height = 0.5
 film_thickness = 0.22
 polarisation = 'TE'
 dcs = np.linspace(20, 80, 61) / 100
+incidence_angle_deg = 8
 
 ed1 = etch_depth
 ft1 = film_thickness
@@ -42,7 +44,7 @@ for wl in wls:
         struct_yy = struct_func(n_sub, n_wg_yy, n_clad)
         struct_zz = struct_func(n_sub, n_wg_zz, n_clad)
 
-        struct_ani = st.StructureAni(struct_xx, struct_yy, struct_zz)
+        struct_ani = stb.StructureAni(struct_xx, struct_yy, struct_zz)
         #struct_ani.write_to_file()
 
         solver = ms.ModeSolverFullyVectorial(4)
@@ -54,7 +56,7 @@ for wl in wls:
         elif polarisation == 'TM':
             ngc.append(np.round(np.real(solver.n_effs_tm), 4)[0])
 
-    period = de.grating_coupler_period(wl, dcs*ngc[0]+(1-dcs)*ngc[1], n_clad, 8, 1)
+    period = de.grating_coupler_period(wl, dcs*ngc[0]+(1-dcs)*ngc[1], n_clad, incidence_angle_deg=incidence_angle_deg, diffration_order=1)
     periods.append(period)
 
 filename = 'gc-sweep-%s-%inm-etch-%i-film.dat' % (polarisation, etch_depth*1000, film_thickness*1000)
