@@ -4,7 +4,6 @@ import numpy as np
 import opticalmaterialspy as mat
 
 from . import structure_base as sb
-from .structure_base import use_gnuplot, use_matplotlib
 
 
 class RidgeWaveguide(sb.Slabs):

@@ -130,6 +130,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
                     fs.write(txt + "\n")
 
             if plot:
+                plt.figure()
                 title = "$n_{eff}$ vs %s" % x_label
                 y_label = "$n_{eff}$"
                 self._plot_n_effs(
@@ -140,6 +141,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
                     title,
                 )
 
+                plt.figure()
                 title = "TE Fraction vs %s" % x_label
                 self._plot_fraction(
                     self._modes_directory + "fraction_te.dat",
@@ -149,6 +151,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
                     fraction_mode_list,
                 )
 
+                plt.figure()
                 title = "TM Fraction vs %s" % x_label
                 self._plot_fraction(
                     self._modes_directory + "fraction_tm.dat",
@@ -508,6 +511,7 @@ class ModeSolverSemiVectorial(_ModeSolver):
                         "E_{max} = %.3f, (x_{max}, y_{max}) = (%.3f, %.3f), MFD_{x} = %.3f, "
                         "MFD_{y} = %.3f"
                     ) % (A, centre[0], centre[1], sigma_2[0], sigma_2[1])
+                    plt.figure()
                     self._plot_mode(
                         self._semi_vectorial_method,
                         i,
@@ -521,6 +525,7 @@ class ModeSolverSemiVectorial(_ModeSolver):
                         wavelength=self._structure._wl,
                     )
                 else:
+                    plt.figure()
                     self._plot_mode(
                         self._semi_vectorial_method,
                         i,
@@ -703,6 +708,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
                     )
                     self._write_mode_to_file(np.real(field_profile), filename_mode)
                     if plot:
+                        plt.figure()
                         self._plot_mode(
                             field_name,
                             i,
