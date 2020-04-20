@@ -2,8 +2,9 @@ import copy
 
 import numpy as np
 import opticalmaterialspy as mat
-
-from . import structure_base as sb
+from modesolverpy import structure_base as sb
+from modesolverpy.autoname import autoname
+from modesolverpy.config import CONFIG
 
 
 class RidgeWaveguide(sb.Slabs):
@@ -77,6 +78,7 @@ class RidgeWaveguide(sb.Slabs):
         self.n_sub = n_sub
         self.n_clad = n_clad
         self.n_wg = n_wg
+        self.settings = {}
 
         self.add_slab(sub_height, n_sub)
         if film_thickness != "wg_height" and film_thickness != wg_height:
@@ -138,3 +140,65 @@ class WgArray(sb.Slabs):
             position += wg_width + wg_gap
 
         self.add_slab(clad_height, n_clad)
+
+
+def waveguide_array():
+    pass
+
+
+def test_waveguide_name():
+    wg1 = waveguide(angle=80, wg_width=0.5)
+    wg2 = waveguide(wg_width=0.5, angle=80)
+    assert (
+        wg1.name == wg2.name
+    ), f"{wg1} and {wg2} waveguides have the same settings and should have the same name"
+
+
+@autoname
+def waveguide(
+    x_step=0.02,
+    y_step=0.02,
+    wg_height=0.4,
+    wg_width=0.5,
+    sub_height=0.5,
+    sub_width=2.0,
+    clad_height=0.5,
+    n_sub=1.4,
+    n_wg=3.0,
+    n_clad=1.0,
+    film_thickness=0.5,
+    wavelength=1.55,
+    angle=75.0,
+):
+    structure = RidgeWaveguide(
+        wavelength,
+        x_step,
+        y_step,
+        wg_height,
+        wg_width,
+        sub_height,
+        sub_width,
+        clad_height,
+        n_sub,
+        n_wg,
+        angle,
+        n_clad,
+        film_thickness,
+    )
+    return structure
+
+
+def get_waveguide_filepath(waveguide):
+    return CONFIG["cache"] / f"{waveguide.name}.dat"
+
+
+def write_index_profile(waveguide):
+    filepath = get_waveguide_filepath(waveguide)
+    waveguide.write_to_file(filepath)
+
+
+if __name__ == "__main__":
+    wg = waveguide(wg_width=0.5, angle=80)
+    print(wg)
+    wg = waveguide(angle=80, wg_width=0.5)
+    print(wg)

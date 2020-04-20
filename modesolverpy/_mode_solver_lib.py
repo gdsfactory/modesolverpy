@@ -8,8 +8,6 @@
 @see: http://www.mathworks.com/matlabcentral/fileexchange/loadFile.do?objectId=12734&objectType=FILE
 
 """
-from __future__ import print_function
-
 import collections as col
 from builtins import range, zip
 

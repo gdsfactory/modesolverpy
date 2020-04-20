@@ -3,7 +3,6 @@ Pipfile.lock
 notebooks/
 scripts/maketags
 
-examples/example_structure_1.png
 examples/modes_semi_vec/
 
 *.cprof
@@ -12,11 +11,9 @@ examples/modes_semi_vec/
 
 # Sphinx documentation
 doc/_build/
-doc/tutorial_ipkiss/_build/
-doc/tutorial_psi/_build/
-doc/tutorial_picazzo/_build/
-tutorial/notebooks/.ipynb_checkpoints/
-tutorial/notebooks/lumerical/3_crossing_optimization/.ipynb_checkpoints/
+.ipynb_checkpoints/
+notebooks/
+
 
 Icon?
 *.prf
@@ -35,6 +32,7 @@ Icon?
 *.bak
 *.dat
 *.mat
+*.png
 
 *.xml
 *.tar.gz

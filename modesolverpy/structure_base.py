@@ -1,7 +1,5 @@
 import abc
 import os
-import subprocess
-import sys
 
 import matplotlib.pylab as plt
 import numpy as np
@@ -281,7 +279,8 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
             plt.savefig(filename_image)
 
     def __str__(self):
-        return self.n.__str__()
+        return self.name
+        # return self.n.__str__()
 
 
 class Structure(_AbstractStructure):
@@ -296,6 +295,8 @@ class Structure(_AbstractStructure):
         self.y_step = y_step
         self.n_background = n_background
         self._n = np.ones((self.y.size, self.x.size), "complex_") * n_background
+        self.name = None
+        self.settings = {}
 
     @property
     def n(self):
@@ -347,6 +348,8 @@ class Slabs(_AbstractStructure):
         self.slabs = {}
         self.slab_count = 0
         self._next_start = 0.0
+        self.name = None
+        self.settings = {}
 
     def add_slab(self, height, n_background=1.0, position="top"):
         """
