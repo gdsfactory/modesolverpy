@@ -1,8 +1,13 @@
+import json
 import os
 
 import matplotlib.pylab as plt
 import numpy as np
+import pytest
 from modesolverpy import _mode_solver_lib as ms
+from modesolverpy import get_modes_jsonpath
+from modesolverpy.autoname import autoname, clean_value
+from modesolverpy.config import CONFIG
 from modesolverpy.mode_solver import _ModeSolver
 from modesolverpy.waveguide import waveguide, write_material_index
 
@@ -45,16 +50,20 @@ class ModeSolverFullyVectorial(_ModeSolver):
             self, n_eigs, tol, boundary, False, initial_mode_guess, n_eff_guess
         )
 
+    # @property
+    # def _modes_directory(self):
+    #     modes_directory = "./modes_full_vec/"
+    #     if not os.path.exists(modes_directory):
+    #         os.mkdir(modes_directory)
+    #     _modes_directory = modes_directory
+    #     return _modes_directory
     @property
     def _modes_directory(self):
-        modes_directory = "./modes_full_vec/"
-        if not os.path.exists(modes_directory):
-            os.mkdir(modes_directory)
-        _modes_directory = modes_directory
-        return _modes_directory
+        return CONFIG["cache"]
 
-    def _solve(self, structure, wavelength):
-        self._structure = structure
+    def solve(self):
+        structure = self._structure = self.wg
+        wavelength = self.wg._wl
         self._ms = ms._ModeSolverVectorial(wavelength, structure, self._boundary)
         self._ms.solve(
             self._n_eigs,
@@ -151,10 +160,10 @@ class ModeSolverFullyVectorial(_ModeSolver):
             dict: A dictionary containing the effective indices
             and mode field profiles (if solved for).
         """
-        modes_directory = self._modes_directory
 
         # Mode info file.
-        with open(modes_directory + "mode_info", "w") as fs:
+        filename_info = filename.parent / (filename.stem + f"_info.dat")
+        with open(filename_info, "w") as fs:
             fs.write("# Mode idx, Mode type, % in major direction, n_eff\n")
             for i, (n_eff, (mode_type, percentage)) in enumerate(
                 zip(self.n_effs, self.mode_types)
@@ -170,10 +179,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
 
         # Mode field plots.
         for i, (mode, areas) in enumerate(zip(self._ms.modes, self.overlaps)):
-            mode_directory = "%smode_%i/" % (modes_directory, i)
-            if not os.path.isdir(mode_directory):
-                os.mkdir(mode_directory)
-            filename_full = mode_directory + filename
+            filename_full = filename.parent / (filename.stem + f"_{i}.dat")
 
             for (field_name, field_profile), area in zip(mode.fields.items(), areas):
                 if field_name in fields_to_write:
@@ -194,6 +200,122 @@ class ModeSolverFullyVectorial(_ModeSolver):
 
         return self.modes
 
+    def plot_modes(
+        self, filename, fields_to_write=("Ex", "Ey", "Ez", "Hx", "Hy", "Hz")
+    ):
+        """ works only for cached modes """
+        # Mode field plots.
+        for i, mode in enumerate(self.modes):
+            filename_full = filename.parent / (filename.stem + f"_{i}.dat")
+
+            for field_name, field_profile in mode.items():
+                if field_name in fields_to_write:
+                    filename_mode = self._get_mode_filename(
+                        field_name, i, filename_full
+                    )
+                    plt.figure()
+                    self._plot_mode(
+                        field_name,
+                        i,
+                        filename_mode,
+                        self.n_effs[i],
+                        # area=area,
+                        wavelength=self.wg._wl,
+                    )
+
+
+@pytest.mark.parametrize("overwrite", [True, False])
+def test_mode_solver_full_vectorial(overwrite):
+    mode_solver = mode_solver_full(overwrite=overwrite)
+    # modes = mode_solver.solve()
+    # neff0 = modes["n_effs"][0].real
+
+    neff0 = mode_solver.results["n_effs"][0].real
+    print(neff0)
+    assert np.isclose(neff0, 2.4717079424099673)
+
+
+@autoname
+def _full(n_modes=2, **wg_kwargs):
+    """
+    returns mode solver with mode_solver.wg
+    writes waveguide material index
+    use mode_solver_semi instead
+
+    Args:
+        n_modes: 2
+        semi_vectorial_method: 'Ey' for TM, 'Ex' for TE
+        wg_kwargs: for waveguide
+    """
+
+    wg = waveguide(**wg_kwargs)
+    write_material_index(wg)
+
+    mode_solver = ModeSolverFullyVectorial(n_modes)
+    mode_solver.wg = wg
+    # modes = mode_solver.solve(wg)
+    # mode_solver.write_modes_to_file("example_modes_1.dat")
+    return mode_solver
+
+
+def mode_solver_full(n_modes=2, overwrite=False, **wg_kwargs):
+    mode_solver = _full(n_modes=n_modes, **wg_kwargs)
+    settings = {k: clean_value(v) for k, v in mode_solver.settings.items()}
+    jsonpath = get_modes_jsonpath(mode_solver)
+    filepath = jsonpath.with_suffix(".dat")
+
+    if overwrite or not jsonpath.exists():
+        r = mode_solver.solve()
+        n_effs_real = r["n_effs"].real.tolist()
+        n_effs_imag = r["n_effs"].imag.tolist()
+        modes = r["modes"]
+
+        modes_real = [
+            {k: v.real.tolist() for k, v in mode.fields.items()} for mode in modes
+        ]
+        modes_imag = [
+            {k: v.imag.tolist() for k, v in mode.fields.items()} for mode in modes
+        ]
+
+        d = dict(
+            n_effs_real=n_effs_real,
+            n_effs_imag=n_effs_imag,
+            modes_real=modes_real,
+            modes_imag=modes_imag,
+            n_modes=len(n_effs_real),
+            settings=settings,
+        )
+
+        with open(jsonpath, "w") as f:
+            f.write(json.dumps(d))
+        mode_solver.write_modes_to_file(filepath)
+
+        r["settings"] = settings
+
+    else:
+        d = json.loads(open(jsonpath).read())
+        modes_real = d["modes_real"]
+        modes_imag = d["modes_imag"]
+        modes_cache = [
+            {k: np.array(np.array(mr[k]) + 1j * np.array(mi[k])) for k in mr.keys()}
+            for mr, mi in zip(modes_real, modes_imag)
+        ]
+        n_effs_real = d["n_effs_real"]
+        n_effs_imag = d["n_effs_imag"]
+        n_effs_cache = [
+            np.array(np.array(mr) + 1j * np.array(mi))
+            for mr, mi in zip(n_effs_real, n_effs_imag)
+        ]
+        r = dict(modes=modes_cache, n_effs=n_effs_cache)
+        mode_solver.modes = r["modes"]
+        mode_solver.n_effs = r["n_effs"]
+        mode_solver.plot_modes(filepath)
+
+    mode_solver.results = r
+    return mode_solver
+
 
 if __name__ == "__main__":
-    pass
+    # test_mode_solver_full_vectorial(overwrite=True)
+    test_mode_solver_full_vectorial(overwrite=False)
+    plt.show()

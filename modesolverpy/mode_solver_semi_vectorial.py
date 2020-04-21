@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 from modesolverpy import _analyse as anal
 from modesolverpy import _mode_solver_lib as ms
+from modesolverpy import get_modes_jsonpath
 from modesolverpy.autoname import autoname, clean_value
-from modesolverpy.config import CONFIG
 from modesolverpy.mode_solver import _ModeSolver
 from modesolverpy.waveguide import waveguide, write_material_index
 
@@ -56,13 +56,13 @@ class ModeSolverSemiVectorial(_ModeSolver):
         self.wg = wg or waveguide()
         self.results = None
 
-    @property
-    def _modes_directory(self):
-        modes_directory = "./modes_semi_vec/"
-        if not os.path.exists(modes_directory):
-            os.mkdir(modes_directory)
-        _modes_directory = modes_directory
-        return _modes_directory
+    # @property
+    # def _modes_directory(self):
+    #     modes_directory = "./modes_semi_vec/"
+    #     if not os.path.exists(modes_directory):
+    #         os.mkdir(modes_directory)
+    #     _modes_directory = modes_directory
+    #     return _modes_directory
 
     def solve(self):
         structure = self._structure = self.wg
@@ -204,10 +204,6 @@ def _semi(n_modes=2, semi_vectorial_method="Ex", **wg_kwargs):
     # modes = mode_solver.solve(wg)
     # mode_solver.write_modes_to_file("example_modes_1.dat")
     return mode_solver
-
-
-def get_modes_jsonpath(mode_solver):
-    return CONFIG["cache"] / f"{mode_solver.name}.json"
 
 
 def mode_solver_semi(

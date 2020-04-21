@@ -5,6 +5,7 @@ import sys
 import matplotlib.pylab as plt
 import numpy as np
 import tqdm
+from modesolverpy.config import CONFIG
 from modesolverpy.waveguide import waveguide
 from six import with_metaclass
 
@@ -37,9 +38,9 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
 
         self._path = os.path.dirname(sys.modules[__name__].__file__) + "/"
 
-    @abc.abstractproperty
+    # @abc.abstractproperty
     def _modes_directory(self):
-        pass
+        return CONFIG["cache"]
 
     # @abc.abstractmethod
     # def _solve(self, structure=None, wavelength=None):
