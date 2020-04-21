@@ -1,14 +1,17 @@
 # modesolverpy
+
 Photonic mode solver with a nice interface and output.
+
 * semi-vectorial and fully vectorial options,
 * simple structure drawing,
-* automated data saving and plotting via Gnuplot,
+* automated data saving and plotting via Matplotlib
 * some limited (at this stage) data processing (finding MFD of fundamental mode), and
 * easily extensible library
 
 The documentation for this project can be found [here](http://modesolverpy.rtfd.io).
 
 ## Examples
+
 * [Ex1: Semi-vectorial mode solving of a ridge waveguide](#example-1-semi-vectorial-mode-solving-of-a-ridge-waveguide)
 * [Ex2: Fully vectorial mode solving of an anisotropic material waveguide](#example-2-fully-vectorial-mode-solving-of-anisotropic-material)
 * [Ex3: Grating-coupler period](#example-3-grating-coupler-period)
@@ -27,6 +30,7 @@ The following example finds the first two modes of a waveguide with the followin
 * wavelength: 1550nm.
 
 #### Python script
+
 ```python
 import modesolverpy.mode_solver as ms
 import modesolverpy.structure as st
@@ -69,12 +73,15 @@ mode_solver.write_modes_to_file('example_modes_1.dat')
 ```
 
 #### Structure
+
 <img src="./examples/modes_semi_vec_ex1/example_structure_1.png " width="400">
 
 ### Modes
+
 <img src="./examples/modes_semi_vec_ex1/example_modes_1_Ey_0.png " width="400"> <img src="./examples/modes_semi_vec_ex1/example_modes_1_Ey_1.png " width="400">
 
 ## Example 2: Fully vectorial mode solving  of an anisotropic material waveguide
+
 The following looks at a contrived ridge waveguide in Z-cut KTP.
 
 The simulation outputs:
@@ -354,41 +361,21 @@ for wl in wls:
 <img src="./examples/dc-sweep-soi-3db.png" width="600">
 
 ## Installation
-It is recommend to install `modesolverpy` either via:
-
-### Ubuntu/Mint/Debian:
-```bash
-pip3 install modesolverpy # or pip2 install modesolverpy
-apt install gnuplot
-```
-
-### Arch Linux:
-```bash
-yaourt -S python-modesolverpy
-```
+It is recommend to install `modesolverpy` via `make install`
 
 ### Dependencies
-If installing using the [Arch Linux AUR package](https://aur.archlinux.org/packages/python-modesolverpy/) or `pip`, dependencies will be automatically downloaded and installed, if not, one should ensure the following dependencies are installed:
 
-Either Gnuplot or Matplotlib can be used for plotting; I am a Gnuplot user to the code was written with it in mind.  If both Gnuplot and Matplotlib are installed, the code will default to Gnuplot.
+Matplotlib can be used for plotting
 
 * [setuptools](https://pypi.python.org/pypi/setuptools),
 * [numpy](http://www.numpy.org/),
 * [scipy](https://www.scipy.org/),
 * [tqdm](https://pypi.python.org/pypi/tqdm), and
 * [opticalmaterialspy](https://github.com/jtambasco/opticalmaterialspy).
-
-#### Plotting
-EITHER:
-
-* [Gnuplot](http://www.gnuplot.info/).
-* [gnuplotpy](https://github.com/jtambasco/gnuplotpy),
-
-OR:
-
 * [matplotlib](https://matplotlib.org/),
 
 ## Acknowledgments
+
 This finite difference mode solver is based on a modified version of [EMpy](https://github.com/lbolla/EMpy).
 
 Thank you to [Inna Krasnokutska](https://github.com/ikrasnokutska) for testing.

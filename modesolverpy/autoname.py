@@ -21,7 +21,7 @@ def get_component_name(component_type, **kwargs):
 
 
 def clean_name(name):
-    """ Ensures that gds cells are composed of [a-zA-Z0-9]
+    """ Ensures that names are composed of [a-zA-Z0-9]
 
     FIXME: only a few characters are currently replaced.
         This function has been updated only on case-by-case basis
@@ -131,3 +131,9 @@ def autoname(component_function):
         return component
 
     return wrapper
+
+
+if __name__ == "__main__":
+    print(clean_name("mode_solver(:_=_2852"))
+
+    print(clean_value(0.5))
