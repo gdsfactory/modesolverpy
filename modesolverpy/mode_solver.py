@@ -10,6 +10,10 @@ from modesolverpy.waveguide import waveguide
 from six import with_metaclass
 
 
+def get_modes_jsonpath(mode_solver):
+    return CONFIG["cache"] / f"{mode_solver.name}.json"
+
+
 class _ModeSolver(with_metaclass(abc.ABCMeta)):
     def __init__(
         self,
@@ -38,31 +42,9 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
 
         self._path = os.path.dirname(sys.modules[__name__].__file__) + "/"
 
-    # @abc.abstractproperty
+    @property
     def _modes_directory(self):
         return CONFIG["cache"]
-
-    # @abc.abstractmethod
-    # def _solve(self, structure=None, wavelength=None):
-    #     pass
-
-    # def solve(self, structure=None, wavelength=None):
-    #     """
-    #     Find the modes of a given structure.
-
-    #     Args:
-    #         structure (Structure): The target structure to solve
-    #             for modes.
-
-    #     Returns:
-    #         dict: The 'n_effs' key gives the effective indices
-    #         of the modes.  The 'modes' key exists of mode
-    #         profiles were solved for; in this case, it will
-    #         return arrays of the mode profiles.
-    #     """
-    #     wavelength = wavelength or self.wg._wl
-    #     structure = structure or self.wg
-    #     return self._solve(structure, structure._wl)
 
     def solve_sweep_structure(
         self,

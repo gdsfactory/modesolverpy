@@ -1,14 +1,12 @@
 import json
-import os
 
 import matplotlib.pylab as plt
 import numpy as np
 import pytest
 from modesolverpy import _analyse as anal
 from modesolverpy import _mode_solver_lib as ms
-from modesolverpy import get_modes_jsonpath
 from modesolverpy.autoname import autoname, clean_value
-from modesolverpy.mode_solver import _ModeSolver
+from modesolverpy.mode_solver import _ModeSolver, get_modes_jsonpath
 from modesolverpy.waveguide import waveguide, write_material_index
 
 
@@ -56,15 +54,15 @@ class ModeSolverSemiVectorial(_ModeSolver):
         self.wg = wg or waveguide()
         self.results = None
 
-    # @property
-    # def _modes_directory(self):
-    #     modes_directory = "./modes_semi_vec/"
-    #     if not os.path.exists(modes_directory):
-    #         os.mkdir(modes_directory)
-    #     _modes_directory = modes_directory
-    #     return _modes_directory
-
     def solve(self):
+        """ Find the modes of a given structure.
+
+        Returns:
+            dict: The 'n_effs' key gives the effective indices
+            of the modes.  The 'modes' key exists of mode
+            profiles were solved for; in this case, it will
+            return arrays of the mode profiles.
+        """
         structure = self._structure = self.wg
         wavelength = self.wg._wl
         self._ms = ms._ModeSolverSemiVectorial(
