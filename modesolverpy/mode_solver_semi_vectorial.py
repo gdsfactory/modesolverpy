@@ -116,40 +116,47 @@ class ModeSolverSemiVectorial(_ModeSolver):
                 self._semi_vectorial_method, i, filename
             )
             self._write_mode_to_file(np.real(mode), filename_mode)
-
-            if plot:
-                if i == 0 and analyse:
-                    A, centre, sigma_2 = anal.fit_gaussian(
-                        self._structure.xc, self._structure.yc, np.abs(mode)
-                    )
-                    subtitle = (
-                        "E_{max} = %.3f, (x_{max}, y_{max}) = (%.3f, %.3f), MFD_{x} = %.3f, "
-                        "MFD_{y} = %.3f"
-                    ) % (A, centre[0], centre[1], sigma_2[0], sigma_2[1])
-                    plt.figure()
-                    self._plot_mode(
-                        self._semi_vectorial_method,
-                        i,
-                        filename_mode,
-                        self.n_effs[i],
-                        subtitle,
-                        sigma_2[0],
-                        sigma_2[1],
-                        centre[0],
-                        centre[1],
-                        wavelength=self._structure._wl,
-                    )
-                else:
-                    plt.figure()
-                    self._plot_mode(
-                        self._semi_vectorial_method,
-                        i,
-                        filename_mode,
-                        self.n_effs[i],
-                        wavelength=self._structure._wl,
-                    )
+        if plot:
+            self.plot_modes(filename=filename, analyse=analyse)
 
         return self.modes
+
+    def plot_modes(self, filename="mode.dat", analyse=True):
+        for i, mode in enumerate(self.modes):
+            filename_mode = self._get_mode_filename(
+                self._semi_vectorial_method, i, filename
+            )
+
+            if i == 0 and analyse:
+                A, centre, sigma_2 = anal.fit_gaussian(
+                    self.wg.xc, self.wg.yc, np.abs(mode)
+                )
+                subtitle = (
+                    "E_{max} = %.3f, (x_{max}, y_{max}) = (%.3f, %.3f), MFD_{x} = %.3f, "
+                    "MFD_{y} = %.3f"
+                ) % (A, centre[0], centre[1], sigma_2[0], sigma_2[1])
+                plt.figure()
+                self._plot_mode(
+                    self._semi_vectorial_method,
+                    i,
+                    filename_mode,
+                    self.n_effs[i],
+                    subtitle,
+                    sigma_2[0],
+                    sigma_2[1],
+                    centre[0],
+                    centre[1],
+                    wavelength=self.wg._wl,
+                )
+            else:
+                plt.figure()
+                self._plot_mode(
+                    self._semi_vectorial_method,
+                    i,
+                    filename_mode,
+                    self.n_effs[i],
+                    wavelength=self.wg._wl,
+                )
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
@@ -211,6 +218,7 @@ def mode_solver_semi(
     )
     settings = {k: clean_value(v) for k, v in mode_solver.settings.items()}
     jsonpath = get_modes_jsonpath(mode_solver)
+    filepath = jsonpath.with_suffix(".dat")
 
     if overwrite or not jsonpath.exists():
         r = mode_solver.solve()
@@ -231,7 +239,7 @@ def mode_solver_semi(
 
         with open(jsonpath, "w") as f:
             f.write(json.dumps(d))
-        mode_solver.write_modes_to_file(jsonpath)
+        mode_solver.write_modes_to_file(filepath)
 
         r["settings"] = settings
 
@@ -250,6 +258,9 @@ def mode_solver_semi(
             for mr, mi in zip(n_effs_real, n_effs_imag)
         ]
         r = dict(modes=modes, n_effs=n_effs)
+        mode_solver.modes = r["modes"]
+        mode_solver.n_effs = r["n_effs"]
+        mode_solver.plot_modes(filepath)
 
     mode_solver.results = r
     return mode_solver
@@ -265,7 +276,7 @@ def mode_solver_semi(
 if __name__ == "__main__":
     # test_mode_solver_semi_vectorial_te(overwrite=True)
     # test_mode_solver_semi_vectorial_te(overwrite=False)
-    # test_mode_solver_semi_vectorial_tm(overwrite=True)
-    test_mode_solver_semi_vectorial_tm(overwrite=False)
+    test_mode_solver_semi_vectorial_tm(overwrite=True)
+    # test_mode_solver_semi_vectorial_tm(overwrite=False)
     # mode_solver_semi()
-    plt.show()
+    # plt.show()

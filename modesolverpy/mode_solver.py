@@ -5,9 +5,6 @@ import sys
 import matplotlib.pylab as plt
 import numpy as np
 import tqdm
-from modesolverpy import _analyse as anal
-from modesolverpy import _mode_solver_lib as ms
-from modesolverpy import structure_base as stb
 from modesolverpy.waveguide import waveguide
 from six import with_metaclass
 
@@ -366,14 +363,14 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
 
         args = {
             "title": title,
-            "x_pts": self._structure.xc_pts,
-            "y_pts": self._structure.yc_pts,
-            "x_min": self._structure.xc_min,
-            "x_max": self._structure.xc_max,
-            "y_min": self._structure.yc_min,
-            "y_max": self._structure.yc_max,
-            "x_step": self._structure.x_step,
-            "y_step": self._structure.y_step,
+            "x_pts": self.wg.xc_pts,
+            "y_pts": self.wg.yc_pts,
+            "x_min": self.wg.xc_min,
+            "x_max": self.wg.xc_max,
+            "y_min": self.wg.yc_min,
+            "y_max": self.wg.yc_max,
+            "x_step": self.wg.x_step,
+            "y_step": self.wg.y_step,
             "filename_data": filename_mode,
             "filename_image": None,
             "e2_x": e2_x,
