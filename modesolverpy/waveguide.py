@@ -1,19 +1,9 @@
 import matplotlib.pylab as plt
 import numpy as np
-import opticalmaterialspy as mat
 from modesolverpy.autoname import autoname
 from modesolverpy.config import CONFIG
+from modesolverpy.materials import si, sio2
 from modesolverpy.structure import RidgeWaveguide
-
-
-def si(wl):
-    return mat.RefractiveIndexWeb(
-        "https://refractiveindex.info/?shelf=main&book=Si&page=Li-293K"
-    ).n(wl)
-
-
-def sio2(wl):
-    return mat.SiO2().n(wl)
 
 
 @autoname
@@ -33,13 +23,13 @@ def waveguide(
     angle=90.0,
 ):
     """ returns a waveguide structure
+
+    Args:
+        wavelength (um)
     """
-    if callable(n_sub):
-        n_sub = n_sub(wavelength)
-    if callable(n_clad):
-        n_clad = n_clad(wavelength)
-    if callable(n_wg):
-        n_wg = n_wg(wavelength)
+    n_wg = n_wg(wavelength) if callable(n_wg) else n_wg
+    n_sub = n_sub(wavelength) if callable(n_sub) else n_sub
+    n_clad = n_clad(wavelength) if callable(n_clad) else n_clad
 
     film_thickness = wg_height
     wg_height = film_thickness - slab_height
@@ -93,7 +83,7 @@ def test_waveguide_material_index():
 
 if __name__ == "__main__":
     wg = waveguide(wg_width=0.5, angle=80, n_wg=si)
-    # test_waveguide_material_index()
-    write_material_index(wg)
     print(wg)
-    plt.show()
+    # test_waveguide_material_index()
+    # write_material_index(wg)
+    # plt.show()
