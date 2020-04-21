@@ -1,11 +1,10 @@
 import os
 
 import matplotlib.pylab as plt
-import modesolverpy.structure as st
 import numpy as np
-from modesolverpy import _analyse as anal
 from modesolverpy import _mode_solver_lib as ms
 from modesolverpy.mode_solver import _ModeSolver
+from modesolverpy.waveguide import waveguide, write_material_index
 
 
 class ModeSolverFullyVectorial(_ModeSolver):
@@ -35,9 +34,13 @@ class ModeSolverFullyVectorial(_ModeSolver):
         boundary="0000",
         initial_mode_guess=None,
         n_eff_guess=None,
+        name=None,
+        wg=None,
     ):
         self.n_effs_te = None
         self.n_effs_tm = None
+        self.name = name
+        self.wg = wg or waveguide()
         _ModeSolver.__init__(
             self, n_eigs, tol, boundary, False, initial_mode_guess, n_eff_guess
         )

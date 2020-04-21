@@ -92,7 +92,7 @@ def dict2name(prefix=None, **kwargs):
 
 
 def autoname(component_function):
-    """ decorator for auto-naming component functions
+    """ decorator for auto-naming modesolver functions
     if no Keyword argument `name`  is passed it creates a name by concenating all Keyword arguments
 
     .. plot::
@@ -101,16 +101,12 @@ def autoname(component_function):
       import pp
 
       @pp.autoname
-      def rectangle(size=(4,2), layer=0):
-          c = pp.Component()
-          w, h = size
-          points = [[w, h], [w, 0], [0, 0], [0, h]]
-          c.add_polygon(points, layer=layer)
-          return c
+      def mode_solver(wg_width=0.5):
+        ...
 
-      c = rectangle(layer=1)
-      c << pp.c.text(text=c.name, size=1)
-      pp.plotgds(c)
+      ms = mode_solver(wg_width=1)
+      print(ms)
+      >> mode_solver_WW1
 
     """
 

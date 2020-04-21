@@ -5,11 +5,11 @@ import sys
 import matplotlib.pylab as plt
 import numpy as np
 import tqdm
+from modesolverpy import _analyse as anal
+from modesolverpy import _mode_solver_lib as ms
+from modesolverpy import structure_base as stb
+from modesolverpy.waveguide import waveguide
 from six import with_metaclass
-
-from . import _analyse as anal
-from . import _mode_solver_lib as ms
-from . import structure_base as stb
 
 
 class _ModeSolver(with_metaclass(abc.ABCMeta)):
@@ -21,6 +21,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         mode_profiles=True,
         initial_mode_guess=None,
         n_eff_guess=None,
+        wg=None,
     ):
         self._n_eigs = int(n_eigs)
         self._tol = tol
@@ -34,31 +35,36 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         self.mode_types = None
         self.overlaps = None
 
+        self.settings = dict(n_eigs=n_eigs, boundary=boundary)
+        self.wg = wg or waveguide()
+
         self._path = os.path.dirname(sys.modules[__name__].__file__) + "/"
 
     @abc.abstractproperty
     def _modes_directory(self):
         pass
 
-    @abc.abstractmethod
-    def _solve(self, structure, wavelength):
-        pass
+    # @abc.abstractmethod
+    # def _solve(self, structure=None, wavelength=None):
+    #     pass
 
-    def solve(self, structure):
-        """
-        Find the modes of a given structure.
+    # def solve(self, structure=None, wavelength=None):
+    #     """
+    #     Find the modes of a given structure.
 
-        Args:
-            structure (Structure): The target structure to solve
-                for modes.
+    #     Args:
+    #         structure (Structure): The target structure to solve
+    #             for modes.
 
-        Returns:
-            dict: The 'n_effs' key gives the effective indices
-            of the modes.  The 'modes' key exists of mode
-            profiles were solved for; in this case, it will
-            return arrays of the mode profiles.
-        """
-        return self._solve(structure, structure._wl)
+    #     Returns:
+    #         dict: The 'n_effs' key gives the effective indices
+    #         of the modes.  The 'modes' key exists of mode
+    #         profiles were solved for; in this case, it will
+    #         return arrays of the mode profiles.
+    #     """
+    #     wavelength = wavelength or self.wg._wl
+    #     structure = structure or self.wg
+    #     return self._solve(structure, structure._wl)
 
     def solve_sweep_structure(
         self,
@@ -397,3 +403,6 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         plt.savefig(filename_image)
 
         return args
+
+    if __name__ == "__main__":
+        pass
