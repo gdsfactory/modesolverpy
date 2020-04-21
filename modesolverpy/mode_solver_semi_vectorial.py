@@ -207,6 +207,36 @@ def _semi(n_modes=2, semi_vectorial_method="Ex", **wg_kwargs):
 def mode_solver_semi(
     n_modes=2, semi_vectorial_method="Ex", overwrite=False, **wg_kwargs
 ):
+    """
+    returns semi vectorial mode solver with the computed modes
+
+    Args:
+        n_modes: 2
+        overwrite: whether to run again even if it finds the modes in CONFIG['cache']
+        semi_vectorial_method: 'Ey' for TM, 'Ex' for TE
+        x_step: 0.02
+        y_step: 0.02
+        wg_height: 0.22
+        wg_width: 0.5
+        slab_height: 0
+        sub_height: 0.5
+        sub_width: 2.0
+        clad_height: 0.5
+        n_sub: sio2
+        n_wg: si
+        n_clad: sio2
+        wavelength: 1.55
+        angle: 90.0
+
+    .. plot::
+      :include-source:
+
+      import modesolverpy as ms
+
+      m = ms.mode_solver_semi()
+      print(m.results.keys())
+
+    """
     mode_solver = _semi(
         n_modes=n_modes, semi_vectorial_method=semi_vectorial_method, **wg_kwargs
     )

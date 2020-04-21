@@ -238,7 +238,6 @@ def _full(n_modes=2, **wg_kwargs):
 
     Args:
         n_modes: 2
-        semi_vectorial_method: 'Ey' for TM, 'Ex' for TE
         wg_kwargs: for waveguide
     """
 
@@ -253,6 +252,35 @@ def _full(n_modes=2, **wg_kwargs):
 
 
 def mode_solver_full(n_modes=2, overwrite=False, **wg_kwargs):
+    """
+    returns full vectorial mode solver with the computed modes
+
+    Args:
+        n_modes: 2
+        overwrite: whether to run again even if it finds the modes in CONFIG['cache']
+        x_step: 0.02
+        y_step: 0.02
+        wg_height: 0.22
+        wg_width: 0.5
+        slab_height: 0
+        sub_height: 0.5
+        sub_width: 2.0
+        clad_height: 0.5
+        n_sub: sio2
+        n_wg: si
+        n_clad: sio2
+        wavelength: 1.55
+        angle: 90.0
+
+    .. plot::
+      :include-source:
+
+      import modesolverpy as ms
+
+      m = ms.mode_solver_full()
+      print(m.results.keys())
+
+    """
     mode_solver = _full(n_modes=n_modes, **wg_kwargs)
     settings = {k: clean_value(v) for k, v in mode_solver.settings.items()}
     jsonpath = get_modes_jsonpath(mode_solver)

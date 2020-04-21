@@ -32,6 +32,8 @@ def waveguide(
     wavelength=1.55,
     angle=90.0,
 ):
+    """ returns a waveguide structure
+    """
     if callable(n_sub):
         n_sub = n_sub(wavelength)
     if callable(n_clad):
