@@ -4,7 +4,7 @@ from inspect import signature
 
 import numpy as np
 
-MAX_NAME_LENGTH = 127
+MAX_NAME_LENGTH = 36
 
 
 def get_component_name(component_type, **kwargs):
@@ -54,19 +54,22 @@ def clean_value(value):
 
     try:
         if isinstance(value, int):  # integer
-            return str(value)
+            value = str(value)
         elif type(value) in [float, np.float64]:  # float
-            return "{:.4f}".format(value).replace(".", "p").rstrip("0").rstrip("p")
+            value = "{:.4f}".format(value).replace(".", "p").rstrip("0").rstrip("p")
         elif isinstance(value, list):
-            return "_".join(clean_value(v) for v in value)
+            value = "_".join(clean_value(v) for v in value)
         elif isinstance(value, tuple):
-            return "_".join(clean_value(v) for v in value)
+            value = "_".join(clean_value(v) for v in value)
         elif isinstance(value, dict):
-            return dict2name(**value)
+            value = dict2name(**value)
         elif callable(value):
-            return value.__name__
+            value = value.__name__
         else:
-            return clean_name(str(value))
+            value = clean_name(str(value))
+        if len(value) > MAX_NAME_LENGTH:
+            value = hashlib.md5(value.encode()).hexdigest()
+        return value
     except TypeError:  # use the __str__ method
         return clean_name(str(value))
 
@@ -114,10 +117,10 @@ def autoname(component_function):
     def wrapper(*args, **kwargs):
         if args:
             raise ValueError("autoname supports only Keyword args")
-        if "name" in kwargs:
-            name = kwargs.pop("name")
-        else:
-            name = get_component_name(component_function.__name__, **kwargs)
+        kwargs.pop("plot", "")
+        name = kwargs.pop(
+            "name", get_component_name(component_function.__name__, **kwargs)
+        )
 
         component = component_function(**kwargs)
         component.name = name
@@ -133,7 +136,40 @@ def autoname(component_function):
     return wrapper
 
 
+class _Dummy:
+    pass
+
+
+@autoname
+def _dummy(plot=True, length=3, wg_width=0.5):
+    c = _Dummy()
+    c.name = ""
+    c.settings = {}
+    return c
+
+
+def test_autoname():
+    name_base = _dummy().name
+    assert name_base == "_dummy"
+    name_plot = _dummy(plot=True).name
+    assert name_base == name_plot, "plot argument should be ingored in names"
+    name_int = _dummy(length=3).name
+    assert name_int == "_dummy_L3"
+    name_float = _dummy(wg_width=0.5).name
+    assert name_float == "_dummy_WW0p5"
+
+
+def test_clean_value():
+    assert clean_value(0.5) == "0p5"
+    assert clean_value(5) == "5"
+
+
+def test_clean_name():
+    assert clean_name("mode_solver(:_=_2852") == "mode_solver___2852"
+
+
 if __name__ == "__main__":
     print(clean_name("mode_solver(:_=_2852"))
-
-    print(clean_value(0.5))
+    # print(clean_value(0.5))
+    # test_autoname()
+    # test_clean_value()

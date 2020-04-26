@@ -1,17 +1,23 @@
-import modesolverpy.materials as materials
+from modesolverpy import materials
 from modesolverpy.config import CONFIG
-from modesolverpy.mode_solver import get_modes_jsonpath
-from modesolverpy.mode_solver_full_vectorial import mode_solver_full
-from modesolverpy.mode_solver_semi_vectorial import mode_solver_semi
-from modesolverpy.waveguide import si, sio2, waveguide
+from modesolverpy.group_index import group_index
+from modesolverpy.mode_solver_full import mode_solver_full
+from modesolverpy.mode_solver_semi import mode_solver_semi
+from modesolverpy.sweep_waveguide import sweep_waveguide
+from modesolverpy.sweep_wavelength import sweep_wavelength
+from modesolverpy.waveguide import waveguide, waveguide_array, write_material_index
 
 __all__ = [
     "CONFIG",
-    "get_modes_jsonpath",
-    "mode_solver_semi",
-    "mode_solver_full",
-    "waveguide",
     "materials",
+    "mode_solver_full",
+    "mode_solver_semi",
+    "sweep_waveguide",
+    "sweep_wavelength",
+    "group_index",
+    "waveguide",
+    "waveguide_array",
+    "write_material_index",
 ]
 
 if __name__ == "__main__":

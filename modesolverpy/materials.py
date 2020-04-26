@@ -1,3 +1,22 @@
+"""
+We have different materials available thanks to the [materialspy](https://opticalmaterialspy.readthedocs.io/en/latest/index.html) module
+
+.. plot::
+   :include-source:
+
+   import matplotlib.pyplot as plt
+   import modesolvepy as ms
+
+   wavelengths = np.linspace(1.3, 1.6, 10)
+   nsi = [ms.materials.si(w) for w in wavelengths]
+
+   plt.plot(wavelengths, nsi)
+   plt.xlabel('wavelength (nm)')
+   plt.ylabel('Refractive index')
+   plt.title('Silicon refractive index')
+
+"""
+
 import opticalmaterialspy as mat
 
 

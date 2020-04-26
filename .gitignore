@@ -1,18 +1,17 @@
 Pipfile.lock
 .idea/
-notebooks/
 scripts/maketags
 
 examples/modes_semi_vec/
 
 *.cprof
-*.ipynb
 .ipynb_checkpoints/
 
 # Sphinx documentation
 doc/_build/
 .ipynb_checkpoints/
-notebooks/
+build/
+docs/source/api
 
 
 Icon?
