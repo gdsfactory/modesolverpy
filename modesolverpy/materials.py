@@ -5,7 +5,7 @@ We have different materials available thanks to the [materialspy](https://optica
    :include-source:
 
    import matplotlib.pyplot as plt
-   import modesolvepy as ms
+   import modesolverpy as ms
 
    wavelengths = np.linspace(1.3, 1.6, 10)
    nsi = [ms.materials.si(w) for w in wavelengths]

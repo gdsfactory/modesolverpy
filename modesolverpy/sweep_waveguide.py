@@ -38,10 +38,13 @@ def sweep_waveguide(
     .. plot::
         :include-source:
 
+        import numpy as np
+        import modesolverpy as ms
+
         wg_widths = np.arange(0.5, 2.0, 0.5)
-        wgs = [waveguide(wg_width=wg_width) for wg_width in wg_widths]
-        r = sweep_waveguide(
-            wgs, wg_widths, x_label="waveguide width", fraction_mode_list=[1, 2], overwrite=overwrite
+        wgs = [ms.waveguide(wg_width=wg_width) for wg_width in wg_widths]
+        r = ms.sweep_waveguide(
+            wgs, wg_widths, x_label="waveguide width", fraction_mode_list=[1, 2],
         )
         print(r["n_effs"][0])
     """

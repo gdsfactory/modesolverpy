@@ -12,3 +12,11 @@
 ```eval_rst
 .. autofunction:: modesolverpy.waveguide.waveguide
 ```
+
+
+# Waveguide Array
+
+
+```eval_rst
+.. autofunction:: modesolverpy.waveguide.waveguide_array
+```

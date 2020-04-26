@@ -24,23 +24,24 @@ def waveguide(
 ):
     """ returns a waveguide structure
 
-    _________________________________
+    ::
 
-                                    clad_height
-           wg_width
-         <---------->
-          ___________    _ _ _ _ _ _
-         |           |
-    _____|           |____          |
-                                    wg_heigth
-    slab_height                     |
-    _______________________ _ _ _ _ __
+        _________________________________
 
-    sub_height
-    _________________________________
-    <------------------------------->
-                 sub_width
+                                        clad_height
+               wg_width
+             <---------->
+              ___________    _ _ _ _ _ _
+             |           |
+        _____|           |____          |
+                                        wg_heigth
+        slab_height                     |
+        _______________________ _ _ _ _ __
 
+        sub_height
+        _________________________________
+        <------------------------------->
+                     sub_width
 
 
     To define a waveguide we need to define:
@@ -56,7 +57,7 @@ def waveguide(
     .. plot::
         :include-source:
 
-        import modesolvepy as ms
+        import modesolverpy as ms
 
         wg = ms.waveguide_array(wg_width=0.5, wg_height=0.22, slab_height=0.09, angle=80)
         ms.write_material_index(wg)
@@ -104,28 +105,27 @@ def waveguide_array(
     wavelength=1.55,
     angle=90.0,
 ):
-    """ returns a waveguide_array (also known as couple waveguides)
+    """ returns a waveguide_array (also known as couple waveguides) ::
 
-    To define a waveguide we need to define:
+         __________________________________________________________
 
-     __________________________________________________________
+                                                                  clad_height
+              wg_widths[0]  wg_gaps[0]  wg_widths[1]
+              <-----------><----------><----------->   _ _ _ _ _ _
+               ___________              ___________
+              |           |            |           |
+         _____|           |____________|           |____          |
+                                                                  wg_heigth
+         slab_height                                              |
+         ________________________________________________ _ _ _ _ _
 
-                                                              clad_height
-          wg_widths[0]  wg_gaps[0]  wg_widths[1]
-          <-----------><----------><----------->   _ _ _ _ _ _
-           ___________              ___________
-          |           |            |           |
-     _____|           |____________|           |____          |
-                                                              wg_heigth
-     slab_height                                              |
-     ________________________________________________ _ _ _ _ _
+         sub_height
+         __________________________________________________________
 
-     sub_height
-     __________________________________________________________
+         <-------------------------------------------------------->
+                              sub_width
 
-     <-------------------------------------------------------->
-                          sub_width
-
+    To define a waveguide we need to define
 
     Args:
         wg_width: of each waveguide (list)
@@ -141,10 +141,10 @@ def waveguide_array(
     .. plot::
         :include-source:
 
-        import modesolvepy as ms
+        import modesolverpy as ms
 
-        wg_slab = ms.waveguide_array(wg_widths=[0.5]*2, wg_gaps=0.2, slab_height=0.09)
-        ms.write_material_index(wg_slab)
+        wg_array = ms.waveguide_array(wg_gaps=[0.2], wg_widths=[0.5, 0.5], slab_height=0.09)
+        ms.write_material_index(wg_array)
 
     """
     n_wg = n_wg(wavelength) if callable(n_wg) else n_wg

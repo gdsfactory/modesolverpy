@@ -11,7 +11,12 @@ html_theme = "sphinx_rtd_theme"
 intersphinx_mapping = {"python": ("https://docs.python.org/3/", None)}
 
 source_parsers = {".md": CommonMarkParser}
-source_suffix = [".rst", ".md"]
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".txt": "markdown",
+    ".md": "markdown",
+}
+
 
 html_static_path = ["_static"]
 htmlhelp_basename = project
@@ -25,10 +30,11 @@ extensions = [
     "matplotlib.sphinxext.plot_directive",
     "sphinx_markdown_tables",
     "sphinx.ext.doctest",
+    "recommonmark",
 ]
 
 # Order members by source
-autodoc_member_order = "bysource"
+# autodoc_member_order = "bysource"
 
 
 def setup(app):

@@ -118,6 +118,7 @@ def autoname(component_function):
         if args:
             raise ValueError("autoname supports only Keyword args")
         kwargs.pop("plot", "")
+        kwargs.pop("plot_profile", "")
         name = kwargs.pop(
             "name", get_component_name(component_function.__name__, **kwargs)
         )
