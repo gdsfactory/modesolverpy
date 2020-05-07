@@ -82,7 +82,9 @@ class ModeSolverSemiVectorial(_ModeSolver):
 
         return r
 
-    def write_modes_to_file(self, filename="mode.dat", plot=True, analyse=True):
+    def write_modes_to_file(
+        self, filename="mode.dat", plot=True, analyse=True, logscale=False
+    ):
         """
         Writes the mode fields to a file and optionally plots them.
 
@@ -110,7 +112,7 @@ class ModeSolverSemiVectorial(_ModeSolver):
             )
             self._write_mode_to_file(np.real(mode), filename_mode)
         if plot:
-            self.plot_modes(filename=filename, analyse=analyse)
+            self.plot_modes(filename=filename, analyse=analyse, logscale=logscale)
 
         return self.modes
 

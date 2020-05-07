@@ -9,7 +9,7 @@ from modesolverpy.config import CONFIG
 from modesolverpy.waveguide import waveguide
 from six import with_metaclass
 
-plt.rc("image", cmap="jet")
+plt.rc("image", cmap="coolwarm")
 
 
 def get_modes_jsonpath(mode_solver):
@@ -379,6 +379,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         heatmap = np.loadtxt(filename_mode, delimiter=",")
         if logscale:
             heatmap = 10 * np.log10(abs(heatmap))
+            heatmap -= np.max(heatmap)
         plt.clf()
         plt.suptitle(title)
         if subtitle:
