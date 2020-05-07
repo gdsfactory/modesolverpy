@@ -1,3 +1,4 @@
+from modesolverpy import _analyse as fit
 from modesolverpy import materials
 from modesolverpy.config import CONFIG
 from modesolverpy.group_index import group_index
@@ -8,6 +9,7 @@ from modesolverpy.sweep_wavelength import sweep_wavelength
 from modesolverpy.waveguide import waveguide, waveguide_array, write_material_index
 
 __all__ = [
+    "fit",
     "CONFIG",
     "materials",
     "mode_solver_full",

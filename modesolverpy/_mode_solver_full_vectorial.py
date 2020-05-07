@@ -128,6 +128,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
         filename="mode.dat",
         plot=True,
         fields_to_write=("Ex", "Ey", "Ez", "Hx", "Hy", "Hz"),
+        logscale=False,
     ):
         """
         Writes the mode fields to a file and optionally plots them.
@@ -185,12 +186,16 @@ class ModeSolverFullyVectorial(_ModeSolver):
                             self.n_effs[i],
                             area=area,
                             wavelength=self._structure._wl,
+                            logscale=logscale,
                         )
 
         return self.modes
 
     def plot_modes(
-        self, filename, fields_to_write=("Ex", "Ey", "Ez", "Hx", "Hy", "Hz")
+        self,
+        filename,
+        fields_to_write=("Ex", "Ey", "Ez", "Hx", "Hy", "Hz"),
+        logscale=False,
     ):
         """ works only for cached modes """
         # Mode field plots.
@@ -210,4 +215,5 @@ class ModeSolverFullyVectorial(_ModeSolver):
                         self.n_effs[i],
                         # area=area,
                         wavelength=self.wg._wl,
+                        logscale=logscale,
                     )

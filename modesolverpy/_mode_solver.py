@@ -9,6 +9,8 @@ from modesolverpy.config import CONFIG
 from modesolverpy.waveguide import waveguide
 from six import with_metaclass
 
+plt.rc("image", cmap="jet")
+
 
 def get_modes_jsonpath(mode_solver):
     return CONFIG["cache"] / f"{mode_solver.name}.json"

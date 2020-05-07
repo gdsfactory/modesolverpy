@@ -10,7 +10,7 @@ from modesolverpy.waveguide import waveguide, write_material_index
 
 @pytest.mark.parametrize("overwrite", [True, False])
 def test_mode_solver_full_vectorial(overwrite):
-    mode_solver = mode_solver_full(overwrite=overwrite)
+    mode_solver = mode_solver_full(overwrite=overwrite, logscale=True, plot=True)
     # modes = mode_solver.solve()
     # neff0 = modes["n_effs"][0].real
 
@@ -46,6 +46,7 @@ def mode_solver_full(
     overwrite=False,
     plot=False,
     plot_profile=False,
+    logscale=False,
     wg=None,
     fields_to_write=("Ex", "Ey", "Ez", "Hx", "Hy", "Hz"),
     **wg_kwargs
@@ -115,7 +116,7 @@ def mode_solver_full(
             f.write(json.dumps(d))
 
         mode_solver.write_modes_to_file(
-            filepath, plot=plot, fields_to_write=fields_to_write
+            filepath, plot=plot, fields_to_write=fields_to_write, logscale=logscale
         )
 
         r["settings"] = settings
@@ -156,7 +157,8 @@ def mode_solver_full(
 
 
 if __name__ == "__main__":
-    # import matplotlib.pylab as plt
+    import matplotlib.pylab as plt
+
     test_mode_solver_full_vectorial(overwrite=True)
     # test_mode_solver_full_vectorial(overwrite=False)
-    # plt.show()
+    plt.show()

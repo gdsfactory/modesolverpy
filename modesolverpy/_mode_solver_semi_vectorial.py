@@ -114,7 +114,7 @@ class ModeSolverSemiVectorial(_ModeSolver):
 
         return self.modes
 
-    def plot_modes(self, filename="mode.dat", analyse=True):
+    def plot_modes(self, filename="mode.dat", analyse=True, logscale=False):
         for i, mode in enumerate(self.modes):
             filename_mode = self._get_mode_filename(
                 self._semi_vectorial_method, i, filename
@@ -140,6 +140,7 @@ class ModeSolverSemiVectorial(_ModeSolver):
                     centre[0],
                     centre[1],
                     wavelength=self.wg._wl,
+                    logscale=logscale,
                 )
             else:
                 plt.figure()
@@ -149,4 +150,5 @@ class ModeSolverSemiVectorial(_ModeSolver):
                     filename_mode,
                     self.n_effs[i],
                     wavelength=self.wg._wl,
+                    logscale=logscale,
                 )

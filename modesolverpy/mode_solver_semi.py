@@ -64,6 +64,7 @@ def mode_solver_semi(
     overwrite=False,
     plot=True,
     plot_profile=False,
+    logscale=False,
     **wg_kwargs
 ):
     """
@@ -126,7 +127,7 @@ def mode_solver_semi(
 
         with open(jsonpath, "w") as f:
             f.write(json.dumps(d))
-        mode_solver.write_modes_to_file(filepath, plot=plot)
+        mode_solver.write_modes_to_file(filepath, plot=plot, logscale=logscale)
 
         r["settings"] = settings
 
@@ -148,7 +149,7 @@ def mode_solver_semi(
         mode_solver.modes = r["modes"]
         mode_solver.n_effs = r["n_effs"]
         if plot:
-            mode_solver.plot_modes(filepath)
+            mode_solver.plot_modes(filepath, logscale=logscale)
 
     mode_solver.results = r
     return mode_solver
@@ -169,5 +170,5 @@ if __name__ == "__main__":
     # test_mode_solver_semi_vectorial_tm(overwrite=True)
     # test_mode_solver_semi_vectorial_tm(overwrite=False)
 
-    mode_solver_semi(plot=True, plot_profile=False)
+    mode_solver_semi(plot=True, plot_profile=False, logscale=True)
     plt.show()
