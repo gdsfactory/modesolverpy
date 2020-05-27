@@ -1,8 +1,8 @@
 import matplotlib.pylab as plt
 import numpy as np
-from modesolverpy import _analyse as anal
-from modesolverpy import _mode_solver_lib as ms
-from modesolverpy._mode_solver import _ModeSolver
+from modes import _analyse as anal
+from modes import _mode_solver_lib as ms
+from modes._mode_solver import _ModeSolver
 
 
 class ModeSolverSemiVectorial(_ModeSolver):

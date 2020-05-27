@@ -2,10 +2,10 @@ import json
 
 import numpy as np
 import pytest
-from modesolverpy._mode_solver import get_modes_jsonpath
-from modesolverpy._mode_solver_full_vectorial import ModeSolverFullyVectorial
-from modesolverpy.autoname import autoname, clean_value
-from modesolverpy.waveguide import waveguide, write_material_index
+from modes._mode_solver import get_modes_jsonpath
+from modes._mode_solver_full_vectorial import ModeSolverFullyVectorial
+from modes.autoname import autoname, clean_value
+from modes.waveguide import waveguide, write_material_index
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
@@ -74,7 +74,7 @@ def mode_solver_full(
     .. plot::
       :include-source:
 
-      import modesolverpy as ms
+      import modes as ms
 
       s = ms.mode_solver_full(plot=True, n_modes=1, wg_width=0.5, wg_height=0.22)
       print(s.results.keys())

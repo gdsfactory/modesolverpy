@@ -5,8 +5,8 @@ import sys
 import matplotlib.pylab as plt
 import numpy as np
 import tqdm
-from modesolverpy.config import CONFIG
-from modesolverpy.waveguide import waveguide
+from modes.config import CONFIG
+from modes.waveguide import waveguide
 from six import with_metaclass
 
 plt.rc("image", cmap="coolwarm")

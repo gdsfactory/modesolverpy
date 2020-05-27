@@ -1,7 +1,7 @@
 import matplotlib.pylab as plt
 import numpy as np
-from modesolverpy import _mode_solver_lib as ms
-from modesolverpy._mode_solver import _ModeSolver
+from modes import _mode_solver_lib as ms
+from modes._mode_solver import _ModeSolver
 
 
 class ModeSolverFullyVectorial(_ModeSolver):
@@ -152,7 +152,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
         """
 
         # Mode info file.
-        filename_info = filename.parent / (filename.stem + f"_info.dat")
+        filename_info = filename.parent / f"{filename.stem}_info.dat"
         with open(filename_info, "w") as fs:
             fs.write("# Mode idx, Mode type, % in major direction, n_eff\n")
             for i, (n_eff, (mode_type, percentage)) in enumerate(

@@ -3,14 +3,14 @@
 
 
 ```eval_rst
-.. autofunction:: modesolverpy.sweep_waveguide.sweep_waveguide
+.. autofunction:: modes.sweep_waveguide.sweep_waveguide
 ```
 
 # Sweep wavelength
 
 
 ```eval_rst
-.. autofunction:: modesolverpy.sweep_wavelength.sweep_wavelength
+.. autofunction:: modes.sweep_wavelength.sweep_wavelength
 
 ```
 
@@ -19,5 +19,5 @@
 
 
 ```eval_rst
-.. autofunction:: modesolverpy.group_index.group_index
+.. autofunction:: modes.group_index.group_index
 ```

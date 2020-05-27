@@ -2,7 +2,7 @@
 loads a configuration from 3 files, high priority overwrites low priority:
 
 1. A config.yml found in the current working directory (high priority)
-2. ~/.config/modesolverpy.yml specific for the machine
+2. ~/.config/modes.yml specific for the machine
 3. the default config is in this file
 
 """
@@ -21,7 +21,7 @@ key: value
 home = pathlib.Path.home()
 cwd = pathlib.Path.cwd()
 cwd_config = cwd / "config.yml"
-home_config = home / ".config" / "modesolverpy.yml"
+home_config = home / ".config" / "modes.yml"
 module_path = pathlib.Path(__file__).parent.absolute()
 repo_path = module_path.parent
 
@@ -34,9 +34,7 @@ CONFIG = hiyapyco.load(
 )
 CONFIG["module"] = module_path
 CONFIG["repo"] = repo_path
-CONFIG["cache"] = pathlib.Path(
-    CONFIG.get("cache", home / ".local" / "cache" / "modesolverpy")
-)
+CONFIG["cache"] = pathlib.Path(CONFIG.get("cache", home / ".local" / "cache" / "modes"))
 CONFIG["cache"].mkdir(exist_ok=True, parents=True)
 
 

@@ -2,8 +2,8 @@ import matplotlib.pylab as plt
 import numpy as np
 import pytest
 import tqdm
-from modesolverpy.mode_solver_full import mode_solver_full
-from modesolverpy.waveguide import waveguide
+from modes.mode_solver_full import mode_solver_full
+from modes.waveguide import waveguide
 
 
 def sweep_waveguide(
@@ -39,7 +39,7 @@ def sweep_waveguide(
         :include-source:
 
         import numpy as np
-        import modesolverpy as ms
+        import modes as ms
 
         wg_widths = np.arange(0.5, 2.0, 0.5)
         wgs = [ms.waveguide(wg_width=wg_width) for wg_width in wg_widths]

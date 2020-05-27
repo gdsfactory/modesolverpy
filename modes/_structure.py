@@ -2,7 +2,7 @@ import copy
 
 import numpy as np
 import opticalmaterialspy as mat
-from modesolverpy import _structure_base as sb
+from modes import _structure_base as sb
 
 
 class RidgeWaveguide(sb.Slabs):

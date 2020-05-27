@@ -1,9 +1,9 @@
 import matplotlib.pylab as plt
 import numpy as np
-from modesolverpy._structure import RidgeWaveguide, WgArray
-from modesolverpy.autoname import autoname
-from modesolverpy.config import CONFIG
-from modesolverpy.materials import si, sio2
+from modes._structure import RidgeWaveguide, WgArray
+from modes.autoname import autoname
+from modes.config import CONFIG
+from modes.materials import si, sio2
 
 
 @autoname
@@ -57,7 +57,7 @@ def waveguide(
     .. plot::
         :include-source:
 
-        import modesolverpy as ms
+        import modes as ms
 
         wg = ms.waveguide_array(wg_width=0.5, wg_height=0.22, slab_height=0.09, angle=80)
         ms.write_material_index(wg)
@@ -141,7 +141,7 @@ def waveguide_array(
     .. plot::
         :include-source:
 
-        import modesolverpy as ms
+        import modes as ms
 
         wg_array = ms.waveguide_array(wg_gaps=[0.2], wg_widths=[0.5, 0.5], slab_height=0.09)
         ms.write_material_index(wg_array)

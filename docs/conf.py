@@ -1,7 +1,7 @@
 from recommonmark.parser import CommonMarkParser
 from recommonmark.transform import AutoStructify
 
-project = "modesolverpy"
+project = "modes"
 version = "0.4.4"
 copyright = "2019, Jean-Luc Tambasco"
 author = "Jean-Luc Tambasco"
@@ -52,4 +52,4 @@ def linkcode_resolve(domain, info):
     if not info["module"]:
         return None
     filename = info["module"].replace(".", "/")
-    return "https://github.com/joamatab/modesolverpy/blob/master/{}.py".format(filename)
+    return "https://github.com/joamatab/modes/blob/master/{}.py".format(filename)

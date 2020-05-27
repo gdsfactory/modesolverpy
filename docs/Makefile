@@ -1,6 +1,6 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = modesolverpy
+SPHINXPROJ    = modes
 SOURCEDIR     = .
 BUILDDIR      = build
 
@@ -17,7 +17,7 @@ help:
 
 upload:
 	mkdir -p site
-	rsync -rv build/html/ site/modesolverpy
+	rsync -rv build/html/ site/modes
 
 open:
 	open build/html/index.html

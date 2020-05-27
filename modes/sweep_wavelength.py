@@ -2,7 +2,7 @@ import matplotlib.pylab as plt
 import numpy as np
 import pytest
 import tqdm
-from modesolverpy.mode_solver_full import mode_solver_full
+from modes.mode_solver_full import mode_solver_full
 
 
 def sweep_wavelength(wavelengths, plot=True, overwrite=False, **wg_kwargs):

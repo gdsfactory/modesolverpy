@@ -2,10 +2,10 @@ import json
 
 import numpy as np
 import pytest
-from modesolverpy._mode_solver import get_modes_jsonpath
-from modesolverpy._mode_solver_semi_vectorial import ModeSolverSemiVectorial
-from modesolverpy.autoname import autoname, clean_value
-from modesolverpy.waveguide import waveguide, write_material_index
+from modes._mode_solver import get_modes_jsonpath
+from modes._mode_solver_semi_vectorial import ModeSolverSemiVectorial
+from modes.autoname import autoname, clean_value
+from modes.waveguide import waveguide, write_material_index
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
@@ -91,7 +91,7 @@ def mode_solver_semi(
     .. plot::
       :include-source:
 
-      import modesolverpy as ms
+      import modes as ms
 
       m = ms.mode_solver_semi()
       print(m.results.keys())

@@ -4,7 +4,7 @@
 
 
 ```eval_rst
-.. autofunction:: modesolverpy.mode_solver_semi.mode_solver_semi
+.. autofunction:: modes.mode_solver_semi.mode_solver_semi
 ```
 
 
@@ -15,5 +15,5 @@
 
 
 ```eval_rst
-.. autofunction:: modesolverpy.mode_solver_full.mode_solver_full
+.. autofunction:: modes.mode_solver_full.mode_solver_full
 ```

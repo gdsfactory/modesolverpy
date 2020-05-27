@@ -2,7 +2,7 @@
 # Materials
 
 ```eval_rst
-.. automodule:: modesolverpy.materials
+.. automodule:: modes.materials
     :members:
 ```
 
@@ -10,7 +10,7 @@
 
 
 ```eval_rst
-.. autofunction:: modesolverpy.waveguide.waveguide
+.. autofunction:: modes.waveguide.waveguide
 ```
 
 
@@ -18,5 +18,5 @@
 
 
 ```eval_rst
-.. autofunction:: modesolverpy.waveguide.waveguide_array
+.. autofunction:: modes.waveguide.waveguide_array
 ```

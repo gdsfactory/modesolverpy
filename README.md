@@ -1,4 +1,4 @@
-# modesolverpy
+# modes
 
 Photonic mode solver with a nice interface and output.
 
@@ -8,14 +8,14 @@ Photonic mode solver with a nice interface and output.
 * some limited (at this stage) data processing (finding MFD of fundamental mode), and
 * easily extensible library
 
-The documentation for this project can be found [here](http://modesolverpy.rtfd.io).
+The documentation for this project can be found [here](http://modes.rtfd.io).
 
 ## Examples
 
 Take a look at the jupyter notebooks
 
 ## Installation
-It is recommend to install `modesolverpy` via `make install`
+It is recommend to install `modes` via `make install`
 
 ### Dependencies
 

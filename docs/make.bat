@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=source
 set BUILDDIR=build
-set SPHINXPROJ=modesolverpy
+set SPHINXPROJ=modes
 
 if "%1" == "" goto help
 
