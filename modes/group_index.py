@@ -72,5 +72,6 @@ def test_sweep(overwrite):
 
 
 if __name__ == "__main__":
-    test_sweep(overwrite=False)
+    print(group_index(g=2))
+    # test_sweep(overwrite=False)
     # plt.show()

@@ -122,11 +122,20 @@ def autoname(component_function):
         name = kwargs.pop(
             "name", get_component_name(component_function.__name__, **kwargs)
         )
+        sig = signature(component_function)
+        if (
+            "args" not in sig.parameters
+            and "kwargs" not in sig.parameters
+            and "wg_kwargs" not in sig.parameters
+        ):
+            for key in kwargs.keys():
+                assert (
+                    key in sig.parameters.keys()
+                ), f"{key} key not in {list(sig.parameters.keys())}"
 
         component = component_function(**kwargs)
         component.name = name
         component.name_function = component_function.__name__
-        sig = signature(component_function)
         component.settings.update(
             **{p.name: p.default for p in sig.parameters.values()}
         )
