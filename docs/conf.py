@@ -2,7 +2,7 @@ from recommonmark.parser import CommonMarkParser
 from recommonmark.transform import AutoStructify
 
 project = "modes"
-version = "1.0.0"
+version = "1.0.1"
 copyright = "2019, Jean-Luc Tambasco"
 author = "Jean-Luc Tambasco"
 
