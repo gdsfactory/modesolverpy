@@ -66,7 +66,9 @@ def group_index(
 def test_sweep(overwrite):
     ng = group_index(n_modes=2)
     print(ng)
-    assert np.isclose(ng, np.array([4.123932892727449, 3.9318152179618666])).all()
+    assert np.isclose(
+        ng, np.array([4.123932892727449, 3.9318152179618666]), atol=0.1
+    ).all()
 
 
 if __name__ == "__main__":
