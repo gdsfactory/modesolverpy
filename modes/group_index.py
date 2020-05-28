@@ -1,6 +1,7 @@
 import matplotlib.pylab as plt
 import numpy as np
 import pytest
+
 from modes.mode_solver_full import mode_solver_full
 
 

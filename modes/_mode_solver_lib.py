@@ -9,10 +9,10 @@
 
 """
 import collections as col
-from builtins import range, zip
+from builtins import range
+from builtins import zip
 
 import numpy
-import scipy
 import scipy.optimize
 from scipy.interpolate import interp2d
 

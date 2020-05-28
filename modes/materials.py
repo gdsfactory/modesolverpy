@@ -16,7 +16,6 @@ We have different materials available thanks to the [materialspy](https://optica
    plt.title('Silicon refractive index')
 
 """
-
 import opticalmaterialspy as mat
 
 

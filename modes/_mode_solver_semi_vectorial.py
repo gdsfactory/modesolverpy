@@ -1,5 +1,6 @@
 import matplotlib.pylab as plt
 import numpy as np
+
 from modes import _analyse as anal
 from modes import _mode_solver_lib as ms
 from modes._mode_solver import _ModeSolver

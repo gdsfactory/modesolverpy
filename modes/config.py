@@ -13,6 +13,10 @@ import logging
 import pathlib
 
 import hiyapyco
+import matplotlib.pylab as plt
+
+plt.rc("image", cmap="coolwarm")
+
 
 default_config = """
 key: value

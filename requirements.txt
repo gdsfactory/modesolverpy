@@ -1,7 +1,1 @@
 -e .
-tqdm
-scipy
-numpy
-opticalmaterialspy
-matplotlib
-hiyapyco
