@@ -2,6 +2,7 @@ import abc
 import os
 import sys
 
+import matplotlib as mpl
 import matplotlib.pylab as plt
 import numpy as np
 import tqdm
@@ -387,10 +388,16 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
             plt.title(title2)
         plt.xlabel("x")
         plt.ylabel("y")
+
+        vmax = 0 if logscale else None
+        vmin = -20 if logscale else None
+
         plt.imshow(
             np.flipud(heatmap),
             extent=(args["x_min"], args["x_max"], args["y_min"], args["y_max"],),
             aspect="auto",
+            vmin=vmin,
+            vmax=vmax,
         )
         plt.colorbar()
         plt.savefig(filename_image)

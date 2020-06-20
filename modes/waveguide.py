@@ -3,7 +3,7 @@ import numpy as np
 from modes._structure import RidgeWaveguide, WgArray
 from modes.autoname import autoname
 from modes.config import CONFIG
-from modes.materials import si, sio2
+from modes.materials import nitride, si, sio2
 
 
 @autoname
@@ -15,10 +15,10 @@ def waveguide(
     slab_height=0,
     sub_height=0.5,
     sub_width=2.0,
-    clad_height=0.5,
+    clad_height=[0.5],
     n_sub=sio2,
     n_wg=si,
-    n_clad=sio2,
+    n_clads=[sio2],
     wavelength=1.55,
     angle=90.0,
 ):
@@ -65,7 +65,7 @@ def waveguide(
     """
     n_wg = n_wg(wavelength) if callable(n_wg) else n_wg
     n_sub = n_sub(wavelength) if callable(n_sub) else n_sub
-    n_clad = n_clad(wavelength) if callable(n_clad) else n_clad
+    n_clad = [n_clad(wavelength) if callable(n_clad) else n_clad for n_clad in n_clads]
 
     film_thickness = wg_height
     wg_height = film_thickness - slab_height
@@ -98,10 +98,10 @@ def waveguide_array(
     slab_height=0,
     sub_height=0.5,
     sub_width=2.0,
-    clad_height=0.5,
+    clad_height=[0.5],
     n_sub=sio2,
     n_wg=si,
-    n_clad=sio2,
+    n_clads=[sio2],
     wavelength=1.55,
     angle=90.0,
 ):
@@ -149,7 +149,7 @@ def waveguide_array(
     """
     n_wg = n_wg(wavelength) if callable(n_wg) else n_wg
     n_sub = n_sub(wavelength) if callable(n_sub) else n_sub
-    n_clad = n_clad(wavelength) if callable(n_clad) else n_clad
+    n_clad = [n_clad(wavelength) if callable(n_clad) else n_clad for n_clad in n_clads]
 
     film_thickness = wg_height
     wg_height = film_thickness - slab_height
@@ -207,10 +207,16 @@ def test_waveguide_array_material_index():
 
 
 if __name__ == "__main__":
-    # wg = waveguide(wg_width=0.5, angle=80, n_wg=si)
+    wg = waveguide(
+        wg_width=0.5,
+        angle=80,
+        n_wg=si,
+        clad_height=[50e-3, 50e-3, 0.5],
+        n_clads=[sio2, nitride, sio2],
+    )
     # wg = waveguide_array(wg_widths=[0.5] * 2, wg_gaps=[0.2], slab_height=0.09)
     # print(wg)
     # test_waveguide_material_index()
-    test_waveguide_array_material_index()
-    # write_material_index(wg)
-    # plt.show()
+    # test_waveguide_array_material_index()
+    write_material_index(wg)
+    plt.show()

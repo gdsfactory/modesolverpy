@@ -5,6 +5,7 @@ import pytest
 from modes._mode_solver import get_modes_jsonpath
 from modes._mode_solver_full_vectorial import ModeSolverFullyVectorial
 from modes.autoname import autoname, clean_value
+from modes.materials import nitride, si, sio2
 from modes.waveguide import waveguide, write_material_index
 
 
@@ -17,6 +18,23 @@ def test_mode_solver_full_vectorial(overwrite):
     neff0 = mode_solver.results["n_effs"][0].real
     print(neff0)
     assert np.isclose(neff0, 2.4717079424099673)
+
+
+@pytest.mark.parametrize("overwrite", [True, False])
+def test_mode_solver_full_vectorial_multi_clad(overwrite):
+    mode_solver = mode_solver_full(
+        overwrite=overwrite,
+        logscale=True,
+        plot=False,
+        clad_height=[50e-3, 50e-3, 0.5],
+        n_clads=[sio2, nitride, sio2],
+    )
+    # modes = mode_solver.solve()
+    # neff0 = modes["n_effs"][0].real
+
+    neff0 = mode_solver.results["n_effs"][0].real
+    print(neff0)
+    assert np.isclose(neff0, 2.483481412238637)
 
 
 @autoname
@@ -159,6 +177,7 @@ def mode_solver_full(
 if __name__ == "__main__":
     import matplotlib.pylab as plt
 
-    test_mode_solver_full_vectorial(overwrite=True)
+    test_mode_solver_full_vectorial_multi_clad(overwrite=True)
+    # test_mode_solver_full_vectorial(overwrite=True)
     # test_mode_solver_full_vectorial(overwrite=False)
     plt.show()
