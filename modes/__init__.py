@@ -6,7 +6,9 @@ from modes.mode_solver_full import mode_solver_full
 from modes.mode_solver_semi import mode_solver_semi
 from modes.sweep_waveguide import sweep_waveguide
 from modes.sweep_wavelength import sweep_wavelength
-from modes.waveguide import waveguide, waveguide_array, write_material_index
+from modes.waveguide import waveguide
+from modes.waveguide import waveguide_array
+from modes.waveguide import write_material_index
 
 __all__ = [
     "fit",
@@ -23,7 +25,7 @@ __all__ = [
 ]
 
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 if __name__ == "__main__":
     print(__all__)

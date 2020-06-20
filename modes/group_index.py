@@ -1,6 +1,7 @@
 import matplotlib.pylab as plt
 import numpy as np
 import pytest
+
 from modes.mode_solver_full import mode_solver_full
 
 
@@ -72,5 +73,6 @@ def test_sweep(overwrite):
 
 
 if __name__ == "__main__":
-    test_sweep(overwrite=False)
+    print(group_index(g=2))
+    # test_sweep(overwrite=False)
     # plt.show()

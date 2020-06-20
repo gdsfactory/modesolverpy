@@ -2,6 +2,7 @@ import copy
 
 import numpy as np
 import opticalmaterialspy as mat
+
 from modes import _structure_base as sb
 
 

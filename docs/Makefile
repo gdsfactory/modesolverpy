@@ -23,3 +23,6 @@ open:
 	open build/html/index.html
 
 see: html open
+
+install:
+	pip install -r requirements.txt

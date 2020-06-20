@@ -1,9 +1,13 @@
 import matplotlib.pylab as plt
 import numpy as np
-from modes._structure import RidgeWaveguide, WgArray
+
+from modes._structure import RidgeWaveguide
+from modes._structure import WgArray
 from modes.autoname import autoname
 from modes.config import CONFIG
-from modes.materials import nitride, si, sio2
+from modes.materials import nitride
+from modes.materials import si
+from modes.materials import sio2
 
 
 @autoname

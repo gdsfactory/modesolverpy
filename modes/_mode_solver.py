@@ -6,9 +6,10 @@ import matplotlib as mpl
 import matplotlib.pylab as plt
 import numpy as np
 import tqdm
+from six import with_metaclass
+
 from modes.config import CONFIG
 from modes.waveguide import waveguide
-from six import with_metaclass
 
 plt.rc("image", cmap="coolwarm")
 
