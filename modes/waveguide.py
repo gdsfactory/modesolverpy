@@ -63,7 +63,7 @@ def waveguide(
 
         import modes as ms
 
-        wg = ms.waveguide_array(wg_width=0.5, wg_height=0.22, slab_height=0.09, angle=80)
+        wg = ms.waveguide(wg_width=0.5, wg_height=0.22, slab_height=0.09, angle=80)
         ms.write_material_index(wg)
 
     """

@@ -1,12 +1,7 @@
 
-# Materials
+# Waveguides
 
-```eval_rst
-.. automodule:: modes.materials
-    :members:
-```
-
-# Waveguide
+## Waveguide
 
 
 ```eval_rst
@@ -14,7 +9,7 @@
 ```
 
 
-# Waveguide Array
+## Waveguide Array (coupled waveguides)
 
 
 ```eval_rst

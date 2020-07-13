@@ -1,4 +1,4 @@
-# modes
+# Modes
 
 Photonic mode solver with a nice interface and output.
 
@@ -15,20 +15,10 @@ The documentation for this project can be found [here](http://modes.rtfd.io).
 Take a look at the jupyter notebooks
 
 ## Installation
-It is recommend to install `modes` via `make install`
 
-### Dependencies
-
-Matplotlib can be used for plotting
-
-* [setuptools](https://pypi.python.org/pypi/setuptools),
-* [numpy](http://www.numpy.org/),
-* [scipy](https://www.scipy.org/),
-* [tqdm](https://pypi.python.org/pypi/tqdm), and
-* [opticalmaterialspy](https://github.com/jtambasco/opticalmaterialspy).
-* [matplotlib](https://matplotlib.org/),
+You can install modes via `pip install modes`
 
 ## Acknowledgments
-This finite difference mode solver is based on a modified version of [EMpy](https://github.com/lbolla/EMpy).
 
-Thank you to [Inna Krasnokutska](https://github.com/ikrasnokutska) for testing.
+This finite difference mode solver is based on a modified version of [EMpy](https://github.com/lbolla/EMpy).
+This project is a fork of [modesolverpy](https://github.com/jtambasco/modesolverpy)

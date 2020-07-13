@@ -15,6 +15,7 @@ docs/source/api
 
 
 Icon?
+*.sqlite3
 *.prf
 *.h5
 *.log

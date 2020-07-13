@@ -1,12 +1,13 @@
+# Sweep
 
-# Sweep waveguide width
+## waveguide width
 
 
 ```eval_rst
 .. autofunction:: modes.sweep_waveguide.sweep_waveguide
 ```
 
-# Sweep wavelength
+##  wavelength
 
 
 ```eval_rst
@@ -15,7 +16,7 @@
 ```
 
 
-# Group index
+## Group index
 
 
 ```eval_rst
