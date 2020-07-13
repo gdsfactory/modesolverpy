@@ -15,7 +15,7 @@ plt.rc("image", cmap="coolwarm")
 
 
 def get_modes_jsonpath(mode_solver):
-    return CONFIG["cache"] / f"{mode_solver.name}.json"
+    return CONFIG.cache / f"{mode_solver.name}.json"
 
 
 class _ModeSolver(with_metaclass(abc.ABCMeta)):
@@ -50,7 +50,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
 
     @property
     def _modes_directory(self):
-        return CONFIG["cache"]
+        return CONFIG.cache
 
     def solve_sweep_waveguide(
         self,

@@ -177,7 +177,7 @@ def waveguide_array(
 
 
 def get_waveguide_filepath(wg):
-    return CONFIG["cache"] / f"{wg.name}.dat"
+    return CONFIG.cache / f"{wg.name}.dat"
 
 
 def write_material_index(wg, filepath=None):

@@ -9,7 +9,6 @@ setup(
     author_email="an.obscurity@gmail.com",
     license="MIT",
     install_requires=[
-        "hiyapyco",
         "matplotlib",
         "numpy",
         "opticalmaterialspy",

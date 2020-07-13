@@ -79,7 +79,7 @@ def mode_solver_full(
 
     Args:
         n_modes: 2
-        overwrite: whether to run again even if it finds the modes in CONFIG['cache']
+        overwrite: whether to run again even if it finds the modes in CONFIG.cache
         x_step: 0.02
         y_step: 0.02
         wg_height: 0.22
