@@ -1,7 +1,7 @@
 from recommonmark.transform import AutoStructify
 
 project = "modes"
-version = "1.0.1"
+version = "1.0.2"
 copyright = "2019, Jean-Luc Tambasco"
 author = "Jean-Luc Tambasco"
 
