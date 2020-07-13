@@ -1,4 +1,4 @@
-# Modes
+# Modes 1.0.2
 
 Photonic mode solver with a nice interface and output.
 
