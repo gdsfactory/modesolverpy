@@ -8,7 +8,6 @@ from modes._mode_solver_full_vectorial import ModeSolverFullyVectorial
 from modes.autoname import autoname
 from modes.autoname import clean_value
 from modes.materials import nitride
-from modes.materials import si
 from modes.materials import sio2
 from modes.waveguide import waveguide
 from modes.waveguide import write_material_index
@@ -79,7 +78,7 @@ def mode_solver_full(
 
     Args:
         n_modes: 2
-        overwrite: whether to run again even if it finds the modes in CONFIG['cache']
+        overwrite: whether to run again even if it finds the modes in CONFIG.cache
         x_step: 0.02 (um)
         y_step: 0.02 (um)
         wg_height: 0.22 (um)

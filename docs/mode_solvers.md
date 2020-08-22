@@ -1,5 +1,7 @@
 
-# Mode solver semi vectorial
+# Mode solver
+
+## semi vectorial
 
 
 
@@ -10,7 +12,7 @@
 
 
 
-# Mode solver full vectorial
+## full vectorial
 
 
 
