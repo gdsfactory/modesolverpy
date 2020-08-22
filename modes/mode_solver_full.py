@@ -80,18 +80,18 @@ def mode_solver_full(
     Args:
         n_modes: 2
         overwrite: whether to run again even if it finds the modes in CONFIG['cache']
-        x_step: 0.02
-        y_step: 0.02
-        wg_height: 0.22
-        wg_width: 0.5
-        slab_height: 0
-        sub_height: 0.5
-        sub_width: 2.0
-        clad_height: 0.5
+        x_step: 0.02 (um)
+        y_step: 0.02 (um)
+        wg_height: 0.22 (um)
+        wg_width: 0.5 (um)
+        slab_height: 0 (um)
+        sub_height: 0.5 (um)
+        sub_width: 2.0 (um)
+        clad_height: 0.5 (um)
         n_sub: sio2
         n_wg: si
         n_clad: sio2
-        wavelength: 1.55
+        wavelength: 1.55 (um)
         angle: 90.0
 
     .. plot::

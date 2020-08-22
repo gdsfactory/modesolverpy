@@ -25,6 +25,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx.ext.linkcode",
+    "sphinx.ext.viewcode",
     "matplotlib.sphinxext.plot_directive",
     "sphinx_markdown_tables",
     "sphinx.ext.doctest",

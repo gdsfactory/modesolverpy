@@ -12,8 +12,8 @@ __all__ = ["CONFIG"]
 import logging
 import pathlib
 
-import hiyapyco
 import matplotlib.pylab as plt
+import hiyapyco
 
 plt.rc("image", cmap="coolwarm")
 

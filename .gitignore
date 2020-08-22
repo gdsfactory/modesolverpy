@@ -3,6 +3,7 @@ Pipfile.lock
 scripts/maketags
 
 examples/modes_semi_vec/
+extra/
 
 *.cprof
 .ipynb_checkpoints/

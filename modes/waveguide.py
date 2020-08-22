@@ -132,8 +132,8 @@ def waveguide_array(
     To define a waveguide we need to define
 
     Args:
-        wg_width: of each waveguide (list)
         wg_gaps: between waveguides
+        wg_widths: of each waveguide (list)
         n_sub, n_wg, n_clad:the material functions or refractive indices of substrate, waveguide and top clad
         sub_height, slab_height, wg_height, clad_height: height of each material
         x_step  y_step: for discretizing the structure

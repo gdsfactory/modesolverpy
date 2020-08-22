@@ -20,10 +20,22 @@ def group_index(
             approximating the gradient of :math:`n_\mathrm{eff}`
             at the nominal wavelength.  Default is 0.01.
         n_modes: number of modes
-        wg_args: arguments for the waveguide
+        x_step: 0.02
+        y_step: 0.02
+        wg_height: 0.22
+        wg_width: 0.5
+        slab_height: 0
+        sub_height: 0.5
+        sub_width: 2.0
+        clad_height: [0.5]
+        n_sub: sio2
+        n_wg: si
+        n_clads: [sio2]
+        wavelength: 1.55
+        angle: 90.0
 
     Returns:
-        list: A list of the group indices found for each mode.
+        List of the group indices found for each mode.
     """
     n_gs = []
 
