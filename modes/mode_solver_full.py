@@ -79,19 +79,19 @@ def mode_solver_full(
     Args:
         n_modes: 2
         overwrite: whether to run again even if it finds the modes in CONFIG.cache
-        x_step: 0.02 (um)
-        y_step: 0.02 (um)
-        wg_height: 0.22 (um)
+        x_step: 0.02 grid step (um)
+        y_step: 0.02 grid step (um)
+        wg_heigth: 0.22 (um)
         wg_width: 0.5 (um)
         slab_height: 0 (um)
-        sub_height: 0.5 (um)
-        sub_width: 2.0 (um)
-        clad_height: 0.5 (um)
-        n_sub: sio2
-        n_wg: si
-        n_clad: sio2
-        wavelength: 1.55 (um)
-        angle: 90.0
+        sub_width: 2.0 related to the total simulation width
+        sub_height: 0.5 bottom simulation margin
+        clad_height: [0.5]  List of claddings (top simulation margin)
+        n_sub: sio2 substrate index material
+        n_wg: si waveguide index material
+        n_clads: list of cladding materials [sio2]
+        wavelength: 1.55 wavelength (um)
+        angle: 90 sidewall angle (degrees)
 
     .. plot::
       :include-source:
@@ -172,7 +172,9 @@ def mode_solver_full(
         mode_solver.modes = r["modes"]
         mode_solver.n_effs = r["n_effs"]
         if plot:
-            mode_solver.plot_modes(filepath, fields_to_write=fields_to_write)
+            mode_solver.plot_modes(
+                filepath, fields_to_write=fields_to_write, logscale=logscale
+            )
 
     mode_solver.results = r
     return mode_solver

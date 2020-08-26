@@ -1,3 +1,7 @@
+from typing import Callable
+from typing import List
+from typing import Union
+
 import matplotlib.pylab as plt
 import numpy as np
 
@@ -12,21 +16,36 @@ from modes.materials import sio2
 
 @autoname
 def waveguide(
-    x_step=0.02,
-    y_step=0.02,
-    wg_height=0.22,
-    wg_width=0.5,
-    slab_height=0,
-    sub_height=0.5,
-    sub_width=2.0,
-    clad_height=[0.5],
-    n_sub=sio2,
-    n_wg=si,
-    n_clads=[sio2],
-    wavelength=1.55,
-    angle=90.0,
+    x_step: float = 0.02,
+    y_step: float = 0.02,
+    wg_height: float = 0.22,
+    wg_width: float = 0.5,
+    slab_height: float = 0,
+    sub_height: float = 0.5,
+    sub_width: float = 2.0,
+    clad_height: List[float] = [0.5],
+    n_sub: Union[Callable, float] = sio2,
+    n_wg: Union[Callable, float] = si,
+    n_clads: List[Union[Callable, float]] = [sio2],
+    wavelength: float = 1.55,
+    angle: float = 90.0,
 ):
-    """ returns a waveguide structure
+    """returns a waveguide structure
+
+    Args:
+        x_step: 0.02 grid step (um)
+        y_step: 0.02 grid step (um)
+        wg_heigth: 0.22 (um)
+        wg_width: 0.5 (um)
+        slab_height: 0 (um)
+        sub_width: 2.0 related to the total simulation width
+        sub_height: 0.5 bottom simulation margin
+        clad_height: [0.5]  List of claddings (top simulation margin)
+        n_sub: sio2 substrate index material
+        n_wg: si waveguide index material
+        n_clads: list of cladding materials [sio2]
+        wavelength: 1.55 wavelength (um)
+        angle: 90 sidewall angle (degrees)
 
     ::
 
@@ -109,7 +128,7 @@ def waveguide_array(
     wavelength=1.55,
     angle=90.0,
 ):
-    """ returns a waveguide_array (also known as couple waveguides) ::
+    """returns a waveguide_array (also known as couple waveguides) ::
 
          __________________________________________________________
 
@@ -189,9 +208,10 @@ def write_material_index(wg, filepath=None):
 def test_waveguide_name():
     wg1 = waveguide(angle=80, wg_width=0.5)
     wg2 = waveguide(wg_width=0.5, angle=80)
-    assert (
-        wg1.name == wg2.name
-    ), f"{wg1} and {wg2} waveguides have the same settings and should have the same name"
+    assert wg1.name == wg2.name, (
+        f"{wg1} and {wg2} waveguides have the same settings and should have the same"
+        " name"
+    )
 
 
 def test_waveguide_material_index():

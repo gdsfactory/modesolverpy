@@ -8,13 +8,12 @@ def gaussian(x, *p):
 
 
 def fit_gaussian(x, y, z_2d, save_fits=False):
-    """ fit a gaussian and
+    """ fit a gaussian
 
     Returns:
-
-    - effective area
-    - center of the mode
-    - Sigma^2
+        effective area
+        center of the mode
+        Sigma^2
     """
     z = z_2d
 

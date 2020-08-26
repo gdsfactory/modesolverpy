@@ -18,7 +18,7 @@ def sweep_wavelength(wavelengths, plot=True, overwrite=False, **wg_kwargs):
         overwrite: when True forces to resimulate the structure
 
     Returns:
-        wg_args: arguments for the waveguide
+        wg_kwargs: arguments for the waveguide
         results: dict of results
         resuls['n_effs']: A list of the effective indices found for each wavelength.
         resuls['fractions_te']:

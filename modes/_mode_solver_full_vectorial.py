@@ -1,3 +1,5 @@
+import pathlib
+
 import matplotlib.pylab as plt
 import numpy as np
 
@@ -103,7 +105,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
         mode_areas = []
         fraction_te = []
         fraction_tm = []
-        for mode in self._ms.modes:
+        for mode in self.modes:
             e_fields = (mode.fields["Ex"], mode.fields["Ey"], mode.fields["Ez"])
             h_fields = (mode.fields["Hx"], mode.fields["Hy"], mode.fields["Hz"])
 
@@ -153,6 +155,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
         """
 
         # Mode info file.
+        filename = pathlib.Path(filename)
         filename_info = filename.parent / f"{filename.stem}_info.dat"
         with open(filename_info, "w") as fs:
             fs.write("# Mode idx, Mode type, % in major direction, n_eff\n")
@@ -169,7 +172,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
                 fs.write(line + "\n")
 
         # Mode field plots.
-        for i, (mode, areas) in enumerate(zip(self._ms.modes, self.overlaps)):
+        for i, (mode, areas) in enumerate(zip(self.modes, self.overlaps)):
             filename_full = filename.parent / (filename.stem + f"_{i}.dat")
 
             for (field_name, field_profile), area in zip(mode.fields.items(), areas):
@@ -200,6 +203,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
     ):
         """ works only for cached modes """
         # Mode field plots.
+        filename = pathlib.Path(filename)
         for i, mode in enumerate(self.modes):
             filename_full = filename.parent / (filename.stem + f"_{i}.dat")
 
