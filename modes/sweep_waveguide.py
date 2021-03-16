@@ -42,10 +42,10 @@ def sweep_waveguide(
         import numpy as np
         import modes as ms
 
-        wg_widths = np.arange(0.5, 2.0, 0.5)
-        wgs = [ms.waveguide(wg_width=wg_width) for wg_width in wg_widths]
+        widths = np.arange(0.5, 2.0, 0.5)
+        wgs = [ms.waveguide(width=width) for width in widths]
         r = ms.sweep_waveguide(
-            wgs, wg_widths, x_label="waveguide width", fraction_mode_list=[1, 2],
+            wgs, widths, x_label="waveguide width", fraction_mode_list=[1, 2],
         )
         print(r["n_effs"][0])
     """
@@ -116,7 +116,11 @@ def sweep_waveguide(
         title = f"$n_{{eff}}$ {suffix}"
         y_label = "$n_{eff}$"
         ms._plot_n_effs(
-            filename_neffs, filename_fraction_te, x_label, y_label, title,
+            filename_neffs,
+            filename_fraction_te,
+            x_label,
+            y_label,
+            title,
         )
         if legend:
             plt.legend(legend)
@@ -124,7 +128,11 @@ def sweep_waveguide(
         plt.figure()
         title = f"TE Fraction {suffix}"
         ms._plot_fraction(
-            filename_fraction_te, x_label, "TE Fraction [%]", title, fraction_mode_list,
+            filename_fraction_te,
+            x_label,
+            "TE Fraction [%]",
+            title,
+            fraction_mode_list,
         )
         if legend:
             plt.legend(legend)
@@ -132,7 +140,11 @@ def sweep_waveguide(
         plt.figure()
         title = f"TM Fraction {suffix}"
         ms._plot_fraction(
-            filename_fraction_tm, x_label, "TM Fraction [%]", title, fraction_mode_list,
+            filename_fraction_tm,
+            x_label,
+            "TM Fraction [%]",
+            title,
+            fraction_mode_list,
         )
         if legend:
             plt.legend(legend)
@@ -142,10 +154,14 @@ def sweep_waveguide(
 
 @pytest.mark.parametrize("overwrite", [True, False])
 def test_sweep(overwrite):
-    wg_widths = np.arange(0.5, 2.0, 0.5)
-    wgs = [waveguide(wg_width=wg_width) for wg_width in wg_widths]
+    widths = np.arange(0.5, 2.0, 0.5)
+    wgs = [waveguide(width=width) for width in widths]
     r = sweep_waveguide(
-        wgs, wg_widths, n_modes=2, fraction_mode_list=[1, 2], overwrite=overwrite,
+        wgs,
+        widths,
+        n_modes=2,
+        fraction_mode_list=[1, 2],
+        overwrite=overwrite,
     )
     print(r["n_effs"][0])
     assert np.isclose(
@@ -156,10 +172,14 @@ def test_sweep(overwrite):
 
 @pytest.mark.parametrize("overwrite", [True, False])
 def test_sweep2(overwrite):
-    wg_widths = np.arange(0.3, 1.0, 0.5)
-    wgs = [waveguide(wg_width=wg_width) for wg_width in wg_widths]
+    widths = np.arange(0.3, 1.0, 0.5)
+    wgs = [waveguide(width=width) for width in widths]
     r = sweep_waveguide(
-        wgs, wg_widths, n_modes=2, fraction_mode_list=[1, 2], overwrite=overwrite,
+        wgs,
+        widths,
+        n_modes=2,
+        fraction_mode_list=[1, 2],
+        overwrite=overwrite,
     )
     print(r["n_effs"][0])
     assert np.isclose(

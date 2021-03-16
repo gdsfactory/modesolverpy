@@ -21,7 +21,7 @@ def get_component_name(component_type, **kwargs):
 
 
 def clean_name(name):
-    """ Ensures that names are composed of [a-zA-Z0-9]
+    """Ensures that names are composed of [a-zA-Z0-9]
 
     FIXME: only a few characters are currently replaced.
         This function has been updated only on case-by-case basis
@@ -44,7 +44,7 @@ def clean_name(name):
 
 
 def clean_value(value):
-    """ returns more readable value (integer)
+    """returns more readable value (integer)
     if number is < 1:
         returns number units in nm (integer)
     """
@@ -95,7 +95,7 @@ def dict2name(prefix=None, **kwargs):
 
 
 def autoname(component_function):
-    """ decorator for auto-naming modesolver functions
+    """decorator for auto-naming modesolver functions
     if no Keyword argument `name`  is passed it creates a name by concenating all Keyword arguments
 
     .. plot::
@@ -104,10 +104,10 @@ def autoname(component_function):
       import pp
 
       @pp.autoname
-      def mode_solver(wg_width=0.5):
+      def mode_solver(width=0.5):
         ...
 
-      ms = mode_solver(wg_width=1)
+      ms = mode_solver(width=1)
       print(ms)
       >> mode_solver_WW1
 
@@ -151,7 +151,7 @@ class _Dummy:
 
 
 @autoname
-def _dummy(plot=True, length=3, wg_width=0.5):
+def _dummy(plot=True, length=3, width=0.5):
     c = _Dummy()
     c.name = ""
     c.settings = {}
@@ -165,8 +165,8 @@ def test_autoname():
     assert name_base == name_plot, "plot argument should be ingored in names"
     name_int = _dummy(length=3).name
     assert name_int == "_dummy_L3"
-    name_float = _dummy(wg_width=0.5).name
-    assert name_float == "_dummy_WW0p5"
+    name_float = _dummy(width=0.5).name
+    assert name_float == "_dummy_W0p5"
 
 
 def test_clean_value():

@@ -12,7 +12,7 @@ def neff(mode=0, overwrite=False, **wg_kwargs):
         x_step: 0.02 (um)
         y_step: 0.02 (um)
         wg_thickness: 0.22 (um)
-        wg_width: 0.5 (um)
+        width: 0.5 (um)
         slab_thickness: 0 (um)
         sub_thickness: 0.5 (um)
         sub_width: 2.0 (um)

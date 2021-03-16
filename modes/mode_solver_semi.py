@@ -80,7 +80,7 @@ def mode_solver_semi(
         x_step: 0.02
         y_step: 0.02
         wg_thickness: 0.22
-        wg_width: 0.5
+        width: 0.5
         slab_thickness: 0
         sub_thickness: 0.5
         sub_width: 2.0

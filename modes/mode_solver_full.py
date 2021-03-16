@@ -82,7 +82,7 @@ def mode_solver_full(
         x_step: 0.02 grid step (um)
         y_step: 0.02 grid step (um)
         wg_heigth: 0.22 (um)
-        wg_width: 0.5 (um)
+        width: 0.5 (um)
         slab_thickness: 0 (um)
         sub_width: 2.0 related to the total simulation width
         sub_thickness: 0.5 bottom simulation margin
@@ -98,7 +98,7 @@ def mode_solver_full(
 
       import modes as ms
 
-      s = ms.mode_solver_full(plot=True, n_modes=1, wg_width=0.5, wg_thickness=0.22)
+      s = ms.mode_solver_full(plot=True, n_modes=1, width=0.5, wg_thickness=0.22)
       print(s.results.keys())
 
     """

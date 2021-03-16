@@ -18,7 +18,7 @@ class RidgeWaveguide(sb.Slabs):
         y_step (float): The grid step in y that the structure
             is created on.
         wg_thickness (float): The thickness of the ridge.
-        wg_width (float): The width of the ridge.
+        width (float): The width of the ridge.
         sub_thickness (float): The thickness of the substrate.
         sub_width (float): The width of the substrate.
         clad_thickness (float): The thickness of the cladding.
@@ -62,7 +62,7 @@ class RidgeWaveguide(sb.Slabs):
         x_step,
         y_step,
         wg_thickness,
-        wg_width,
+        width,
         sub_thickness,
         sub_width,
         clad_thickness,
@@ -79,7 +79,7 @@ class RidgeWaveguide(sb.Slabs):
         self.n_wg = n_wg
         self.settings = {}
         self.wg_thickness = wg_thickness
-        self.wg_width = wg_width
+        self.width = width
         self.slab_thickness = film_thickness - wg_thickness
 
         self.add_slab(sub_thickness, n_sub)
@@ -93,7 +93,7 @@ class RidgeWaveguide(sb.Slabs):
         k = self.add_slab(wg_thickness, n_clad[0])
 
         self.slabs[k].add_material(
-            self.x_ctr - wg_width / 2.0, self.x_ctr + wg_width / 2.0, n_wg, angle
+            self.x_ctr - width / 2.0, self.x_ctr + width / 2.0, n_wg, angle
         )
 
         for hc, nc in zip(clad_thickness, n_clad):
@@ -107,7 +107,7 @@ class WgArray(sb.Slabs):
         x_step,
         y_step,
         wg_thickness,
-        wg_widths,
+        widths,
         wg_gaps,
         sub_thickness,
         sub_width,
@@ -128,7 +128,7 @@ class WgArray(sb.Slabs):
         self.n_wg = n_wg
         self.settings = {}
         self.wg_thickness = wg_thickness
-        self.wg_widths = wg_widths
+        self.widths = widths
         self.wg_gaps = wg_gaps
         self.slab_thickness = film_thickness - wg_thickness
 
@@ -138,9 +138,9 @@ class WgArray(sb.Slabs):
             wg_gaps = [wg_gaps]
 
         try:
-            assert len(wg_widths) == len(wg_gaps) + 1
+            assert len(widths) == len(wg_gaps) + 1
         except TypeError:
-            wg_widths = [wg_widths for _ in wg_gaps]
+            widths = [widths for _ in wg_gaps]
 
         wg_gaps_pad = copy.copy(wg_gaps)
         wg_gaps_pad.append(0.0)
@@ -155,13 +155,13 @@ class WgArray(sb.Slabs):
             self.add_slab(film_thickness - wg_thickness, n_wg)
 
         k = self.add_slab(wg_thickness, n_clad[0])
-        air_width_l_r = 0.5 * (sub_width - np.sum(wg_widths) - np.sum(wg_gaps))
+        air_width_l_r = 0.5 * (sub_width - np.sum(widths) - np.sum(wg_gaps))
         position = air_width_l_r
 
-        for wg_width, wg_gap in zip(wg_widths, wg_gaps_pad):
-            self.slabs[k].add_material(position, position + wg_width, n_wg, angle)
+        for width, wg_gap in zip(widths, wg_gaps_pad):
+            self.slabs[k].add_material(position, position + width, n_wg, angle)
 
-            position += wg_width + wg_gap
+            position += width + wg_gap
 
         for hc, nc in zip(clad_thickness, n_clad):
             self.add_slab(hc, nc)

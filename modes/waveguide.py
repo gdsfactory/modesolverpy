@@ -19,7 +19,7 @@ def waveguide(
     x_step: float = 0.02,
     y_step: float = 0.02,
     wg_thickness: float = 0.22,
-    wg_width: float = 0.5,
+    width: float = 0.5,
     slab_thickness: float = 0,
     sub_thickness: float = 0.5,
     sub_width: float = 2.0,
@@ -36,7 +36,7 @@ def waveguide(
         x_step: x grid step (um)
         y_step: y grid step (um)
         wg_thickness: waveguide thickness (um)
-        wg_width: 0.5 (um)
+        width: 0.5 (um)
         slab_thickness: 0 (um)
         sub_width: 2.0 related to the total simulation width (um)
         sub_thickness: 0.5 bottom simulation margin (um)
@@ -52,7 +52,7 @@ def waveguide(
         _________________________________
 
                                         clad_thickness
-               wg_width
+               width
              <---------->
               ___________    _ _ _ _ _ _
              |           |
@@ -82,7 +82,7 @@ def waveguide(
 
         import modes as ms
 
-        wg = ms.waveguide(wg_width=0.5, wg_thickness=0.22, slab_thickness=0.09, angle=80)
+        wg = ms.waveguide(width=0.5, wg_thickness=0.22, slab_thickness=0.09, angle=80)
         ms.write_material_index(wg)
 
     """
@@ -98,7 +98,7 @@ def waveguide(
         x_step=x_step,
         y_step=y_step,
         wg_thickness=wg_thickness,
-        wg_width=wg_width,
+        width=width,
         sub_thickness=sub_thickness,
         sub_width=sub_width,
         clad_thickness=clad_thickness,
@@ -113,7 +113,7 @@ def waveguide(
 @autoname
 def waveguide_array(
     wg_gaps,
-    wg_widths,
+    widths,
     x_step=0.02,
     y_step=0.02,
     wg_thickness=0.22,
@@ -132,7 +132,7 @@ def waveguide_array(
          __________________________________________________________
 
                                                                   clad_thickness
-              wg_widths[0]  wg_gaps[0]  wg_widths[1]
+              widths[0]  wg_gaps[0]  widths[1]
               <-----------><----------><----------->   _ _ _ _ _ _
                ___________              ___________
               |           |            |           |
@@ -151,7 +151,7 @@ def waveguide_array(
 
     Args:
         wg_gaps: between waveguides
-        wg_widths: of each waveguide (list)
+        widths: of each waveguide (list)
         x_step: grid x step (um)
         y_step: grid y step(um)
         n_sub: substrate refractive index value or function(wavelength)
@@ -170,7 +170,7 @@ def waveguide_array(
 
         import modes as ms
 
-        wg_array = ms.waveguide_array(wg_gaps=[0.2], wg_widths=[0.5, 0.5], slab_thickness=0.09)
+        wg_array = ms.waveguide_array(wg_gaps=[0.2], widths=[0.5, 0.5], slab_thickness=0.09)
         ms.write_material_index(wg_array)
 
     """
@@ -182,7 +182,7 @@ def waveguide_array(
     wg_thickness = film_thickness - slab_thickness
 
     return WgArray(
-        wg_widths=wg_widths,
+        widths=widths,
         wg_gaps=wg_gaps,
         wavelength=wavelength,
         x_step=x_step,
@@ -210,8 +210,8 @@ def write_material_index(wg, filepath=None):
 
 
 def test_waveguide_name():
-    wg1 = waveguide(angle=80, wg_width=0.5)
-    wg2 = waveguide(wg_width=0.5, angle=80)
+    wg1 = waveguide(angle=80, width=0.5)
+    wg2 = waveguide(width=0.5, angle=80)
     assert wg1.name == wg2.name, (
         f"{wg1} and {wg2} waveguides have the same settings and should have the same"
         " name"
@@ -227,7 +227,7 @@ def test_waveguide_material_index():
 
 
 def test_waveguide_array_material_index():
-    wg = waveguide_array(wg_gaps=[0.2], wg_widths=[0.5] * 2)
+    wg = waveguide_array(wg_gaps=[0.2], widths=[0.5] * 2)
     n = wg.n
     sx, sy = np.shape(n)
     n_wg = wg.n[sx // 2][sy // 2]
@@ -236,13 +236,13 @@ def test_waveguide_array_material_index():
 
 if __name__ == "__main__":
     wg = waveguide(
-        wg_width=0.5,
+        width=0.5,
         angle=80,
         n_wg=si,
         clad_thickness=[50e-3, 50e-3, 0.5],
         n_clads=[sio2, nitride, sio2],
     )
-    # wg = waveguide_array(wg_widths=[0.5] * 2, wg_gaps=[0.2], slab_thickness=0.09)
+    # wg = waveguide_array(widths=[0.5] * 2, wg_gaps=[0.2], slab_thickness=0.09)
     # print(wg)
     # test_waveguide_material_index()
     # test_waveguide_array_material_index()
