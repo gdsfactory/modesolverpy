@@ -1,5 +1,5 @@
 help:
-	@echo 'make install:          install package, requirements and pre-commit hook'
+	@echo 'make install: install package, requirements and pre-commit hook'
 
 install:
 	pip install -r requirements.txt
@@ -10,7 +10,32 @@ install:
 lint:
 	flake8 .
 
-publish:
-	rm -rf dist
-	python setup.py sdist bdist_wheel
-	twine upload dist/*
+update:
+	pre-commit autoupdate --bleeding-edge
+
+cov:
+	pytest --cov=modes
+
+mypy:
+	mypy . --ignore-missing-imports
+
+lint:
+	tox -e flake8
+
+pylint:
+	pylint --rcfile .pylintrc pp/
+
+lintdocs:
+	flake8 --select RST
+
+lintdocs2:
+	pydocstyle modes
+
+doc8:
+	doc8 docs/
+
+autopep8:
+	autopep8 --in-place --aggressive --aggressive **/*.py
+
+codestyle:
+	pycodestyle --max-line-length=88

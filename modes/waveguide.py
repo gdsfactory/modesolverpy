@@ -33,17 +33,17 @@ def waveguide(
     """returns a waveguide structure
 
     Args:
-        x_step: 0.02 grid step (um)
-        y_step: 0.02 grid step (um)
-        wg_heigth: 0.22 (um)
+        x_step: x grid step (um)
+        y_step: y grid step (um)
+        wg_height: waveguide thickness (um)
         wg_width: 0.5 (um)
         slab_height: 0 (um)
-        sub_width: 2.0 related to the total simulation width
-        sub_height: 0.5 bottom simulation margin
+        sub_width: 2.0 related to the total simulation width (um)
+        sub_height: 0.5 bottom simulation margin (um)
         clad_height: [0.5]  List of claddings (top simulation margin)
-        n_sub: sio2 substrate index material
-        n_wg: si waveguide index material
-        n_clads: list of cladding materials [sio2]
+        n_sub: substrate index material
+        n_wg: core waveguide index material
+        n_clads: list of cladding refractive index or function [sio2]
         wavelength: 1.55 wavelength (um)
         angle: 90 sidewall angle (degrees)
 
@@ -57,7 +57,7 @@ def waveguide(
               ___________    _ _ _ _ _ _
              |           |
         _____|           |____          |
-                                        wg_heigth
+                                        wg_height
         slab_height                     |
         _______________________ _ _ _ _ __
 
@@ -71,7 +71,7 @@ def waveguide(
 
     - the material functions or refractive indices of box, waveguide and clad
     - height of each material
-    - x and y_steps for discretizing the structure
+    - x and y_steps for structure grid
     - sidewall angle
     - wavelength that can be used in case the refractive index are a function of the wavelength
 
@@ -117,7 +117,6 @@ def waveguide_array(
     x_step=0.02,
     y_step=0.02,
     wg_height=0.22,
-    wg_width=0.5,
     slab_height=0,
     sub_height=0.5,
     sub_width=2.0,
@@ -128,7 +127,7 @@ def waveguide_array(
     wavelength=1.55,
     angle=90.0,
 ):
-    """returns a waveguide_array (also known as couple waveguides) ::
+    """Returns a evanescent coupled waveguides ::
 
          __________________________________________________________
 
@@ -138,7 +137,7 @@ def waveguide_array(
                ___________              ___________
               |           |            |           |
          _____|           |____________|           |____          |
-                                                                  wg_heigth
+                                                                  wg_height
          slab_height                                              |
          ________________________________________________ _ _ _ _ _
 
@@ -153,11 +152,16 @@ def waveguide_array(
     Args:
         wg_gaps: between waveguides
         wg_widths: of each waveguide (list)
-        n_sub, n_wg, n_clad:the material functions or refractive indices of substrate, waveguide and top clad
-        sub_height, slab_height, wg_height, clad_height: height of each material
-        x_step  y_step: for discretizing the structure
-        angle: (deg) sidewall angle in degrees
-        wavelength: in case the refractive index is a function of the wavelength
+        x_step: grid x step (um)
+        y_step: grid y step(um)
+        n_sub: substrate refractive index value or function(wavelength)
+        n_wg: waveguide refractive index value or function(wavelength)
+        n_clads: waveguide refractive index value or function(wavelength)
+        slab_height: slab thickness (um)
+        sub_height: substrate thickness (um)
+        clad_height: cladding thickness (um)
+        wavelength: in um
+        angle: sidewall angle in degrees
 
     Where all units are in um
 
