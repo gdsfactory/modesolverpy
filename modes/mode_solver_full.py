@@ -98,7 +98,7 @@ def mode_solver_full(
 
       import modes as ms
 
-      s = ms.mode_solver_full(plot=True, n_modes=1, width=0.5, wg_thickness=0.22)
+      s = ms.mode_solver_full(plot=True, n_modes=1, width=0.5, thickness=0.22)
       print(s.results.keys())
 
     """

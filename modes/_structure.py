@@ -17,7 +17,7 @@ class RidgeWaveguide(sb.Slabs):
             is created on.
         y_step (float): The grid step in y that the structure
             is created on.
-        wg_thickness (float): The thickness of the ridge.
+        thickness (float): The thickness of the ridge.
         width (float): The width of the ridge.
         sub_thickness (float): The thickness of the substrate.
         sub_width (float): The width of the substrate.
@@ -50,7 +50,7 @@ class RidgeWaveguide(sb.Slabs):
         film_thickness (float, str): The thickness of the
             film the waveguide is on.  If the waveguide
             is a true ridge (fully etched), then the film thickness
-            can be set to 'wg_thickness', otherwise the waveguide
+            can be set to 'thickness', otherwise the waveguide
             is a rib waveguide, and a float should be given
             specifying the thickness of the film.
 
@@ -61,7 +61,7 @@ class RidgeWaveguide(sb.Slabs):
         wavelength,
         x_step,
         y_step,
-        wg_thickness,
+        thickness,
         width,
         sub_thickness,
         sub_width,
@@ -70,7 +70,7 @@ class RidgeWaveguide(sb.Slabs):
         n_wg,
         angle=0,
         n_clad=[mat.Air().n()],
-        film_thickness="wg_thickness",
+        film_thickness="thickness",
     ):
         sb.Slabs.__init__(self, wavelength, y_step, x_step, sub_width)
 
@@ -78,19 +78,19 @@ class RidgeWaveguide(sb.Slabs):
         self.n_clad = n_clad
         self.n_wg = n_wg
         self.settings = {}
-        self.wg_thickness = wg_thickness
+        self.thickness = thickness
         self.width = width
-        self.slab_thickness = film_thickness - wg_thickness
+        self.slab_thickness = film_thickness - thickness
 
         self.add_slab(sub_thickness, n_sub)
-        # if film_thickness != "wg_thickness" and film_thickness != wg_thickness:
-        if film_thickness not in ("wg_thickness", wg_thickness):
+        # if film_thickness != "thickness" and film_thickness != thickness:
+        if film_thickness not in ("thickness", thickness):
             assert film_thickness > 0.0, "Film must have some thickness to it."
             assert (
-                wg_thickness <= film_thickness
+                thickness <= film_thickness
             ), "Waveguide can't be thicker than the film."
-            self.add_slab(film_thickness - wg_thickness, n_wg)
-        k = self.add_slab(wg_thickness, n_clad[0])
+            self.add_slab(film_thickness - thickness, n_wg)
+        k = self.add_slab(thickness, n_clad[0])
 
         self.slabs[k].add_material(
             self.x_ctr - width / 2.0, self.x_ctr + width / 2.0, n_wg, angle
@@ -106,7 +106,7 @@ class WgArray(sb.Slabs):
         wavelength,
         x_step,
         y_step,
-        wg_thickness,
+        thickness,
         widths,
         wg_gaps,
         sub_thickness,
@@ -121,16 +121,16 @@ class WgArray(sb.Slabs):
 
         sb.Slabs.__init__(self, wavelength, y_step, x_step, sub_width)
 
-        film_thickness = film_thickness or wg_thickness
+        film_thickness = film_thickness or thickness
 
         self.n_sub = n_sub
         self.n_clad = n_clad
         self.n_wg = n_wg
         self.settings = {}
-        self.wg_thickness = wg_thickness
+        self.thickness = thickness
         self.widths = widths
         self.wg_gaps = wg_gaps
-        self.slab_thickness = film_thickness - wg_thickness
+        self.slab_thickness = film_thickness - thickness
 
         try:
             iter(wg_gaps)
@@ -147,14 +147,14 @@ class WgArray(sb.Slabs):
 
         self.add_slab(sub_thickness, n_sub)
 
-        if film_thickness not in ("wg_thickness", wg_thickness):
+        if film_thickness not in ("thickness", thickness):
             assert film_thickness > 0.0, "Film must have some thickness to it."
             assert (
-                wg_thickness <= film_thickness
+                thickness <= film_thickness
             ), "Waveguide can't be thicker than the film."
-            self.add_slab(film_thickness - wg_thickness, n_wg)
+            self.add_slab(film_thickness - thickness, n_wg)
 
-        k = self.add_slab(wg_thickness, n_clad[0])
+        k = self.add_slab(thickness, n_clad[0])
         air_width_l_r = 0.5 * (sub_width - np.sum(widths) - np.sum(wg_gaps))
         position = air_width_l_r
 

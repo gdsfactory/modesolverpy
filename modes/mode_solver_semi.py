@@ -79,7 +79,7 @@ def mode_solver_semi(
         semi_vectorial_method: 'Ey' for TM, 'Ex' for TE
         x_step: 0.02
         y_step: 0.02
-        wg_thickness: 0.22
+        thickness: 0.22
         width: 0.5
         slab_thickness: 0
         sub_thickness: 0.5

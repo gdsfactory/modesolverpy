@@ -11,7 +11,7 @@ def neff(mode=0, overwrite=False, **wg_kwargs):
         mode: 0 is fundamental
         x_step: 0.02 (um)
         y_step: 0.02 (um)
-        wg_thickness: 0.22 (um)
+        thickness: 0.22 (um)
         width: 0.5 (um)
         slab_thickness: 0 (um)
         sub_thickness: 0.5 (um)

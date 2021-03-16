@@ -18,7 +18,7 @@ from modes.materials import sio2
 def waveguide(
     x_step: float = 0.02,
     y_step: float = 0.02,
-    wg_thickness: float = 0.22,
+    thickness: float = 0.22,
     width: float = 0.5,
     slab_thickness: float = 0,
     sub_thickness: float = 0.5,
@@ -35,7 +35,7 @@ def waveguide(
     Args:
         x_step: x grid step (um)
         y_step: y grid step (um)
-        wg_thickness: waveguide thickness (um)
+        thickness: waveguide thickness (um)
         width: 0.5 (um)
         slab_thickness: 0 (um)
         sub_width: 2.0 related to the total simulation width (um)
@@ -57,7 +57,7 @@ def waveguide(
               ___________    _ _ _ _ _ _
              |           |
         _____|           |____          |
-                                        wg_thickness
+                                        thickness
         slab_thickness                     |
         _______________________ _ _ _ _ __
 
@@ -82,7 +82,7 @@ def waveguide(
 
         import modes as ms
 
-        wg = ms.waveguide(width=0.5, wg_thickness=0.22, slab_thickness=0.09, angle=80)
+        wg = ms.waveguide(width=0.5, thickness=0.22, slab_thickness=0.09, angle=80)
         ms.write_material_index(wg)
 
     """
@@ -90,14 +90,14 @@ def waveguide(
     n_sub = n_sub(wavelength) if callable(n_sub) else n_sub
     n_clad = [n_clad(wavelength) if callable(n_clad) else n_clad for n_clad in n_clads]
 
-    film_thickness = wg_thickness
-    wg_thickness = film_thickness - slab_thickness
+    film_thickness = thickness
+    thickness = film_thickness - slab_thickness
 
     return RidgeWaveguide(
         wavelength=wavelength,
         x_step=x_step,
         y_step=y_step,
-        wg_thickness=wg_thickness,
+        thickness=thickness,
         width=width,
         sub_thickness=sub_thickness,
         sub_width=sub_width,
@@ -116,7 +116,7 @@ def waveguide_array(
     widths,
     x_step=0.02,
     y_step=0.02,
-    wg_thickness=0.22,
+    thickness=0.22,
     slab_thickness=0,
     sub_thickness=0.5,
     sub_width=2.0,
@@ -137,7 +137,7 @@ def waveguide_array(
                ___________              ___________
               |           |            |           |
          _____|           |____________|           |____          |
-                                                                  wg_thickness
+                                                                  thickness
          slab_thickness                                              |
          ________________________________________________ _ _ _ _ _
 
@@ -178,8 +178,8 @@ def waveguide_array(
     n_sub = n_sub(wavelength) if callable(n_sub) else n_sub
     n_clad = [n_clad(wavelength) if callable(n_clad) else n_clad for n_clad in n_clads]
 
-    film_thickness = wg_thickness
-    wg_thickness = film_thickness - slab_thickness
+    film_thickness = thickness
+    thickness = film_thickness - slab_thickness
 
     return WgArray(
         widths=widths,
@@ -187,7 +187,7 @@ def waveguide_array(
         wavelength=wavelength,
         x_step=x_step,
         y_step=y_step,
-        wg_thickness=wg_thickness,
+        thickness=thickness,
         sub_thickness=sub_thickness,
         sub_width=sub_width,
         clad_thickness=clad_thickness,
