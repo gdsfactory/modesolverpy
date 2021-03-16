@@ -79,12 +79,12 @@ def mode_solver_semi(
         semi_vectorial_method: 'Ey' for TM, 'Ex' for TE
         x_step: 0.02
         y_step: 0.02
-        wg_height: 0.22
+        wg_thickness: 0.22
         wg_width: 0.5
-        slab_height: 0
-        sub_height: 0.5
+        slab_thickness: 0
+        sub_thickness: 0.5
         sub_width: 2.0
-        clad_height: 0.5
+        clad_thickness: 0.5
         n_sub: sio2
         n_wg: si
         n_clad: sio2

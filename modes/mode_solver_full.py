@@ -30,7 +30,7 @@ def test_mode_solver_full_vectorial_multi_clad(overwrite):
         overwrite=overwrite,
         logscale=True,
         plot=False,
-        clad_height=[50e-3, 50e-3, 0.5],
+        clad_thickness=[50e-3, 50e-3, 0.5],
         n_clads=[sio2, nitride, sio2],
     )
     # modes = mode_solver.solve()
@@ -83,10 +83,10 @@ def mode_solver_full(
         y_step: 0.02 grid step (um)
         wg_heigth: 0.22 (um)
         wg_width: 0.5 (um)
-        slab_height: 0 (um)
+        slab_thickness: 0 (um)
         sub_width: 2.0 related to the total simulation width
-        sub_height: 0.5 bottom simulation margin
-        clad_height: [0.5]  List of claddings (top simulation margin)
+        sub_thickness: 0.5 bottom simulation margin
+        clad_thickness: [0.5]  List of claddings (top simulation margin)
         n_sub: sio2 substrate index material
         n_wg: si waveguide index material
         n_clads: list of cladding materials [sio2]
@@ -98,7 +98,7 @@ def mode_solver_full(
 
       import modes as ms
 
-      s = ms.mode_solver_full(plot=True, n_modes=1, wg_width=0.5, wg_height=0.22)
+      s = ms.mode_solver_full(plot=True, n_modes=1, wg_width=0.5, wg_thickness=0.22)
       print(s.results.keys())
 
     """

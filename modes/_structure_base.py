@@ -309,8 +309,8 @@ class Slabs(_AbstractStructure):
     profile cross-section designs.
 
     :class:`Slabs` is a collection of :class:`Slab` objects.  Each
-    slab has a fixed height (usually less than the
-    maximum height of the desired simulation window),
+    slab has a fixed thickness (usually less than the
+    maximum thickness of the desired simulation window),
     and is as wide as the simulation window.
 
     :class:`Slabs` objects can be index using `[name]` to return
@@ -351,12 +351,12 @@ class Slabs(_AbstractStructure):
         self.name = None
         self.settings = {}
 
-    def add_slab(self, height, n_background=1.0, position="top"):
+    def add_slab(self, thickness, n_background=1.0, position="top"):
         """
         Creates and adds a :class:`Slab` object.
 
         Args:
-            height (float): Height of the slab.
+            thickness (float): Height of the slab.
             n_background (float): The nominal refractive
                 index of the slab.  Default is 1 (air).
 
@@ -375,10 +375,10 @@ class Slabs(_AbstractStructure):
         else:
             n_back = n_background
 
-        height_discretised = self.y_step * ((height // self.y_step) + 1)
+        thickness_discretised = self.y_step * ((thickness // self.y_step) + 1)
 
         y_min = self._next_start
-        y_max = y_min + height_discretised
+        y_max = y_min + thickness_discretised
         self.slabs[name] = Slab(
             name,
             self.x_step,
@@ -392,7 +392,7 @@ class Slabs(_AbstractStructure):
         )
 
         self.y_max = y_max
-        self._next_start = y_min + height_discretised
+        self._next_start = y_min + thickness_discretised
         self.slab_count += 1
 
         if position == "bottom":
@@ -455,7 +455,7 @@ class Slab(Structure):
     A :class:`Slabs` object composes many :class:`Slab` objects.
     The more :class:`Slab` are added, the more horizontal
     slices are added.  A :class:`Slab` has a chosen fixed
-    height, and a background (nominal) refractive
+    thickness, and a background (nominal) refractive
     index.  A slab can then be customised to include
     a desired design.
 

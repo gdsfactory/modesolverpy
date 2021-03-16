@@ -13,7 +13,7 @@ from builtins import range
 from builtins import zip
 
 import numpy
-import scipy.optimize
+import scipy
 from scipy.interpolate import interp2d
 
 
@@ -540,57 +540,53 @@ class _ModeSolverVectorial:
             + e * (exx4 * exx2 - exx1 * exx3) / ew23 / ew14
         ) / (n + s)
 
-        axye = (
-            (eyy4 * (1 + eyy3 / ezz4) - eyy3 * (1 + eyy4 / ezz4)) / ns34 / (e + w)
-            - (
-                2 * eyx1 * eyy2 / ezz1 * n * w / ns21
-                + 2 * eyx2 * eyy1 / ezz2 * s * w / ns21
-                + 2 * eyx4 * eyy3 / ezz4 * n * e / ns34
-                + 2 * eyx3 * eyy4 / ezz3 * s * e / ns34
-                + 2 * eyy1 * eyy2 * (1.0 / ezz1 - 1.0 / ezz2) * w ** 2 / ns21
-            )
-            / e
-            / (e + w) ** 2
-        )
+        axye = (eyy4 * (1 + eyy3 / ezz4) - eyy3 * (1 + eyy4 / ezz4)) / ns34 / (
+            e + w
+        ) - (
+            2 * eyx1 * eyy2 / ezz1 * n * w / ns21
+            + 2 * eyx2 * eyy1 / ezz2 * s * w / ns21
+            + 2 * eyx4 * eyy3 / ezz4 * n * e / ns34
+            + 2 * eyx3 * eyy4 / ezz3 * s * e / ns34
+            + 2 * eyy1 * eyy2 * (1.0 / ezz1 - 1.0 / ezz2) * w ** 2 / ns21
+        ) / e / (
+            e + w
+        ) ** 2
 
-        axyw = (
-            (eyy2 * (1 + eyy1 / ezz2) - eyy1 * (1 + eyy2 / ezz2)) / ns21 / (e + w)
-            - (
-                2 * eyx1 * eyy2 / ezz1 * n * e / ns21
-                + 2 * eyx2 * eyy1 / ezz2 * s * e / ns21
-                + 2 * eyx4 * eyy3 / ezz4 * n * w / ns34
-                + 2 * eyx3 * eyy4 / ezz3 * s * w / ns34
-                + 2 * eyy3 * eyy4 * (1.0 / ezz3 - 1.0 / ezz4) * e ** 2 / ns34
-            )
-            / w
-            / (e + w) ** 2
-        )
+        axyw = (eyy2 * (1 + eyy1 / ezz2) - eyy1 * (1 + eyy2 / ezz2)) / ns21 / (
+            e + w
+        ) - (
+            2 * eyx1 * eyy2 / ezz1 * n * e / ns21
+            + 2 * eyx2 * eyy1 / ezz2 * s * e / ns21
+            + 2 * eyx4 * eyy3 / ezz4 * n * w / ns34
+            + 2 * eyx3 * eyy4 / ezz3 * s * w / ns34
+            + 2 * eyy3 * eyy4 * (1.0 / ezz3 - 1.0 / ezz4) * e ** 2 / ns34
+        ) / w / (
+            e + w
+        ) ** 2
 
-        ayxn = (
-            (exx4 * (1 + exx1 / ezz4) - exx1 * (1 + exx4 / ezz4)) / ew14 / (n + s)
-            - (
-                2 * exy3 * exx2 / ezz3 * e * s / ew23
-                + 2 * exy2 * exx3 / ezz2 * w * n / ew23
-                + 2 * exy4 * exx1 / ezz4 * e * s / ew14
-                + 2 * exy1 * exx4 / ezz1 * w * n / ew14
-                + 2 * exx3 * exx2 * (1.0 / ezz3 - 1.0 / ezz2) * s ** 2 / ew23
-            )
-            / n
-            / (n + s) ** 2
-        )
+        ayxn = (exx4 * (1 + exx1 / ezz4) - exx1 * (1 + exx4 / ezz4)) / ew14 / (
+            n + s
+        ) - (
+            2 * exy3 * exx2 / ezz3 * e * s / ew23
+            + 2 * exy2 * exx3 / ezz2 * w * n / ew23
+            + 2 * exy4 * exx1 / ezz4 * e * s / ew14
+            + 2 * exy1 * exx4 / ezz1 * w * n / ew14
+            + 2 * exx3 * exx2 * (1.0 / ezz3 - 1.0 / ezz2) * s ** 2 / ew23
+        ) / n / (
+            n + s
+        ) ** 2
 
-        ayxs = (
-            (exx2 * (1 + exx3 / ezz2) - exx3 * (1 + exx2 / ezz2)) / ew23 / (n + s)
-            - (
-                2 * exy3 * exx2 / ezz3 * e * n / ew23
-                + 2 * exy2 * exx3 / ezz2 * w * n / ew23
-                + 2 * exy4 * exx1 / ezz4 * e * s / ew14
-                + 2 * exy1 * exx4 / ezz1 * w * s / ew14
-                + 2 * exx1 * exx4 * (1.0 / ezz1 - 1.0 / ezz4) * n ** 2 / ew14
-            )
-            / s
-            / (n + s) ** 2
-        )
+        ayxs = (exx2 * (1 + exx3 / ezz2) - exx3 * (1 + exx2 / ezz2)) / ew23 / (
+            n + s
+        ) - (
+            2 * exy3 * exx2 / ezz3 * e * n / ew23
+            + 2 * exy2 * exx3 / ezz2 * w * n / ew23
+            + 2 * exy4 * exx1 / ezz4 * e * s / ew14
+            + 2 * exy1 * exx4 / ezz1 * w * s / ew14
+            + 2 * exx1 * exx4 * (1.0 / ezz1 - 1.0 / ezz4) * n ** 2 / ew14
+        ) / s / (
+            n + s
+        ) ** 2
 
         axyne = +eyy3 * (1 - eyy4 / ezz4) / (e + w) / ns34
         axyse = -eyy4 * (1 - eyy3 / ezz3) / (e + w) / ns34

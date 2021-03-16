@@ -1,8 +1,6 @@
 import abc
 import os
 import sys
-
-import matplotlib as mpl
 import matplotlib.pylab as plt
 import numpy as np
 import tqdm
@@ -159,7 +157,11 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         return n_effs
 
     def solve_sweep_wavelength(
-        self, structure, wavelengths, filename="wavelength_n_effs.dat", plot=True,
+        self,
+        structure,
+        wavelengths,
+        filename="wavelength_n_effs.dat",
+        plot=True,
     ):
         """
         Deprecated!! use sweep_wavelength.py instead!!
@@ -395,7 +397,12 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
 
         plt.imshow(
             np.flipud(heatmap),
-            extent=(args["x_min"], args["x_max"], args["y_min"], args["y_max"],),
+            extent=(
+                args["x_min"],
+                args["x_max"],
+                args["y_min"],
+                args["y_max"],
+            ),
             aspect="auto",
             vmin=vmin,
             vmax=vmax,

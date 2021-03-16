@@ -18,12 +18,12 @@ from modes.materials import sio2
 def waveguide(
     x_step: float = 0.02,
     y_step: float = 0.02,
-    wg_height: float = 0.22,
+    wg_thickness: float = 0.22,
     wg_width: float = 0.5,
-    slab_height: float = 0,
-    sub_height: float = 0.5,
+    slab_thickness: float = 0,
+    sub_thickness: float = 0.5,
     sub_width: float = 2.0,
-    clad_height: List[float] = [0.5],
+    clad_thickness: List[float] = [0.5],
     n_sub: Union[Callable, float] = sio2,
     n_wg: Union[Callable, float] = si,
     n_clads: List[Union[Callable, float]] = [sio2],
@@ -35,12 +35,12 @@ def waveguide(
     Args:
         x_step: x grid step (um)
         y_step: y grid step (um)
-        wg_height: waveguide thickness (um)
+        wg_thickness: waveguide thickness (um)
         wg_width: 0.5 (um)
-        slab_height: 0 (um)
+        slab_thickness: 0 (um)
         sub_width: 2.0 related to the total simulation width (um)
-        sub_height: 0.5 bottom simulation margin (um)
-        clad_height: [0.5]  List of claddings (top simulation margin)
+        sub_thickness: 0.5 bottom simulation margin (um)
+        clad_thickness: [0.5]  List of claddings (top simulation margin)
         n_sub: substrate index material
         n_wg: core waveguide index material
         n_clads: list of cladding refractive index or function [sio2]
@@ -51,17 +51,17 @@ def waveguide(
 
         _________________________________
 
-                                        clad_height
+                                        clad_thickness
                wg_width
              <---------->
               ___________    _ _ _ _ _ _
              |           |
         _____|           |____          |
-                                        wg_height
-        slab_height                     |
+                                        wg_thickness
+        slab_thickness                     |
         _______________________ _ _ _ _ __
 
-        sub_height
+        sub_thickness
         _________________________________
         <------------------------------->
                      sub_width
@@ -70,7 +70,7 @@ def waveguide(
     To define a waveguide we need to define:
 
     - the material functions or refractive indices of box, waveguide and clad
-    - height of each material
+    - thickness of each material
     - x and y_steps for structure grid
     - sidewall angle
     - wavelength that can be used in case the refractive index are a function of the wavelength
@@ -82,7 +82,7 @@ def waveguide(
 
         import modes as ms
 
-        wg = ms.waveguide(wg_width=0.5, wg_height=0.22, slab_height=0.09, angle=80)
+        wg = ms.waveguide(wg_width=0.5, wg_thickness=0.22, slab_thickness=0.09, angle=80)
         ms.write_material_index(wg)
 
     """
@@ -90,18 +90,18 @@ def waveguide(
     n_sub = n_sub(wavelength) if callable(n_sub) else n_sub
     n_clad = [n_clad(wavelength) if callable(n_clad) else n_clad for n_clad in n_clads]
 
-    film_thickness = wg_height
-    wg_height = film_thickness - slab_height
+    film_thickness = wg_thickness
+    wg_thickness = film_thickness - slab_thickness
 
     return RidgeWaveguide(
         wavelength=wavelength,
         x_step=x_step,
         y_step=y_step,
-        wg_height=wg_height,
+        wg_thickness=wg_thickness,
         wg_width=wg_width,
-        sub_height=sub_height,
+        sub_thickness=sub_thickness,
         sub_width=sub_width,
-        clad_height=clad_height,
+        clad_thickness=clad_thickness,
         n_sub=n_sub,
         n_wg=n_wg,
         angle=angle,
@@ -116,11 +116,11 @@ def waveguide_array(
     wg_widths,
     x_step=0.02,
     y_step=0.02,
-    wg_height=0.22,
-    slab_height=0,
-    sub_height=0.5,
+    wg_thickness=0.22,
+    slab_thickness=0,
+    sub_thickness=0.5,
     sub_width=2.0,
-    clad_height=[0.5],
+    clad_thickness=[0.5],
     n_sub=sio2,
     n_wg=si,
     n_clads=[sio2],
@@ -131,17 +131,17 @@ def waveguide_array(
 
          __________________________________________________________
 
-                                                                  clad_height
+                                                                  clad_thickness
               wg_widths[0]  wg_gaps[0]  wg_widths[1]
               <-----------><----------><----------->   _ _ _ _ _ _
                ___________              ___________
               |           |            |           |
          _____|           |____________|           |____          |
-                                                                  wg_height
-         slab_height                                              |
+                                                                  wg_thickness
+         slab_thickness                                              |
          ________________________________________________ _ _ _ _ _
 
-         sub_height
+         sub_thickness
          __________________________________________________________
 
          <-------------------------------------------------------->
@@ -157,9 +157,9 @@ def waveguide_array(
         n_sub: substrate refractive index value or function(wavelength)
         n_wg: waveguide refractive index value or function(wavelength)
         n_clads: waveguide refractive index value or function(wavelength)
-        slab_height: slab thickness (um)
-        sub_height: substrate thickness (um)
-        clad_height: cladding thickness (um)
+        slab_thickness: slab thickness (um)
+        sub_thickness: substrate thickness (um)
+        clad_thickness: cladding thickness (um)
         wavelength: in um
         angle: sidewall angle in degrees
 
@@ -170,7 +170,7 @@ def waveguide_array(
 
         import modes as ms
 
-        wg_array = ms.waveguide_array(wg_gaps=[0.2], wg_widths=[0.5, 0.5], slab_height=0.09)
+        wg_array = ms.waveguide_array(wg_gaps=[0.2], wg_widths=[0.5, 0.5], slab_thickness=0.09)
         ms.write_material_index(wg_array)
 
     """
@@ -178,8 +178,8 @@ def waveguide_array(
     n_sub = n_sub(wavelength) if callable(n_sub) else n_sub
     n_clad = [n_clad(wavelength) if callable(n_clad) else n_clad for n_clad in n_clads]
 
-    film_thickness = wg_height
-    wg_height = film_thickness - slab_height
+    film_thickness = wg_thickness
+    wg_thickness = film_thickness - slab_thickness
 
     return WgArray(
         wg_widths=wg_widths,
@@ -187,10 +187,10 @@ def waveguide_array(
         wavelength=wavelength,
         x_step=x_step,
         y_step=y_step,
-        wg_height=wg_height,
-        sub_height=sub_height,
+        wg_thickness=wg_thickness,
+        sub_thickness=sub_thickness,
         sub_width=sub_width,
-        clad_height=clad_height,
+        clad_thickness=clad_thickness,
         n_sub=n_sub,
         n_wg=n_wg,
         angle=angle,
@@ -239,10 +239,10 @@ if __name__ == "__main__":
         wg_width=0.5,
         angle=80,
         n_wg=si,
-        clad_height=[50e-3, 50e-3, 0.5],
+        clad_thickness=[50e-3, 50e-3, 0.5],
         n_clads=[sio2, nitride, sio2],
     )
-    # wg = waveguide_array(wg_widths=[0.5] * 2, wg_gaps=[0.2], slab_height=0.09)
+    # wg = waveguide_array(wg_widths=[0.5] * 2, wg_gaps=[0.2], slab_thickness=0.09)
     # print(wg)
     # test_waveguide_material_index()
     # test_waveguide_array_material_index()
