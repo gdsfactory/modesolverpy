@@ -3,7 +3,7 @@ import hashlib
 from inspect import signature
 
 import numpy as np
-from typing import Any
+from typing import Any, Dict
 
 MAX_NAME_LENGTH = 36
 
@@ -148,14 +148,15 @@ def autoname(component_function):
 
 
 class _Dummy:
-    pass
+    name: str = "dummy"
+    settings: Dict[str, float] = dict(a=3)
 
 
 @autoname
 def _dummy(plot: bool = True, length: int = 3, width: float = 0.5) -> _Dummy:
     c = _Dummy()
     c.name = ""
-    c.settings = dict(plot=plot, length=length, width=width)
+    c.settings_exta = dict(plot=plot, length=length, width=width)
     return c
 
 
@@ -182,5 +183,5 @@ def test_clean_name() -> None:
 if __name__ == "__main__":
     print(clean_name("mode_solver(:_=_2852"))
     # print(clean_value(0.5))
-    # test_autoname()
+    test_autoname()
     # test_clean_value()

@@ -14,6 +14,8 @@ from modes.materials import nitride
 from modes.materials import si
 from modes.materials import sio2
 
+WaveguideType = Union[RidgeWaveguide, WgArray]
+
 
 @autoname
 def waveguide(

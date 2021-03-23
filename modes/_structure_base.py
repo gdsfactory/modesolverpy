@@ -13,6 +13,11 @@ StringOrNumber = Union[str, float, int]
 
 
 class _AbstractStructure(with_metaclass(abc.ABCMeta)):
+    x_max: float
+    x_min: float
+    x_step: float
+    y_step: float
+
     @abc.abstractproperty
     def n(self):
         """

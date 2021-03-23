@@ -6,7 +6,7 @@ from modes import _mode_solver_lib as ms
 from modes._mode_solver import _ModeSolver
 from numpy import ndarray
 from pathlib import PosixPath
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 
 
 class ModeSolverSemiVectorial(_ModeSolver):
@@ -40,16 +40,15 @@ class ModeSolverSemiVectorial(_ModeSolver):
         tol: float = 0.001,
         boundary: str = "0000",
         mode_profiles: bool = True,
-        initial_mode_guess: None = None,
+        initial_mode_guess: Optional[float] = None,
         semi_vectorial_method: str = "Ex",
-        name: str = "mode_solver_semi_vectorial",
         wg: None = None,
     ) -> None:
         self._semi_vectorial_method = semi_vectorial_method
         _ModeSolver.__init__(
             self, n_eigs, tol, boundary, mode_profiles, initial_mode_guess
         )
-        self.name = name
+        self.name = "mode_solver_semi_vectorial"
         self.wg = wg
         self.results = None
 

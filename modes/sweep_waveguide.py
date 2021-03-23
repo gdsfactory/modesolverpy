@@ -62,7 +62,7 @@ def sweep_waveguide(
         print(r["n_effs"][0])
     """
     n_effs = []
-    mode_types = []
+    mode_types: List[Tuple[str, float64]] = []
     fractions_te = []
     fractions_tm = []
 

@@ -22,10 +22,9 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         tol: float = 0.0,
         boundary: str = "0000",
         mode_profiles: bool = True,
-        initial_mode_guess: None = None,
-        n_eff_guess: None = None,
+        initial_mode_guess: Optional[float] = None,
+        n_eff_guess: Optional[float] = None,
         wg: None = None,
-        name: None = None,
     ) -> None:
         self._n_eigs = int(n_eigs)
         self._tol = tol
@@ -41,9 +40,12 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
 
         self.settings = dict(n_eigs=n_eigs, boundary=boundary)
         self.wg = wg or waveguide()
-        self.name = name
+        self.name = "mode_solver"
 
         self._path = os.path.dirname(sys.modules[__name__].__file__) + "/"
+
+    def get_neff(self, mode: int = 0) -> float:
+        return np.real(self.n_effs[mode])
 
     @property
     def _modes_directory(self) -> PosixPath:

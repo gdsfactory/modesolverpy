@@ -7,7 +7,7 @@ from modes._mode_solver_lib import FDMode, _ModeSolverVectorial
 from modes._mode_solver import _ModeSolver
 from numpy import complex128, float64, ndarray
 from pathlib import PosixPath
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union, Optional
 
 
 class ModeSolverFullyVectorial(_ModeSolver):
@@ -16,16 +16,15 @@ class ModeSolverFullyVectorial(_ModeSolver):
     setup and run a mode solving simulation.
 
     Args:
-        n_eigs (int): The number of eigen-values to solve for.
-        tol (float): The precision of the eigen-value/eigen-vector
+        n_eigs: number of eigen-values to solve for.
+        tol: The precision of the eigen-value/eigen-vector
             solver.  Default is 0.001.
         boundary (str): The boundary conditions to use.
             This is a string that identifies the type of boundary conditions applied.
-            The following options are available: 'A' - Hx is antisymmetric, Hy is symmetric,
-            'S' - Hx is symmetric and, Hy is antisymmetric, and '0' - Hx and Hy are zero
-            immediately outside of the boundary.
-            The string identifies all four boundary conditions, in the order:
-            North, south, east, west. For example, boundary='000A'. Default is '0000'.
+            'A' - Hx is antisymmetric, Hy is symmetric,
+            'S' - Hx is symmetric and, Hy is antisymmetric
+            '0' - Hx and Hy are zero immediately outside of the boundary.
+            The string identifies North, south, east, west boundary conditions
         initial_mode_guess (list): An initial mode guess for the modesolver.
         initial_n_eff_guess (list): An initial effective index guess for the modesolver.
     """
@@ -35,14 +34,13 @@ class ModeSolverFullyVectorial(_ModeSolver):
         n_eigs: int,
         tol: float = 0.001,
         boundary: str = "0000",
-        initial_mode_guess: None = None,
-        n_eff_guess: None = None,
-        name: None = None,
+        initial_mode_guess: Optional[float] = None,
+        n_eff_guess: Optional[float] = None,
         wg: None = None,
     ) -> None:
         self.n_effs_te = None
         self.n_effs_tm = None
-        self.name = name
+        self.name = "ModeSolverFullyVectorial"
         self.wg = wg
         _ModeSolver.__init__(
             self, n_eigs, tol, boundary, False, initial_mode_guess, n_eff_guess
@@ -245,3 +243,9 @@ class ModeSolverFullyVectorial(_ModeSolver):
                         wavelength=self.wg._wl,
                         logscale=logscale,
                     )
+
+
+if __name__ == "__main__":
+    from modes.waveguide import waveguide
+
+    ms = ModeSolverFullyVectorial(n_eigs=1, wg=waveguide())

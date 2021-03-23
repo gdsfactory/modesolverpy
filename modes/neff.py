@@ -2,11 +2,10 @@ import numpy as np
 import pytest
 
 from modes.mode_solver_full import mode_solver_full
-from numpy import ndarray
 
 
-def neff(mode: int = 0, overwrite: bool = False, **wg_kwargs) -> ndarray:
-    """returns effective index for a mode
+def neff(mode: int = 0, overwrite: bool = False, **wg_kwargs) -> float:
+    """Returns effective index for a mode
 
     Args:
         mode: 0 is fundamental
@@ -25,7 +24,7 @@ def neff(mode: int = 0, overwrite: bool = False, **wg_kwargs) -> ndarray:
         angle: 90.0
     """
     ms = mode_solver_full(overwrite=overwrite, n_modes=mode + 1, **wg_kwargs)
-    return np.real(ms.n_effs[mode])
+    return ms.get_neff(mode=mode)
 
 
 @pytest.mark.parametrize("mode, neff_expected", [(0, 2.47), (1, 1.81)])
