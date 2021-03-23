@@ -17,15 +17,17 @@ We have different materials available thanks to the [materialspy](https://optica
 
 """
 import opticalmaterialspy as mat
+from numpy import float64
+from typing import Union
 
 
-def si(wl):
+def si(wl: Union[float, float64]) -> float64:
     return mat.RefractiveIndexWeb(
         "https://refractiveindex.info/?shelf=main&book=Si&page=Li-293K"
     ).n(wl)
 
 
-def sio2(wl):
+def sio2(wl: Union[float, float64]) -> float64:
     return mat.SiO2().n(wl)
 
 
@@ -33,7 +35,7 @@ def air(wl):
     return mat.Air().n(wl)
 
 
-def nitride(wl):
+def nitride(wl: float) -> float64:
     return mat.RefractiveIndexWeb(
         "https://refractiveindex.info/?shelf=main&book=Si3N4&page=Luke"
     ).n(wl)

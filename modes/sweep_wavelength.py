@@ -4,9 +4,13 @@ import pytest
 import tqdm
 
 from modes.mode_solver_full import mode_solver_full
+from numpy import float64, ndarray
+from typing import Dict, List, Union
 
 
-def sweep_wavelength(wavelengths, plot=True, overwrite=False, **wg_kwargs):
+def sweep_wavelength(
+    wavelengths: ndarray, plot: bool = True, overwrite: bool = False, **wg_kwargs
+) -> Dict[str, Union[List[ndarray], List[List[float64]], List[List[float]]]]:
     """
 
     Solve for the effective indices of a fixed structure at
@@ -51,7 +55,11 @@ def sweep_wavelength(wavelengths, plot=True, overwrite=False, **wg_kwargs):
     if plot:
         title = "$n_{eff}$ vs Wavelength"
         ms._plot_n_effs(
-            filename_neffs, filename_fraction_te, "Wavelength", "n_{eff}", title,
+            filename_neffs,
+            filename_fraction_te,
+            "Wavelength",
+            "n_{eff}",
+            title,
         )
         plt.ylabel("$n_{eff}$")
 
@@ -60,7 +68,7 @@ def sweep_wavelength(wavelengths, plot=True, overwrite=False, **wg_kwargs):
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
-def test_sweep(overwrite):
+def test_sweep(overwrite: bool) -> None:
     wavelengths = np.arange(1.30, 1.60, 0.1)
     r = sweep_wavelength(wavelengths=wavelengths, overwrite=overwrite)
     print(r["n_effs"][0])

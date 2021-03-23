@@ -3,7 +3,7 @@ import json
 import numpy as np
 import pytest
 
-from modes._mode_solver import get_modes_jsonpath
+from modes.get_modes_jsonpath import get_modes_jsonpath
 from modes._mode_solver_full_vectorial import ModeSolverFullyVectorial
 from modes.autoname import autoname
 from modes.autoname import clean_value
@@ -11,10 +11,12 @@ from modes.materials import nitride
 from modes.materials import sio2
 from modes.waveguide import waveguide
 from modes.waveguide import write_material_index
+from modes._structure import RidgeWaveguide
+from typing import Optional, Tuple
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
-def test_mode_solver_full_vectorial(overwrite):
+def test_mode_solver_full_vectorial(overwrite: bool) -> None:
     mode_solver = mode_solver_full(overwrite=overwrite, logscale=True, plot=True)
     # modes = mode_solver.solve()
     # neff0 = modes["n_effs"][0].real
@@ -25,7 +27,7 @@ def test_mode_solver_full_vectorial(overwrite):
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
-def test_mode_solver_full_vectorial_multi_clad(overwrite):
+def test_mode_solver_full_vectorial_multi_clad(overwrite: bool) -> None:
     mode_solver = mode_solver_full(
         overwrite=overwrite,
         logscale=True,
@@ -42,7 +44,13 @@ def test_mode_solver_full_vectorial_multi_clad(overwrite):
 
 
 @autoname
-def _full(n_modes=2, wg=None, plot=True, plot_profile=False, **wg_kwargs):
+def _full(
+    n_modes: int = 2,
+    wg: Optional[RidgeWaveguide] = None,
+    plot: bool = True,
+    plot_profile: bool = False,
+    **wg_kwargs
+) -> ModeSolverFullyVectorial:
     """
     returns mode solver with mode_solver.wg
     writes waveguide material index
@@ -64,15 +72,22 @@ def _full(n_modes=2, wg=None, plot=True, plot_profile=False, **wg_kwargs):
 
 
 def mode_solver_full(
-    n_modes=2,
-    overwrite=False,
-    plot=False,
-    plot_profile=False,
-    logscale=False,
-    wg=None,
-    fields_to_write=("Ex", "Ey", "Ez", "Hx", "Hy", "Hz"),
+    n_modes: int = 2,
+    overwrite: bool = False,
+    plot: bool = False,
+    plot_profile: bool = False,
+    logscale: bool = False,
+    wg: Optional[RidgeWaveguide] = None,
+    fields_to_write: Tuple[str, ...] = (
+        "Ex",
+        "Ey",
+        "Ez",
+        "Hx",
+        "Hy",
+        "Hz",
+    ),
     **wg_kwargs
-):
+) -> ModeSolverFullyVectorial:
     """
     returns full vectorial mode solver with the computed modes
 

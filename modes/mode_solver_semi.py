@@ -3,7 +3,7 @@ import json
 import numpy as np
 import pytest
 
-from modes._mode_solver import get_modes_jsonpath
+from modes.get_modes_jsonpath import get_modes_jsonpath
 from modes._mode_solver_semi_vectorial import ModeSolverSemiVectorial
 from modes.autoname import autoname
 from modes.autoname import clean_value
@@ -12,7 +12,7 @@ from modes.waveguide import write_material_index
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
-def test_mode_solver_semi_vectorial_te(overwrite):
+def test_mode_solver_semi_vectorial_te(overwrite: bool) -> None:
     mode_solver = mode_solver_semi(overwrite=overwrite)
     # modes = mode_solver.solve()
     # neff0 = modes["n_effs"][0].real
@@ -23,7 +23,7 @@ def test_mode_solver_semi_vectorial_te(overwrite):
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
-def test_mode_solver_semi_vectorial_tm(overwrite):
+def test_mode_solver_semi_vectorial_tm(overwrite: bool) -> None:
     mode_solver = mode_solver_semi(semi_vectorial_method="Ey", overwrite=overwrite)
     # modes = mode_solver.solve()
     # neff0 = modes["n_effs"][0].real
@@ -35,8 +35,12 @@ def test_mode_solver_semi_vectorial_tm(overwrite):
 
 @autoname
 def _semi(
-    n_modes=2, semi_vectorial_method="Ex", plot=False, plot_profile=False, **wg_kwargs
-):
+    n_modes: int = 2,
+    semi_vectorial_method: str = "Ex",
+    plot: bool = False,
+    plot_profile: bool = False,
+    **wg_kwargs
+) -> ModeSolverSemiVectorial:
     """
     returns mode solver with mode_solver.wg
     writes waveguide material index
@@ -62,14 +66,14 @@ def _semi(
 
 
 def mode_solver_semi(
-    n_modes=2,
-    semi_vectorial_method="Ex",
-    overwrite=False,
-    plot=True,
-    plot_profile=False,
-    logscale=False,
+    n_modes: int = 2,
+    semi_vectorial_method: str = "Ex",
+    overwrite: bool = False,
+    plot: bool = True,
+    plot_profile: bool = False,
+    logscale: bool = False,
     **wg_kwargs
-):
+) -> ModeSolverSemiVectorial:
     """
     returns semi vectorial mode solver with the computed modes
 

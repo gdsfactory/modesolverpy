@@ -30,7 +30,7 @@ def waveguide(
     n_clads: List[Union[Callable, float]] = [sio2],
     wavelength: float = 1.55,
     angle: float = 90.0,
-):
+) -> RidgeWaveguide:
     """Return waveguide structure
 
     Args:
@@ -118,21 +118,21 @@ def waveguide(
 
 @autoname
 def waveguide_array(
-    wg_gaps,
-    widths,
-    x_step=0.02,
-    y_step=0.02,
-    thickness=0.22,
-    slab_thickness=0,
-    sub_thickness=0.5,
-    sub_width=2.0,
-    clad_thickness=[0.5],
-    n_sub=sio2,
-    n_wg=si,
-    n_clads=[sio2],
-    wavelength=1.55,
-    angle=90.0,
-):
+    wg_gaps: List[float],
+    widths: List[float],
+    x_step: float = 0.02,
+    y_step: float = 0.02,
+    thickness: float = 0.22,
+    slab_thickness: int = 0,
+    sub_thickness: float = 0.5,
+    sub_width: float = 2.0,
+    clad_thickness: List[float] = [0.5],
+    n_sub: Callable = sio2,
+    n_wg: Callable = si,
+    n_clads: List[Callable] = [sio2],
+    wavelength: float = 1.55,
+    angle: float = 90.0,
+) -> WgArray:
     """Returns a evanescent coupled waveguides ::
 
          __________________________________________________________
@@ -215,7 +215,7 @@ def write_material_index(wg, filepath=None):
     wg.write_to_file(filepath)
 
 
-def test_waveguide_name():
+def test_waveguide_name() -> None:
     wg1 = waveguide(angle=80, width=0.5)
     wg2 = waveguide(width=0.5, angle=80)
     assert wg1.name == wg2.name, (
@@ -224,7 +224,7 @@ def test_waveguide_name():
     )
 
 
-def test_waveguide_material_index():
+def test_waveguide_material_index() -> None:
     wg = waveguide()
     n = wg.n
     sx, sy = np.shape(n)
@@ -232,7 +232,7 @@ def test_waveguide_material_index():
     assert n_wg == si(wg._wl)
 
 
-def test_waveguide_array_material_index():
+def test_waveguide_array_material_index() -> None:
     wg = waveguide_array(wg_gaps=[0.2], widths=[0.5] * 2)
     n = wg.n
     sx, sy = np.shape(n)

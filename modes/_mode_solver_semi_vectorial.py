@@ -4,6 +4,9 @@ import numpy as np
 from modes import _analyse as anal
 from modes import _mode_solver_lib as ms
 from modes._mode_solver import _ModeSolver
+from numpy import ndarray
+from pathlib import PosixPath
+from typing import Dict, List, Union
 
 
 class ModeSolverSemiVectorial(_ModeSolver):
@@ -33,15 +36,15 @@ class ModeSolverSemiVectorial(_ModeSolver):
 
     def __init__(
         self,
-        n_eigs,
-        tol=0.001,
-        boundary="0000",
-        mode_profiles=True,
-        initial_mode_guess=None,
-        semi_vectorial_method="Ex",
-        name="mode_solver_semi_vectorial",
-        wg=None,
-    ):
+        n_eigs: int,
+        tol: float = 0.001,
+        boundary: str = "0000",
+        mode_profiles: bool = True,
+        initial_mode_guess: None = None,
+        semi_vectorial_method: str = "Ex",
+        name: str = "mode_solver_semi_vectorial",
+        wg: None = None,
+    ) -> None:
         self._semi_vectorial_method = semi_vectorial_method
         _ModeSolver.__init__(
             self, n_eigs, tol, boundary, mode_profiles, initial_mode_guess
@@ -50,8 +53,8 @@ class ModeSolverSemiVectorial(_ModeSolver):
         self.wg = wg
         self.results = None
 
-    def solve(self):
-        """ Find the modes of a given structure.
+    def solve(self) -> Dict[str, Union[ndarray, List[ndarray]]]:
+        """Find the modes of a given structure.
 
         Returns:
             dict: The 'n_effs' key gives the effective indices
@@ -84,8 +87,12 @@ class ModeSolverSemiVectorial(_ModeSolver):
         return r
 
     def write_modes_to_file(
-        self, filename="mode.dat", plot=True, analyse=True, logscale=False
-    ):
+        self,
+        filename: PosixPath = "mode.dat",
+        plot: bool = True,
+        analyse: bool = True,
+        logscale: bool = False,
+    ) -> List[ndarray]:
         """
         Writes the mode fields to a file and optionally plots them.
 
@@ -117,7 +124,12 @@ class ModeSolverSemiVectorial(_ModeSolver):
 
         return self.modes
 
-    def plot_modes(self, filename="mode.dat", analyse=True, logscale=False):
+    def plot_modes(
+        self,
+        filename: PosixPath = "mode.dat",
+        analyse: bool = True,
+        logscale: bool = False,
+    ) -> None:
         for i, mode in enumerate(self.modes):
             filename_mode = self._get_mode_filename(
                 self._semi_vectorial_method, i, filename

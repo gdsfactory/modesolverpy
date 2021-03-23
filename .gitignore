@@ -6,6 +6,7 @@ examples/modes_semi_vec/
 extra/
 
 *.cprof
+*.xonsh
 .ipynb_checkpoints/
 
 # Sphinx documentation

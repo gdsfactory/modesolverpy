@@ -3,11 +3,12 @@ import hashlib
 from inspect import signature
 
 import numpy as np
+from typing import Any
 
 MAX_NAME_LENGTH = 36
 
 
-def get_component_name(component_type, **kwargs):
+def get_component_name(component_type: str, **kwargs) -> str:
     name = component_type
 
     if kwargs:
@@ -20,7 +21,7 @@ def get_component_name(component_type, **kwargs):
     return name
 
 
-def clean_name(name):
+def clean_name(name: str) -> str:
     """Ensures that names are composed of [a-zA-Z0-9]
 
     FIXME: only a few characters are currently replaced.
@@ -43,7 +44,7 @@ def clean_name(name):
     return name
 
 
-def clean_value(value):
+def clean_value(value: Any) -> str:
     """returns more readable value (integer)
     if number is < 1:
         returns number units in nm (integer)
@@ -74,12 +75,12 @@ def clean_value(value):
         return clean_name(str(value))
 
 
-def join_first_letters(name):
+def join_first_letters(name: str) -> str:
     """ join the first letter of a name separated with underscores (taper_length -> TL) """
     return "".join([x[0] for x in name.split("_") if x])
 
 
-def dict2name(prefix=None, **kwargs):
+def dict2name(prefix: str = "", **kwargs) -> str:
     """ returns name from a dict """
     if prefix:
         label = [prefix]
@@ -151,14 +152,14 @@ class _Dummy:
 
 
 @autoname
-def _dummy(plot=True, length=3, width=0.5):
+def _dummy(plot: bool = True, length: int = 3, width: float = 0.5) -> _Dummy:
     c = _Dummy()
     c.name = ""
-    c.settings = {}
+    c.settings = dict(plot=plot, length=length, width=width)
     return c
 
 
-def test_autoname():
+def test_autoname() -> None:
     name_base = _dummy().name
     assert name_base == "_dummy"
     name_plot = _dummy(plot=True).name
@@ -169,12 +170,12 @@ def test_autoname():
     assert name_float == "_dummy_W0p5"
 
 
-def test_clean_value():
+def test_clean_value() -> None:
     assert clean_value(0.5) == "0p5"
     assert clean_value(5) == "5"
 
 
-def test_clean_name():
+def test_clean_name() -> None:
     assert clean_name("mode_solver(:_=_2852") == "mode_solver___2852"
 
 

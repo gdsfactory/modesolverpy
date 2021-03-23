@@ -2,7 +2,6 @@
 """
 
 __all__ = ["CONFIG"]
-
 import pathlib
 
 import matplotlib.pylab as plt
@@ -27,6 +26,7 @@ class Config:
 
 
 CONFIG = Config()
+
 
 if __name__ == "__main__":
     print(CONFIG.repo)

@@ -3,8 +3,11 @@ import pathlib
 import matplotlib.pylab as plt
 import numpy as np
 
-from modes import _mode_solver_lib as ms
+from modes._mode_solver_lib import FDMode, _ModeSolverVectorial
 from modes._mode_solver import _ModeSolver
+from numpy import complex128, float64, ndarray
+from pathlib import PosixPath
+from typing import Any, Dict, List, Tuple, Union
 
 
 class ModeSolverFullyVectorial(_ModeSolver):
@@ -29,14 +32,14 @@ class ModeSolverFullyVectorial(_ModeSolver):
 
     def __init__(
         self,
-        n_eigs,
-        tol=0.001,
-        boundary="0000",
-        initial_mode_guess=None,
-        n_eff_guess=None,
-        name=None,
-        wg=None,
-    ):
+        n_eigs: int,
+        tol: float = 0.001,
+        boundary: str = "0000",
+        initial_mode_guess: None = None,
+        n_eff_guess: None = None,
+        name: None = None,
+        wg: None = None,
+    ) -> None:
         self.n_effs_te = None
         self.n_effs_tm = None
         self.name = name
@@ -45,8 +48,8 @@ class ModeSolverFullyVectorial(_ModeSolver):
             self, n_eigs, tol, boundary, False, initial_mode_guess, n_eff_guess
         )
 
-    def solve(self):
-        """ Find the modes of a given structure.
+    def solve(self) -> Dict[str, Union[ndarray, List[FDMode]]]:
+        """Find the modes of a given structure.
 
         Returns:
             dict: The 'n_effs' key gives the effective indices
@@ -56,7 +59,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
         """
         structure = self._structure = self.wg
         wavelength = self.wg._wl
-        self._ms = ms._ModeSolverVectorial(wavelength, structure, self._boundary)
+        self._ms = _ModeSolverVectorial(wavelength, structure, self._boundary)
         self._ms.solve(
             self._n_eigs,
             self._tol,
@@ -79,7 +82,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
 
         return r
 
-    def _get_mode_types(self):
+    def _get_mode_types(self) -> List[Tuple[str, float64]]:
         mode_types = []
         labels = {0: "qTE", 1: "qTM", 2: "qTE/qTM"}
         for overlap in self.overlaps:
@@ -87,7 +90,11 @@ class ModeSolverFullyVectorial(_ModeSolver):
             mode_types.append((labels[idx], np.round(overlap[idx], 2)))
         return mode_types
 
-    def _sort_neffs(self, n_effs):
+    def _sort_neffs(
+        self, n_effs: ndarray
+    ) -> Union[
+        Tuple[List[complex128], List[complex128]], Tuple[List[complex128], List[Any]]
+    ]:
         mode_types = self._get_mode_types()
 
         n_effs_te = []
@@ -101,7 +108,9 @@ class ModeSolverFullyVectorial(_ModeSolver):
 
         return n_effs_te, n_effs_tm
 
-    def _get_overlaps(self, fields):
+    def _get_overlaps(
+        self, fields: List[FDMode]
+    ) -> Tuple[List[List[Union[float, float64]]], List[float64], List[float64]]:
         mode_areas = []
         fraction_te = []
         fraction_tm = []
@@ -128,11 +137,18 @@ class ModeSolverFullyVectorial(_ModeSolver):
 
     def write_modes_to_file(
         self,
-        filename="mode.dat",
-        plot=True,
-        fields_to_write=("Ex", "Ey", "Ez", "Hx", "Hy", "Hz"),
-        logscale=False,
-    ):
+        filename: PosixPath = "mode.dat",
+        plot: bool = True,
+        fields_to_write: Tuple[str, ...] = (
+            "Ex",
+            "Ey",
+            "Ez",
+            "Hx",
+            "Hy",
+            "Hz",
+        ),
+        logscale: bool = False,
+    ) -> List[FDMode]:
         """
         Writes the mode fields to a file and optionally plots them.
 
@@ -197,10 +213,17 @@ class ModeSolverFullyVectorial(_ModeSolver):
 
     def plot_modes(
         self,
-        filename,
-        fields_to_write=("Ex", "Ey", "Ez", "Hx", "Hy", "Hz"),
-        logscale=False,
-    ):
+        filename: PosixPath,
+        fields_to_write: Tuple[str, ...] = (
+            "Ex",
+            "Ey",
+            "Ez",
+            "Hx",
+            "Hy",
+            "Hz",
+        ),
+        logscale: bool = False,
+    ) -> None:
         """ works only for cached modes """
         # Mode field plots.
         filename = pathlib.Path(filename)

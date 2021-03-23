@@ -5,18 +5,30 @@ import tqdm
 
 from modes.mode_solver_full import mode_solver_full
 from modes.waveguide import waveguide
+from modes._structure import RidgeWaveguide
+from numpy import float64, ndarray
+from typing import Dict, List, Tuple, Union
 
 
 def sweep_waveguide(
-    waveguides,
-    sweep_param_list,
-    plot=True,
-    x_label="waveguide width (um)",
-    fraction_mode_list=[],
-    overwrite=False,
-    n_modes=6,
-    legend=None,
-):
+    waveguides: List[RidgeWaveguide],
+    sweep_param_list: ndarray,
+    plot: bool = True,
+    x_label: str = "waveguide width (um)",
+    fraction_mode_list: List[int] = [],
+    overwrite: bool = False,
+    n_modes: int = 6,
+    legend: None = None,
+) -> Dict[
+    str,
+    Union[
+        List[ndarray],
+        List[List[Tuple[str, float64]]],
+        List[List[float64]],
+        List[List[List[Union[str, float]]]],
+        List[List[float]],
+    ],
+]:
     """
     Find the modes of many waveguides.
 
@@ -153,7 +165,7 @@ def sweep_waveguide(
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
-def test_sweep(overwrite):
+def test_sweep(overwrite: bool) -> None:
     widths = np.arange(0.5, 2.0, 0.5)
     wgs = [waveguide(width=width) for width in widths]
     r = sweep_waveguide(
@@ -171,7 +183,7 @@ def test_sweep(overwrite):
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
-def test_sweep2(overwrite):
+def test_sweep2(overwrite: bool) -> None:
     widths = np.arange(0.3, 1.0, 0.5)
     wgs = [waveguide(width=width) for width in widths]
     r = sweep_waveguide(

@@ -8,26 +8,25 @@ from six import with_metaclass
 
 from modes.config import CONFIG
 from modes.waveguide import waveguide
+from numpy import complex128, float64, ndarray
+from pathlib import PosixPath
+from typing import Dict, List, Optional, Union
 
 plt.rc("image", cmap="coolwarm")
-
-
-def get_modes_jsonpath(mode_solver):
-    return CONFIG.cache / f"{mode_solver.name}.json"
 
 
 class _ModeSolver(with_metaclass(abc.ABCMeta)):
     def __init__(
         self,
-        n_eigs,
-        tol=0.0,
-        boundary="0000",
-        mode_profiles=True,
-        initial_mode_guess=None,
-        n_eff_guess=None,
-        wg=None,
-        name=None,
-    ):
+        n_eigs: int,
+        tol: float = 0.0,
+        boundary: str = "0000",
+        mode_profiles: bool = True,
+        initial_mode_guess: None = None,
+        n_eff_guess: None = None,
+        wg: None = None,
+        name: None = None,
+    ) -> None:
         self._n_eigs = int(n_eigs)
         self._tol = tol
         self._boundary = boundary
@@ -47,7 +46,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         self._path = os.path.dirname(sys.modules[__name__].__file__) + "/"
 
     @property
-    def _modes_directory(self):
+    def _modes_directory(self) -> PosixPath:
         return CONFIG.cache
 
     def solve_sweep_waveguide(
@@ -248,14 +247,21 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
 
         return n_gs
 
-    def _get_mode_filename(self, field_name, mode_number, filename):
+    def _get_mode_filename(
+        self, field_name: str, mode_number: int, filename: PosixPath
+    ) -> str:
         filename_prefix, filename_ext = os.path.splitext(filename)
         filename_mode = (
             filename_prefix + "_" + field_name + "_" + str(mode_number) + filename_ext
         )
         return filename_mode
 
-    def _write_n_effs_to_file(self, n_effs, filename, x_vals=None):
+    def _write_n_effs_to_file(
+        self,
+        n_effs: List[ndarray],
+        filename: PosixPath,
+        x_vals: Optional[ndarray] = None,
+    ) -> List[ndarray]:
         with open(filename, "w") as fs:
             fs.write("# Sweep param, mode 1, mode 2, ...\n")
             for i, n_eff in enumerate(n_effs):
@@ -267,7 +273,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
                 fs.write(line_start + line + "\n")
         return n_effs
 
-    def _write_mode_to_file(self, mode, filename):
+    def _write_mode_to_file(self, mode: ndarray, filename: str) -> ndarray:
         with open(filename, "w") as fs:
             for e in mode[::-1]:
                 e_str = ",".join([str(v) for v in e])
@@ -275,8 +281,13 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         return mode
 
     def _plot_n_effs(
-        self, filename_n_effs, filename_te_fractions, xlabel, ylabel, title
-    ):
+        self,
+        filename_n_effs: PosixPath,
+        filename_te_fractions: PosixPath,
+        xlabel: str,
+        ylabel: str,
+        title: str,
+    ) -> Dict[str, Union[str, PosixPath, int]]:
         args = {
             "titl": title,
             "xlab": xlabel,
@@ -302,7 +313,14 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
 
         return args
 
-    def _plot_fraction(self, filename_fraction, xlabel, ylabel, title, mode_list=[]):
+    def _plot_fraction(
+        self,
+        filename_fraction: PosixPath,
+        xlabel: str,
+        ylabel: str,
+        title: str,
+        mode_list: List[int] = [],
+    ) -> Dict[str, Union[str, PosixPath]]:
         if not mode_list:
             mode_list = range(len(self.modes))
         gp_mode_list = " ".join(str(idx) for idx in mode_list)
@@ -333,19 +351,19 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
 
     def _plot_mode(
         self,
-        field_name,
-        mode_number,
-        filename_mode,
-        n_eff=None,
-        subtitle="",
-        e2_x=0.0,
-        e2_y=0.0,
-        ctr_x=0.0,
-        ctr_y=0.0,
-        area=None,
-        wavelength=None,
-        logscale=False,
-    ):
+        field_name: str,
+        mode_number: int,
+        filename_mode: str,
+        n_eff: Optional[Union[complex128, ndarray]] = None,
+        subtitle: str = "",
+        e2_x: Union[float, float64] = 0.0,
+        e2_y: Union[float, float64] = 0.0,
+        ctr_x: Union[float, float64] = 0.0,
+        ctr_y: Union[float, float64] = 0.0,
+        area: Optional[Union[float, float64]] = None,
+        wavelength: Optional[float] = None,
+        logscale: bool = False,
+    ) -> Dict[str, Union[str, int, float64, float]]:
         fn = field_name[0] + "_{" + field_name[1:] + "}"
         title = r"Mode %i $|%s|$ Profile" % (mode_number, fn)
         if n_eff:

@@ -5,6 +5,11 @@ import matplotlib.pylab as plt
 import numpy as np
 from scipy import interpolate
 from six import with_metaclass
+from numpy import float64, ndarray
+from typing import Callable, Union, Dict
+
+
+StringOrNumber = Union[str, float, int]
 
 
 class _AbstractStructure(with_metaclass(abc.ABCMeta)):
@@ -17,21 +22,21 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
         pass
 
     @property
-    def x_pts(self):
+    def x_pts(self) -> int:
         """
         int: The number of grid points in x.
         """
         return int((self.x_max - self.x_min) / self.x_step + 1)
 
     @property
-    def y_pts(self):
+    def y_pts(self) -> int:
         """
         int: The number of grid points in y.
         """
         return int((self.y_max - self.y_min) / self.y_step)
 
     @property
-    def x_ctr(self):
+    def x_ctr(self) -> float:
         """
         float: The centre distance in x.
         """
@@ -45,63 +50,63 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
         return 0.5 * (self.y_max + self.y_min)
 
     @property
-    def xc(self):
+    def xc(self) -> ndarray:
         """
         np.array: The centre points of the x points.
         """
         return 0.5 * (self.x[1:] + self.x[:-1])
 
     @property
-    def yc(self):
+    def yc(self) -> ndarray:
         """
         np.array: The centre points of the y points.
         """
         return 0.5 * (self.y[1:] + self.y[:-1])
 
     @property
-    def xc_pts(self):
+    def xc_pts(self) -> int:
         """
         int: The number of points in `xc`.
         """
         return self.x_pts - 1
 
     @property
-    def yc_pts(self):
+    def yc_pts(self) -> int:
         """
         int: The number of points in `yc`.
         """
         return self.y_pts - 1
 
     @property
-    def xc_min(self):
+    def xc_min(self) -> float64:
         """
         float: The minimum value of `xc`.
         """
         return self.xc[0]
 
     @property
-    def xc_max(self):
+    def xc_max(self) -> float64:
         """
         float: The maximum value of `xc`.
         """
         return self.xc[-1]
 
     @property
-    def yc_min(self):
+    def yc_min(self) -> float64:
         """
         float: The minimum value of `yc`.
         """
         return self.yc[0]
 
     @property
-    def yc_max(self):
+    def yc_max(self) -> float64:
         """
         float: The maximum value of `yc`.
         """
         return self.yc[-1]
 
     @property
-    def x(self):
+    def x(self) -> ndarray:
         """
         np.array: The grid points in x.
         """
@@ -117,7 +122,7 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
         return x
 
     @property
-    def y(self):
+    def y(self) -> ndarray:
         """
         np.array: The grid points in y.
         """
@@ -131,7 +136,7 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
         return y
 
     @property
-    def eps(self):
+    def eps(self) -> ndarray:
         """
         np.array: A grid of permittivies representing
         the permittivity profile of the structure.
@@ -139,7 +144,7 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
         return self.n ** 2
 
     @property
-    def eps_func(self):
+    def eps_func(self) -> Callable:
         """
         function: a function that when passed a `x` and `y` values,
             returns the permittivity profile of the structure,
@@ -161,14 +166,14 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
 
     def _add_triangular_sides(
         self,
-        xy_mask,
-        angle,
-        y_top_right,
-        y_bot_left,
-        x_top_right,
-        x_bot_left,
-        n_material,
-    ):
+        xy_mask: ndarray,
+        angle: Union[float, int],
+        y_top_right: float,
+        y_bot_left: float,
+        x_top_right: Union[float, float64],
+        x_bot_left: Union[float, float64],
+        n_material: float64,
+    ) -> ndarray:
         angle = np.radians(angle)
         trap_len = (y_top_right - y_bot_left) / np.tan(angle)
         num_x_iterations = trap_len / self.x_step
@@ -193,8 +198,14 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
         return self.n
 
     def _add_material(
-        self, x_bot_left, y_bot_left, x_top_right, y_top_right, n_material, angle=0
-    ):
+        self,
+        x_bot_left: Union[float, float64],
+        y_bot_left: float,
+        x_top_right: Union[float, float64],
+        y_top_right: float,
+        n_material: float64,
+        angle: Union[float, int] = 0,
+    ) -> ndarray:
         """
         A low-level function that allows writing a rectangle refractive
         index profile to a `Structure`.
@@ -278,15 +289,22 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
             plt.colorbar()
             plt.savefig(filename_image)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
         # return self.n.__str__()
 
 
 class Structure(_AbstractStructure):
     def __init__(
-        self, x_step, y_step, x_max, y_max, x_min=0.0, y_min=0.0, n_background=1.0
-    ):
+        self,
+        x_step: float,
+        y_step: float,
+        x_max: float,
+        y_max: float,
+        x_min: float = 0.0,
+        y_min: float = 0.0,
+        n_background: float64 = 1.0,
+    ) -> None:
         self.x_min = x_min
         self.x_max = x_max
         self.y_min = y_min
@@ -296,10 +314,10 @@ class Structure(_AbstractStructure):
         self.n_background = n_background
         self._n = np.ones((self.y.size, self.x.size), "complex_") * n_background
         self.name = None
-        self.settings = {}
+        self.settings: Dict[str, StringOrNumber] = {}
 
     @property
-    def n(self):
+    def n(self) -> ndarray:
         return self._n
 
 
@@ -335,7 +353,14 @@ class Slabs(_AbstractStructure):
             added so far.
     """
 
-    def __init__(self, wavelength, y_step, x_step, x_max, x_min=0.0):
+    def __init__(
+        self,
+        wavelength: Union[float, float64],
+        y_step: float,
+        x_step: float,
+        x_max: float,
+        x_min: float = 0.0,
+    ) -> None:
         _AbstractStructure.__init__(self)
 
         self._wl = wavelength
@@ -351,7 +376,9 @@ class Slabs(_AbstractStructure):
         self.name = None
         self.settings = {}
 
-    def add_slab(self, thickness, n_background=1.0, position="top"):
+    def add_slab(
+        self, thickness: float, n_background: float64 = 1.0, position: str = "top"
+    ) -> str:
         """
         Creates and adds a :class:`Slab` object.
 
@@ -430,7 +457,7 @@ class Slabs(_AbstractStructure):
         self._wl = wavelength
 
     @property
-    def n(self):
+    def n(self) -> ndarray:
         """
         np.array: The refractive index profile matrix
         of the current slab.
@@ -481,8 +508,17 @@ class Slab(Structure):
     position = 0
 
     def __init__(
-        self, name, x_step, y_step, x_max, y_max, x_min, y_min, n_background, wavelength
-    ):
+        self,
+        name: str,
+        x_step: float,
+        y_step: float,
+        x_max: float,
+        y_max: float,
+        x_min: float,
+        y_min: float,
+        n_background: Callable,
+        wavelength: Union[float, float64],
+    ) -> None:
         self._wl = wavelength
         self.name = name
         self.position = Slab.position
@@ -505,7 +541,13 @@ class Slab(Structure):
         ]
         self._mat_params = []
 
-    def add_material(self, x_min, x_max, n, angle=0):
+    def add_material(
+        self,
+        x_min: Union[float, float64],
+        x_max: Union[float, float64],
+        n: float64,
+        angle: Union[float, int] = 0,
+    ) -> ndarray:
         """
         Add a refractive index between two x-points.
 

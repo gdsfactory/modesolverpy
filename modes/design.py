@@ -1,7 +1,10 @@
 import numpy as np
+from numpy import float64
 
 
-def directional_coupler_lc(wavelength_nm, n_eff_1, n_eff_2, power_ratio=1):
+def directional_coupler_lc(
+    wavelength_nm: int, n_eff_1: float, n_eff_2: float, power_ratio: int = 1
+) -> float64:
     """
     Calculates the coherence length (100% power transfer) of a
     directional coupler.
@@ -106,7 +109,7 @@ def qpm_period(pmp_n, pmp_l, sig_n, sig_l, idl_n, idl_l, type="forward"):
     return l_qpm
 
 
-def test_design():
+def test_design() -> None:
     np.isclose(directional_coupler_lc(1550, 2.378, 2.317864), 12.8827)
 
 

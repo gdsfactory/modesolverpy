@@ -1,14 +1,18 @@
 import numpy as np
 import scipy.optimize as sciopt
+from numpy import float64, ndarray
+from typing import Tuple
 
 
-def gaussian(x, *p):
+def gaussian(x: ndarray, *p) -> ndarray:
     A, mu, sigma = p
     return A * np.exp(-((x - mu) ** 2) / (2.0 * sigma ** 2))
 
 
-def fit_gaussian(x, y, z_2d, save_fits=False):
-    """ fit a gaussian
+def fit_gaussian(
+    x: ndarray, y: ndarray, z_2d: ndarray, save_fits: bool = False
+) -> Tuple[float64, Tuple[float64, float64], ndarray]:
+    """fit a gaussian
 
     Returns:
         effective area

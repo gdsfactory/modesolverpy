@@ -2,11 +2,17 @@ import numpy as np
 import pytest
 
 from modes.mode_solver_full import mode_solver_full
+from numpy import float64
+from typing import List
 
 
 def group_index(
-    wavelength=1.55, wavelength_step=0.01, overwrite=False, n_modes=1, **wg_kwargs
-):
+    wavelength: float = 1.55,
+    wavelength_step: float = 0.01,
+    overwrite: bool = False,
+    n_modes: int = 1,
+    **wg_kwargs,
+) -> List[float64]:
     r"""
     Solve for the group index, :math:`n_g`, of a structure at a particular
     wavelength.
@@ -75,7 +81,7 @@ def group_index(
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
-def test_sweep(overwrite):
+def test_sweep(overwrite: bool) -> None:
     ng = group_index(n_modes=2)
     print(ng)
     assert np.isclose(

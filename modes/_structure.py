@@ -5,6 +5,8 @@ import numpy as np
 import opticalmaterialspy as mat
 
 from modes import _structure_base as sb
+from numpy import float64
+from typing import List, Optional, Union
 
 
 class RidgeWaveguide(sb.Slabs):
@@ -59,20 +61,20 @@ class RidgeWaveguide(sb.Slabs):
 
     def __init__(
         self,
-        wavelength,
-        x_step,
-        y_step,
-        thickness,
-        width,
-        sub_thickness,
-        sub_width,
-        clad_thickness,
-        n_sub,
-        n_wg,
-        angle=0,
-        n_clad=[mat.Air().n()],
-        film_thickness="thickness",
-    ):
+        wavelength: Union[float, float64],
+        x_step: float,
+        y_step: float,
+        thickness: float,
+        width: Union[float, float64],
+        sub_thickness: float,
+        sub_width: float,
+        clad_thickness: List[float],
+        n_sub: float64,
+        n_wg: float64,
+        angle: Union[float, int] = 0,
+        n_clad: List[float64] = [mat.Air().n()],
+        film_thickness: float = "thickness",
+    ) -> None:
         if not isinstance(n_clad, Iterable):
             raise ValueError(f"nclad not Iterable, got {n_clad}")
         if not isinstance(clad_thickness, Iterable):
@@ -116,21 +118,21 @@ class RidgeWaveguide(sb.Slabs):
 class WgArray(sb.Slabs):
     def __init__(
         self,
-        wavelength,
-        x_step,
-        y_step,
-        thickness,
-        widths,
-        wg_gaps,
-        sub_thickness,
-        sub_width,
-        clad_thickness,
-        n_sub,
-        n_wg,
-        angle=0,
-        n_clad=[mat.Air().n()],
-        film_thickness=None,
-    ):
+        wavelength: float,
+        x_step: float,
+        y_step: float,
+        thickness: float,
+        widths: List[float],
+        wg_gaps: List[float],
+        sub_thickness: float,
+        sub_width: float,
+        clad_thickness: List[float],
+        n_sub: float64,
+        n_wg: float64,
+        angle: float = 0,
+        n_clad: List[float64] = [mat.Air().n()],
+        film_thickness: Optional[float] = None,
+    ) -> None:
 
         sb.Slabs.__init__(self, wavelength, y_step, x_step, sub_width)
 

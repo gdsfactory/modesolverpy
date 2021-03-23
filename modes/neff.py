@@ -2,9 +2,10 @@ import numpy as np
 import pytest
 
 from modes.mode_solver_full import mode_solver_full
+from numpy import ndarray
 
 
-def neff(mode=0, overwrite=False, **wg_kwargs):
+def neff(mode: int = 0, overwrite: bool = False, **wg_kwargs) -> ndarray:
     """returns effective index for a mode
 
     Args:
@@ -28,7 +29,7 @@ def neff(mode=0, overwrite=False, **wg_kwargs):
 
 
 @pytest.mark.parametrize("mode, neff_expected", [(0, 2.47), (1, 1.81)])
-def test_neff(mode, neff_expected):
+def test_neff(mode: int, neff_expected: float) -> None:
     assert np.isclose(neff(mode), neff_expected, atol=0.1)
 
 

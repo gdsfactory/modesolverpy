@@ -15,18 +15,28 @@ from builtins import zip
 import numpy
 import scipy
 from scipy.interpolate import interp2d
+from modes._structure import RidgeWaveguide
+from numpy import complex128, float64, ndarray
+from scipy.sparse.csr import csr_matrix
+from typing import List, Optional, Tuple, Union
 
 
-def trapz2(f, x=None, y=None, dx=1.0, dy=1.0):
+def trapz2(
+    f: ndarray,
+    x: Optional[ndarray] = None,
+    y: Optional[ndarray] = None,
+    dx: float = 1.0,
+    dy: float = 1.0,
+) -> complex128:
     """Double integrate."""
     return numpy.trapz(numpy.trapz(f, x=y, dx=dy), x=x, dx=dx)
 
 
-def centered1d(x):
+def centered1d(x: ndarray) -> ndarray:
     return (x[1:] + x[:-1]) / 2.0
 
 
-def centered2d(x):
+def centered2d(x: ndarray) -> ndarray:
     return (x[1:, 1:] + x[1:, :-1] + x[:-1, 1:] + x[:-1, :-1]) / 4.0
 
 
@@ -78,7 +88,13 @@ class _ModeSolverSemiVectorial:
 
     """
 
-    def __init__(self, wl, structure, boundary="0000", method="Ex"):
+    def __init__(
+        self,
+        wl: float,
+        structure: RidgeWaveguide,
+        boundary: str = "0000",
+        method: str = "Ex",
+    ) -> None:
         # Polarisation bug fix.
         assert method in ("Ex", "Ey"), "Invalid polarisation method."
         if method == "Ex":
@@ -93,7 +109,7 @@ class _ModeSolverSemiVectorial:
         self.method = method
         self.structure = structure
 
-    def build_matrix(self):
+    def build_matrix(self) -> csr_matrix:
 
         from scipy.sparse import coo_matrix
 
@@ -269,7 +285,13 @@ class _ModeSolverSemiVectorial:
 
         return A
 
-    def solve(self, neigs, tol=0, mode_profiles=True, initial_mode_guess=None):
+    def solve(
+        self,
+        neigs: int,
+        tol: float = 0,
+        mode_profiles: bool = True,
+        initial_mode_guess: None = None,
+    ) -> "_ModeSolverSemiVectorial":
 
         from scipy.sparse.linalg import eigen
 
@@ -367,14 +389,16 @@ class _ModeSolverVectorial:
 
     """
 
-    def __init__(self, wl, structure, boundary):
+    def __init__(
+        self, wl: Union[float, float64], structure: RidgeWaveguide, boundary: str
+    ) -> None:
         self.wl = wl
         self.x = structure.y
         self.y = structure.x
         self.epsfunc = structure.eps_func
         self.boundary = boundary
 
-    def build_matrix(self):
+    def build_matrix(self) -> csr_matrix:
 
         from scipy.sparse import coo_matrix
 
@@ -788,7 +812,9 @@ class _ModeSolverVectorial:
 
         return A
 
-    def compute_other_fields(self, neffs, Hxs, Hys):
+    def compute_other_fields(
+        self, neffs: ndarray, Hxs: List[ndarray], Hys: List[ndarray]
+    ) -> Tuple[List[ndarray], List[ndarray], List[ndarray], List[ndarray]]:
 
         from scipy.sparse import coo_matrix
 
@@ -2036,8 +2062,13 @@ class _ModeSolverVectorial:
         return (Hzs, Exs, Eys, Ezs)
 
     def solve(
-        self, neigs=4, tol=0, guess=None, mode_profiles=True, initial_mode_guess=None
-    ):
+        self,
+        neigs: int = 4,
+        tol: float = 0,
+        guess: None = None,
+        mode_profiles: bool = True,
+        initial_mode_guess: None = None,
+    ) -> "_ModeSolverVectorial":
         """
         This function finds the eigenmodes.
 
@@ -2129,7 +2160,19 @@ class _ModeSolverVectorial:
 
 
 class FDMode:
-    def __init__(self, wl, x, y, neff, Ex, Ey, Ez, Hx, Hy, Hz):
+    def __init__(
+        self,
+        wl: Union[float, float64],
+        x: ndarray,
+        y: ndarray,
+        neff: complex128,
+        Ex: ndarray,
+        Ey: ndarray,
+        Ez: ndarray,
+        Hx: ndarray,
+        Hy: ndarray,
+        Hz: ndarray,
+    ) -> None:
         self.wl = wl
         self.x = x
         self.y = y
@@ -2145,12 +2188,12 @@ class FDMode:
             {"Ex": Ex, "Ey": Ey, "Ez": Ez, "Hx": Hx, "Hy": Hy, "Hz": Hz}
         )
 
-    def norm(self):
+    def norm(self) -> complex128:
         x = centered1d(self.x)
         y = centered1d(self.y)
         return scipy.sqrt(trapz2(self.intensity(), x=x, y=y))
 
-    def normalize(self):
+    def normalize(self) -> "FDMode":
         n = self.norm()
         self.Ex /= n
         self.Ey /= n
@@ -2161,7 +2204,7 @@ class FDMode:
 
         return self
 
-    def intensityTETM(self, x=None, y=None):
+    def intensityTETM(self, x: None = None, y: None = None) -> Tuple[ndarray, ndarray]:
         I_TE = self.Ex * centered2d(numpy.conj(self.Hy)) / 2.0
         I_TM = -self.Ey * centered2d(numpy.conj(self.Hx)) / 2.0
         if x is None and y is None:
@@ -2173,6 +2216,6 @@ class FDMode:
             I_TM_ = interp2d(x, y, x0, y0, I_TM)
             return (I_TE_, I_TM_)
 
-    def intensity(self, x=None, y=None):
+    def intensity(self, x: None = None, y: None = None) -> ndarray:
         I_TE, I_TM = self.intensityTETM(x, y)
         return I_TE + I_TM
