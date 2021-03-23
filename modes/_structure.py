@@ -1,5 +1,6 @@
 import copy
 
+from collections.abc import Iterable
 import numpy as np
 import opticalmaterialspy as mat
 
@@ -72,6 +73,11 @@ class RidgeWaveguide(sb.Slabs):
         n_clad=[mat.Air().n()],
         film_thickness="thickness",
     ):
+        if not isinstance(n_clad, Iterable):
+            raise ValueError(f"nclad not Iterable, got {n_clad}")
+        if not isinstance(clad_thickness, Iterable):
+            raise ValueError(f"clad_thickness not Iterable, got {clad_thickness}")
+
         sb.Slabs.__init__(self, wavelength, y_step, x_step, sub_width)
 
         self.n_sub = n_sub
@@ -98,6 +104,13 @@ class RidgeWaveguide(sb.Slabs):
 
         for hc, nc in zip(clad_thickness, n_clad):
             self.add_slab(hc, nc)
+
+    def __repr__(self) -> str:
+        return f"{self.width} x {self.thickness} um, n_wg = {self.n_wg}, n_clad = {self.n_clad}"
+
+    def _repr_html_(self):
+        """Plot index profile in matplotlib when using jupyter notebooks."""
+        self.write_to_file()
 
 
 class WgArray(sb.Slabs):
@@ -165,3 +178,10 @@ class WgArray(sb.Slabs):
 
         for hc, nc in zip(clad_thickness, n_clad):
             self.add_slab(hc, nc)
+
+    def __repr__(self) -> str:
+        return f"{[width for width in self.widths]} x {self.thickness} um, n_wg = {self.n_wg}, n_clad = {self.n_clad}"
+
+    def _repr_html_(self):
+        """Plot index profile in matplotlib when using jupyter notebooks."""
+        self.write_to_file()

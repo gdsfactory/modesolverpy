@@ -2,6 +2,7 @@ from typing import Callable
 from typing import List
 from typing import Union
 
+from collections.abc import Iterable
 import matplotlib.pylab as plt
 import numpy as np
 
@@ -30,7 +31,7 @@ def waveguide(
     wavelength: float = 1.55,
     angle: float = 90.0,
 ):
-    """returns a waveguide structure
+    """Return waveguide structure
 
     Args:
         x_step: x grid step (um)
@@ -86,6 +87,11 @@ def waveguide(
         ms.write_material_index(wg)
 
     """
+
+    if not isinstance(n_clads, Iterable):
+        raise ValueError(f"nclads not Iterable, got {n_clads}")
+    if not isinstance(clad_thickness, Iterable):
+        raise ValueError(f"clad_thickness not Iterable, got {clad_thickness}")
     n_wg = n_wg(wavelength) if callable(n_wg) else n_wg
     n_sub = n_sub(wavelength) if callable(n_sub) else n_sub
     n_clad = [n_clad(wavelength) if callable(n_clad) else n_clad for n_clad in n_clads]
