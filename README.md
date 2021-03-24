@@ -1,6 +1,7 @@
 # Modes 1.0.2
 
 Photonic mode solver with a nice interface and output.
+Based on a modified version of [EMpy](https://github.com/lbolla/EMpy) and [modesolverpy](https://github.com/jtambasco/modesolverpy)
 
 * semi-vectorial and fully vectorial options,
 * simple structure drawing,
@@ -17,8 +18,3 @@ Take a look at the jupyter notebooks
 ## Installation
 
 You can install modes via `pip install modes`
-
-## Acknowledgments
-
-This finite difference mode solver is based on a modified version of [EMpy](https://github.com/lbolla/EMpy).
-This project is a fork of [modesolverpy](https://github.com/jtambasco/modesolverpy)
