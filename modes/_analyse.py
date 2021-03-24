@@ -1,7 +1,8 @@
+from typing import Tuple
+
 import numpy as np
 import scipy.optimize as sciopt
 from numpy import float64, ndarray
-from typing import Tuple
 
 
 def gaussian(x: ndarray, *p) -> ndarray:

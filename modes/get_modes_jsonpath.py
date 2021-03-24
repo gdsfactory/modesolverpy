@@ -1,5 +1,6 @@
 from pathlib import PosixPath
 from typing import Union
+
 from modes._mode_solver_full_vectorial import ModeSolverFullyVectorial
 from modes._mode_solver_semi_vectorial import ModeSolverSemiVectorial
 from modes.config import CONFIG

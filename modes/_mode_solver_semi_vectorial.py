@@ -1,12 +1,13 @@
+from pathlib import PosixPath
+from typing import Dict, List, Optional, Union
+
 import matplotlib.pylab as plt
 import numpy as np
+from numpy import ndarray
 
 from modes import _analyse as anal
 from modes import _mode_solver_lib as ms
 from modes._mode_solver import _ModeSolver
-from numpy import ndarray
-from pathlib import PosixPath
-from typing import Dict, List, Union, Optional
 
 
 class ModeSolverSemiVectorial(_ModeSolver):

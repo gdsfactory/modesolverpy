@@ -9,16 +9,16 @@
 
 """
 import collections as col
-from builtins import range
-from builtins import zip
+from builtins import range, zip
+from typing import List, Optional, Tuple, Union
 
 import numpy
 import scipy
-from scipy.interpolate import interp2d
-from modes._structure import RidgeWaveguide
 from numpy import complex128, float64, ndarray
+from scipy.interpolate import interp2d
 from scipy.sparse.csr import csr_matrix
-from typing import List, Optional, Tuple, Union
+
+from modes._structure import RidgeWaveguide
 
 
 def trapz2(

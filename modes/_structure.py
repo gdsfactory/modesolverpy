@@ -1,12 +1,12 @@
 import copy
-
 from collections.abc import Iterable
+from typing import List, Optional, Union
+
 import numpy as np
 import opticalmaterialspy as mat
+from numpy import float64
 
 from modes import _structure_base as sb
-from numpy import float64
-from typing import List, Optional, Union
 
 
 class RidgeWaveguide(sb.Slabs):

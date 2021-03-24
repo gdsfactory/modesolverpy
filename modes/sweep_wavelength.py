@@ -1,11 +1,12 @@
+from typing import Dict, List, Union
+
 import matplotlib.pylab as plt
 import numpy as np
 import pytest
 import tqdm
+from numpy import float64, ndarray
 
 from modes.mode_solver_full import mode_solver_full
-from numpy import float64, ndarray
-from typing import Dict, List, Union
 
 
 def sweep_wavelength(

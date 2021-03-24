@@ -1,13 +1,14 @@
+from typing import Dict, List, Tuple, Union
+
 import matplotlib.pylab as plt
 import numpy as np
 import pytest
 import tqdm
+from numpy import float64, ndarray
 
+from modes._structure import RidgeWaveguide
 from modes.mode_solver_full import mode_solver_full
 from modes.waveguide import waveguide
-from modes._structure import RidgeWaveguide
-from numpy import float64, ndarray
-from typing import Dict, List, Tuple, Union
 
 
 def sweep_waveguide(

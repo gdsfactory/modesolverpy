@@ -16,9 +16,10 @@ We have different materials available thanks to the [materialspy](https://optica
    plt.title('Silicon refractive index')
 
 """
+from typing import Union
+
 import opticalmaterialspy as mat
 from numpy import float64
-from typing import Union
 
 
 def si(wl: Union[float, float64]) -> float64:

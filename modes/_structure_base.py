@@ -1,13 +1,12 @@
 import abc
 import os
+from typing import Callable, Dict, Union
 
 import matplotlib.pylab as plt
 import numpy as np
+from numpy import float64, ndarray
 from scipy import interpolate
 from six import with_metaclass
-from numpy import float64, ndarray
-from typing import Callable, Union, Dict
-
 
 StringOrNumber = Union[str, float, int]
 

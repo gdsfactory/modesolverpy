@@ -1,13 +1,13 @@
 import pathlib
+from pathlib import PosixPath
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import matplotlib.pylab as plt
 import numpy as np
-
-from modes._mode_solver_lib import FDMode, _ModeSolverVectorial
-from modes._mode_solver import _ModeSolver
 from numpy import complex128, float64, ndarray
-from pathlib import PosixPath
-from typing import Any, Dict, List, Tuple, Union, Optional
+
+from modes._mode_solver import _ModeSolver
+from modes._mode_solver_lib import FDMode, _ModeSolverVectorial
 
 
 class ModeSolverFullyVectorial(_ModeSolver):

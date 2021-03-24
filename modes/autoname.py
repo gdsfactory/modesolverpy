@@ -1,9 +1,9 @@
 import functools
 import hashlib
 from inspect import signature
+from typing import Any, Dict
 
 import numpy as np
-from typing import Any, Dict
 
 MAX_NAME_LENGTH = 36
 

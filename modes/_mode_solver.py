@@ -1,16 +1,17 @@
 import abc
 import os
 import sys
+from pathlib import PosixPath
+from typing import Dict, List, Optional, Union
+
 import matplotlib.pylab as plt
 import numpy as np
 import tqdm
+from numpy import complex128, float64, ndarray
 from six import with_metaclass
 
 from modes.config import CONFIG
 from modes.waveguide import waveguide
-from numpy import complex128, float64, ndarray
-from pathlib import PosixPath
-from typing import Dict, List, Optional, Union
 
 plt.rc("image", cmap="coolwarm")
 

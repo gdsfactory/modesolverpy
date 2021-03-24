@@ -1,9 +1,10 @@
+from typing import List
+
 import numpy as np
 import pytest
+from numpy import float64
 
 from modes.mode_solver_full import mode_solver_full
-from numpy import float64
-from typing import List
 
 
 def group_index(
