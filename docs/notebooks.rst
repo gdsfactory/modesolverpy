@@ -20,3 +20,4 @@ Tutorials for `modes <https://modes.rtfd.io>`_
    notebooks/22_sweep_height.ipynb
    notebooks/30_sweep_coupler_gap.ipynb
    notebooks/31_sweep_grating_coupler.ipynb
+   notebooks/32_coupling_efficiency.ipynb

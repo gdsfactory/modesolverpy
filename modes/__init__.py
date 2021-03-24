@@ -8,7 +8,7 @@ from modes.mode_solver_semi import mode_solver_semi
 from modes.neff import neff
 from modes.sweep_waveguide import sweep_waveguide
 from modes.sweep_wavelength import sweep_wavelength
-from modes.waveguide import waveguide, waveguide_array
+from modes.waveguide import waveguide, waveguide_array, write_material_index
 
 __all__ = [
     "fit",
@@ -24,6 +24,7 @@ __all__ = [
     "group_index",
     "waveguide",
     "waveguide_array",
+    "write_material_index",
 ]
 
 
