@@ -2,6 +2,8 @@
 # 1.0.3
 
 - remove dbr sample and EMpy dependency
+- added type hints
+- added more tests
 
 
 # 1.0.2
