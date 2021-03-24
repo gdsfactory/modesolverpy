@@ -1,10 +1,9 @@
 import numpy as np
-from numpy import float64
 
 
 def directional_coupler_lc(
     wavelength_nm: int, n_eff_1: float, n_eff_2: float, power_ratio: int = 1
-) -> float64:
+) -> float:
     """
     Calculates the coherence length (100% power transfer) of a
     directional coupler.
@@ -28,17 +27,20 @@ def directional_coupler_lc(
 
 
 def grating_coupler_period(
-    wavelength, n_eff, n_clad, incidence_angle_deg, diffration_order=1
-):
-    """
-    Calculate the period needed for a grating coupler.
+    wavelength: float,
+    n_eff: float,
+    n_clad: float,
+    incidence_angle_deg: float,
+    diffration_order: int = 1,
+) -> float:
+    """Returns period needed for a grating coupler.
 
     Args:
-        wavelength (float): The target wavelength for the grating coupler.
-        n_eff (float): The effective index of the mode of a waveguide with the width of the grating coupler.
-        n_clad (float): The refractive index of the cladding.
-        incidence_angle_deg (float): The incidence angle the grating coupler should operate at [degrees].
-        diffration_order (int): The grating order the coupler should work at.  Default is 1st order (1).
+        wavelength: target wavelength for the grating coupler.
+        n_eff: effective index of the mode of a waveguide with the width of the grating coupler.
+        n_clad refractive index of the cladding.
+        incidence_angle_deg: incidence angle the grating coupler should operate at [degrees].
+        diffration_order: grating order the coupler should work at.  Default is 1st order (1).
 
     Returns:
         float: The period needed for the grating coupler in the same units as wavelength
@@ -54,8 +56,8 @@ def grating_coupler_period(
     return grating_period
 
 
-def loss(n, wavelength):
-    """ return dB/um loss for a n propagation constant imaginary part """
+def loss(n, wavelength: float) -> float:
+    """Return dB/um loss for a n propagation constant imaginary part."""
     kappa = n.imag
     alpha = (
         4.34 * 4 * np.pi * np.abs(kappa) / wavelength
@@ -113,5 +115,16 @@ def test_design() -> None:
     np.isclose(directional_coupler_lc(1550, 2.378, 2.317864), 12.8827)
 
 
+def test_grating_coupler_period():
+    period = grating_coupler_period(
+        wavelength=1.55, n_eff=2.378, n_clad=1.44, incidence_angle_deg=1
+    )
+    print(period)
+    np.isclose(period, 0.658770338)
+
+
 if __name__ == "__main__":
-    test_design()
+    # test_design()
+    # test_grating_coupler_period()
+    db_um = loss(n=2.4 + 1j, wavelength=1.55)
+    print(db_um)

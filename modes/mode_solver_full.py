@@ -1,18 +1,15 @@
 import json
+from typing import Optional, Tuple
 
 import numpy as np
 import pytest
 
-from modes.get_modes_jsonpath import get_modes_jsonpath
 from modes._mode_solver_full_vectorial import ModeSolverFullyVectorial
-from modes.autoname import autoname
-from modes.autoname import clean_value
-from modes.materials import nitride
-from modes.materials import sio2
-from modes.waveguide import waveguide
-from modes.waveguide import write_material_index
 from modes._structure import RidgeWaveguide
-from typing import Optional, Tuple
+from modes.autoname import autoname, clean_value
+from modes.get_modes_jsonpath import get_modes_jsonpath
+from modes.materials import nitride, sio2
+from modes.waveguide import waveguide, write_material_index
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
@@ -96,7 +93,7 @@ def mode_solver_full(
         overwrite: whether to run again even if it finds the modes in CONFIG.cache
         x_step: 0.02 grid step (um)
         y_step: 0.02 grid step (um)
-        wg_heigth: 0.22 (um)
+        thickness: 0.22 (um)
         width: 0.5 (um)
         slab_thickness: 0 (um)
         sub_width: 2.0 related to the total simulation width

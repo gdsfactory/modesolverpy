@@ -1,3 +1,6 @@
+"""Compute coupling_efficiency from waveguide mode to fiber.
+"""
+
 import numpy as np
 
 
@@ -27,14 +30,13 @@ def _overlap(mode, gaussian):
     return eta
 
 
-def reflection(n1, n2):
-    """
-    Calculate the power reflection at the interface
+def reflection(n1: float, n2: float) -> float:
+    """Returns power reflection at the interface
     of two refractive index materials.
 
     Args:
-        n1 (float): Refractive index of material 1.
-        n2 (float): Refractive index of material 2.
+        n1: Refractive index of material 1.
+        n2: Refractive index of material 2.
 
     Returns:
         float: The percentage of reflected power.
@@ -43,14 +45,13 @@ def reflection(n1, n2):
     return r
 
 
-def transmission(n1, n2):
-    """
-    Calculate the power transmission at the interface
+def transmission(n1: float, n2: float):
+    """Returns power transmission at the interface
     of two refractive index materials.
 
     Args:
-        n1 (float): Refractive index of material 1.
-        n2 (float): Refractive index of material 2.
+        n1: Refractive index of material 1.
+        n2: Refractive index of material 2.
 
     Returns:
         float: The percentage of transmitted power.
@@ -59,34 +60,30 @@ def transmission(n1, n2):
 
 
 def coupling_efficiency(
-    mode_solver, fibre_mfd, fibre_offset_x=0, fibre_offset_y=0, n_eff_fibre=1.441
-):
-    """
-    Finds the coupling efficiency between a solved
+    mode_solver,
+    fibre_mfd: float,
+    fibre_offset_x: float = 0.0,
+    fibre_offset_y: float = 0.0,
+    n_eff_fibre: float = 1.441,
+) -> float:
+    """Returns the coupling efficiency between a solved
     fundamental mode and a fibre of given MFD.
 
     Args:
-        mode_solver (_ModeSolver): Mode solver that
-            has found a fundamental mode.
-        fibre_mfd (float): The mode-field diameter
-            (MFD) of the fibre.
-        fibre_offset_x (float): Offset the fibre
-            from the centre position of the window
-            in x. Default is 0 (no offset).
-        fibre_offset_y (float): Offset the fibre
-            from the centre position of the window
-            in y. Default is 0 (no offset).
-        n_eff_fibre (float): The effective index
-            of the fibre mode.  Default is 1.441.
+        mode_solver: with fundamental mode.
+        fibre_mfd: mode-field diameter (MFD) of the fibre.
+        fibre_offset_x: Offset the fibre from the centre position of the window in x.
+        fibre_offset_y: Offset the fibre from the centre position of the window in y.
+        n_eff_fibre: The effective index of the fibre mode.
 
     Returns:
-        float: The power coupling efficiency.
+        float: The power coupling efficiency for each mode.
     """
     etas = []
 
     gaus = _make_gaussian(
-        mode_solver._structure.xc,
-        mode_solver._structure.yc,
+        mode_solver.wg.xc,
+        mode_solver.wg.yc,
         fibre_mfd,
         fibre_offset_x,
         fibre_offset_y,
@@ -99,3 +96,21 @@ def coupling_efficiency(
         etas.append(eta)
 
     return etas
+
+
+def test_coupling_efficiency():
+    import modes
+
+    ms = modes.mode_solver_semi()
+    ce = coupling_efficiency(mode_solver=ms, fibre_mfd=11)
+    assert np.isclose(ce[0], 0.1501963670028584)
+
+
+if __name__ == "__main__":
+
+    test_coupling_efficiency()
+
+    # ms = modes.mode_solver_full() # FIXME
+    # ms = modes.mode_solver_semi()
+    # ce = coupling_efficiency(mode_solver=ms, fibre_mfd=11)
+    # print(ce)

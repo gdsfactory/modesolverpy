@@ -14,7 +14,7 @@ repos:
       rev: "9042488762e10137fd535601d9f433f1e3920dad"
       hooks:
           - id: isort
-            files: "pp/.*"
+            files: "modes/.*"
             args: ["--profile", "black", "--filter-files"]
 
     - repo: https://github.com/psf/black

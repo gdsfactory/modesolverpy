@@ -3,12 +3,10 @@ import json
 import numpy as np
 import pytest
 
-from modes.get_modes_jsonpath import get_modes_jsonpath
 from modes._mode_solver_semi_vectorial import ModeSolverSemiVectorial
-from modes.autoname import autoname
-from modes.autoname import clean_value
-from modes.waveguide import waveguide
-from modes.waveguide import write_material_index
+from modes.autoname import autoname, clean_value
+from modes.get_modes_jsonpath import get_modes_jsonpath
+from modes.waveguide import waveguide, write_material_index
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
@@ -49,6 +47,8 @@ def _semi(
     Args:
         n_modes: 2
         semi_vectorial_method: 'Ey' for TM, 'Ex' for TE
+        plot: plot modes
+        plot_profile: plot index profile
         wg_kwargs: for waveguide
     """
 
@@ -69,7 +69,7 @@ def mode_solver_semi(
     n_modes: int = 2,
     semi_vectorial_method: str = "Ex",
     overwrite: bool = False,
-    plot: bool = True,
+    plot: bool = False,
     plot_profile: bool = False,
     logscale: bool = False,
     **wg_kwargs
@@ -81,6 +81,10 @@ def mode_solver_semi(
         n_modes: 2
         overwrite: whether to run again even if it finds the modes in CONFIG.cache
         semi_vectorial_method: 'Ey' for TM, 'Ex' for TE
+        overwrite: runs even
+        plot: plot modes
+        plot_profile: plot index profile
+        logscale: plots mode in logscale
         x_step: 0.02
         y_step: 0.02
         thickness: 0.22
