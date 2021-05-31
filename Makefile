@@ -23,7 +23,7 @@ lint:
 	tox -e flake8
 
 pylint:
-	pylint --rcfile .pylintrc pp/
+	pylint --rcfile .pylintrc modes/
 
 lintdocs:
 	flake8 --select RST
@@ -39,3 +39,6 @@ autopep8:
 
 codestyle:
 	pycodestyle --max-line-length=88
+
+test:
+	pytest

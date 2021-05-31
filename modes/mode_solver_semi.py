@@ -6,7 +6,7 @@ import pytest
 from modes._mode_solver_semi_vectorial import ModeSolverSemiVectorial
 from modes.autoname import autoname, clean_value
 from modes.get_modes_jsonpath import get_modes_jsonpath
-from modes.waveguide import waveguide, write_material_index
+from modes.waveguide import waveguide
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
@@ -33,11 +33,7 @@ def test_mode_solver_semi_vectorial_tm(overwrite: bool) -> None:
 
 @autoname
 def _semi(
-    n_modes: int = 2,
-    semi_vectorial_method: str = "Ex",
-    plot: bool = False,
-    plot_profile: bool = False,
-    **wg_kwargs
+    n_modes: int = 2, semi_vectorial_method: str = "Ex", plot: bool = False, **wg_kwargs
 ) -> ModeSolverSemiVectorial:
     """
     returns mode solver with mode_solver.wg
@@ -48,13 +44,10 @@ def _semi(
         n_modes: 2
         semi_vectorial_method: 'Ey' for TM, 'Ex' for TE
         plot: plot modes
-        plot_profile: plot index profile
         wg_kwargs: for waveguide
     """
 
     wg = waveguide(**wg_kwargs)
-    if plot_profile:
-        write_material_index(wg)
 
     mode_solver = ModeSolverSemiVectorial(
         n_modes, semi_vectorial_method=semi_vectorial_method
@@ -70,7 +63,6 @@ def mode_solver_semi(
     semi_vectorial_method: str = "Ex",
     overwrite: bool = False,
     plot: bool = False,
-    plot_profile: bool = False,
     logscale: bool = False,
     **wg_kwargs
 ) -> ModeSolverSemiVectorial:
@@ -83,7 +75,6 @@ def mode_solver_semi(
         semi_vectorial_method: 'Ey' for TM, 'Ex' for TE
         overwrite: runs even
         plot: plot modes
-        plot_profile: plot index profile
         logscale: plots mode in logscale
         x_step: 0.02
         y_step: 0.02
@@ -95,7 +86,7 @@ def mode_solver_semi(
         clad_thickness: 0.5
         n_sub: sio2
         n_wg: si
-        n_clad: sio2
+        n_clads: [sio2]
         wavelength: 1.55
         angle: 90.0
 
@@ -109,11 +100,7 @@ def mode_solver_semi(
 
     """
     mode_solver = _semi(
-        n_modes=n_modes,
-        semi_vectorial_method=semi_vectorial_method,
-        plot=plot,
-        plot_profile=plot_profile,
-        **wg_kwargs
+        n_modes=n_modes, semi_vectorial_method=semi_vectorial_method, **wg_kwargs
     )
     settings = {k: clean_value(v) for k, v in mode_solver.settings.items()}
     jsonpath = get_modes_jsonpath(mode_solver)
@@ -181,5 +168,5 @@ if __name__ == "__main__":
     # test_mode_solver_semi_vectorial_tm(overwrite=True)
     # test_mode_solver_semi_vectorial_tm(overwrite=False)
 
-    mode_solver_semi(plot=True, plot_profile=False, logscale=True)
+    mode_solver_semi(plot=True, logscale=True)
     plt.show()
