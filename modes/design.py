@@ -2,7 +2,7 @@ import numpy as np
 
 
 def directional_coupler_lc(
-    wavelength_nm: int, n_eff_1: float, n_eff_2: float, power_ratio: int = 1
+    wavelength_nm: int, n_eff_1: float, n_eff_2: float, power_ratio: float = 1.0
 ) -> float:
     """
     Calculates the coherence length (100% power transfer) of a
