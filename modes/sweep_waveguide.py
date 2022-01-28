@@ -81,7 +81,6 @@ def sweep_waveguide(
         fractions_tm=fractions_tm,
     )
 
-    # suffix = "_".join([f"{int(i*1e3)}" for i in sweep_param_list])
     suffix = "_".join([f"{int(sweep_param_list[i]*1e3)}" for i in [0, -1]])
     suffix += f"_{len(sweep_param_list)}"
 
@@ -90,13 +89,6 @@ def sweep_waveguide(
     filename_mode_types = filename.parent / f"{filename.stem}_mode_types.dat"
     filename_fraction_te = filename.parent / f"{filename.stem}_fraction_te.dat"
     filename_fraction_tm = filename.parent / f"{filename.stem}_fraction_tm.dat"
-
-    # filename_neffs = ms._modes_directory / f"{ms.name}_{suffix}_neffs.dat"
-    # filename_mode_types = ms._modes_directory / f"{ms.name}_{suffix}_mode_types.dat"
-    # filename_fraction_te = ms._modes_directory / f"{ms.name}_{suffix}_fraction_te.dat"
-    # filename_fraction_tm = ms._modes_directory / f"{ms.name}_{suffix}_fraction_tm.dat"
-
-    # if overwrite or not filename_neffs.exists():
 
     ms._write_n_effs_to_file(n_effs, filename_neffs, sweep_param_list)
 
@@ -176,10 +168,9 @@ def test_sweep(overwrite: bool) -> None:
         fraction_mode_list=[1, 2],
         overwrite=overwrite,
     )
-    print(r["n_effs"][0])
     assert np.isclose(
         r["n_effs"][0], np.array([2.47170794, 1.81238363]), atol=0.1
-    ).all()
+    ).all(), r["n_effs"][0]
     assert r
 
 
@@ -194,13 +185,21 @@ def test_sweep2(overwrite: bool) -> None:
         fraction_mode_list=[1, 2],
         overwrite=overwrite,
     )
-    print(r["n_effs"][0])
     assert np.isclose(
         r["n_effs"][0], np.array([1.84891783, 1.60477969]), atol=0.1
-    ).all()
+    ).all(), r["n_effs"][0]
     assert r
 
 
 if __name__ == "__main__":
-    test_sweep2(overwrite=False)
+    # test_sweep2(overwrite=False)
+
+    widths = np.arange(0.3, 1.0, 0.5)
+    wgs = [waveguide(width=width) for width in widths]
+    r = sweep_waveguide(
+        wgs,
+        widths,
+        n_modes=2,
+        fraction_mode_list=[1, 2],
+    )
     plt.show()
