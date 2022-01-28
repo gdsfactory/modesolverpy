@@ -9,7 +9,7 @@ from modes._structure import RidgeWaveguide
 from modes.autoname import autoname, clean_value
 from modes.get_modes_jsonpath import get_modes_jsonpath
 from modes.materials import nitride, sio2
-from modes.waveguide import waveguide, write_material_index
+from modes.waveguide import waveguide
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
@@ -45,7 +45,6 @@ def _full(
     n_modes: int = 2,
     wg: Optional[RidgeWaveguide] = None,
     plot: bool = True,
-    plot_profile: bool = False,
     **wg_kwargs
 ) -> ModeSolverFullyVectorial:
     """
@@ -57,11 +56,10 @@ def _full(
         n_modes: 2
         wg: waveguide object
         wg_kwargs: for waveguide
+        plot: plot modes
     """
 
     wg = wg or waveguide(**wg_kwargs)
-    if plot_profile:
-        write_material_index(wg)
 
     mode_solver = ModeSolverFullyVectorial(n_modes)
     mode_solver.wg = wg
@@ -72,7 +70,6 @@ def mode_solver_full(
     n_modes: int = 2,
     overwrite: bool = False,
     plot: bool = False,
-    plot_profile: bool = False,
     logscale: bool = False,
     wg: Optional[RidgeWaveguide] = None,
     fields_to_write: Tuple[str, ...] = (
@@ -91,6 +88,10 @@ def mode_solver_full(
     Args:
         n_modes: 2
         overwrite: whether to run again even if it finds the modes in CONFIG.cache
+        plot: plot modes
+        logscale: plots mode in logscale
+        wg: waveguide
+        fields_to_write:
         x_step: 0.02 grid step (um)
         y_step: 0.02 grid step (um)
         thickness: 0.22 (um)
@@ -114,9 +115,7 @@ def mode_solver_full(
       print(s.results.keys())
 
     """
-    mode_solver = _full(
-        n_modes=n_modes, wg=wg, plot=plot, plot_profile=plot_profile, **wg_kwargs
-    )
+    mode_solver = _full(n_modes=n_modes, wg=wg, plot=plot, **wg_kwargs)
     settings = {k: clean_value(v) for k, v in mode_solver.settings.items()}
     jsonpath = get_modes_jsonpath(mode_solver)
     filepath = jsonpath.with_suffix(".dat")
