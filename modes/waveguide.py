@@ -45,9 +45,9 @@ def waveguide(
         n_slab: optional slab index. Defaults to n_wg.
         n_clads: list of cladding refractive index or function [sio2]
         wavelength: 1.55 wavelength (um)
-        angle: 90 sidewall angle (degrees)
+        angle: 90 sidewall angle with respect to normal (degrees)
 
-    ::
+    .. code::
 
         _________________________________
 
@@ -72,7 +72,7 @@ def waveguide(
     - the material functions or refractive indices of box, waveguide and clad
     - thickness of each material
     - x and y_steps for structure grid
-    - sidewall angle
+    - sidewall angle (degrees)
     - wavelength that can be used in case the refractive index are a function of the wavelength
 
     Where all units are in um
@@ -112,6 +112,7 @@ def waveguide(
         clad_thickness=clad_thickness,
         n_sub=n_sub,
         n_wg=n_wg,
+        n_slab=n_slab,
         angle=angle,
         n_clad=n_clad,
         film_thickness=film_thickness,
@@ -136,19 +137,20 @@ def waveguide_array(
     wavelength: float = 1.55,
     angle: float = 90.0,
 ) -> WgArray:
-    """Returns a evanescent coupled waveguides ::
+    """Returns a evanescent coupled waveguides
 
+    .. code::
          __________________________________________________________
 
                                                                   clad_thickness
-              widths[0]  wg_gaps[0]  widths[1]
+                widths[0]   wg_gaps[0]  widths[1]
               <-----------><----------><----------->   _ _ _ _ _ _
-               ___________              ___________
-              |           |            |           |
+               ___________              ___________               |
+              |           |            |           |              |
          _____|           |____________|           |____          |
                                                                   thickness
-         slab_thickness                                              |
-         ________________________________________________ _ _ _ _ _
+         slab_thickness                                           |
+         ________________________________________________ _ _ _ _ |
 
          sub_thickness
          __________________________________________________________
@@ -206,6 +208,7 @@ def waveguide_array(
         clad_thickness=clad_thickness,
         n_sub=n_sub,
         n_wg=n_wg,
+        n_slab=n_slab,
         angle=angle,
         n_clad=n_clad,
         film_thickness=film_thickness,
