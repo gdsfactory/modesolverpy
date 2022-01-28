@@ -71,6 +71,7 @@ class RidgeWaveguide(sb.Slabs):
         clad_thickness: List[float],
         n_sub: float64,
         n_wg: float64,
+        n_slab: Optional[float] = None,
         angle: Union[float, int] = 0,
         n_clad: List[float64] = [mat.Air().n()],
         film_thickness: float = "thickness",
@@ -97,7 +98,7 @@ class RidgeWaveguide(sb.Slabs):
             assert (
                 thickness <= film_thickness
             ), "Waveguide can't be thicker than the film."
-            self.add_slab(film_thickness - thickness, n_wg)
+            self.add_slab(self.slab_thickness, n_slab or n_wg)
         k = self.add_slab(thickness, n_clad[0])
 
         self.slabs[k].add_material(
@@ -112,7 +113,7 @@ class RidgeWaveguide(sb.Slabs):
 
     def _repr_html_(self):
         """Plot index profile in matplotlib when using jupyter notebooks."""
-        self.write_to_file()
+        self.plot()
 
 
 class WgArray(sb.Slabs):
@@ -129,6 +130,7 @@ class WgArray(sb.Slabs):
         clad_thickness: List[float],
         n_sub: float64,
         n_wg: float64,
+        n_slab: Optional[float] = None,
         angle: float = 0,
         n_clad: List[float64] = [mat.Air().n()],
         film_thickness: Optional[float] = None,
@@ -167,7 +169,7 @@ class WgArray(sb.Slabs):
             assert (
                 thickness <= film_thickness
             ), "Waveguide can't be thicker than the film."
-            self.add_slab(film_thickness - thickness, n_wg)
+            self.add_slab(self.slab_thickness, n_slab or n_wg)
 
         k = self.add_slab(thickness, n_clad[0])
         air_width_l_r = 0.5 * (sub_width - np.sum(widths) - np.sum(wg_gaps))
@@ -186,4 +188,4 @@ class WgArray(sb.Slabs):
 
     def _repr_html_(self):
         """Plot index profile in matplotlib when using jupyter notebooks."""
-        self.write_to_file()
+        self.plot()

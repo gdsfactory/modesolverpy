@@ -249,15 +249,12 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
 
         return self.n
 
-    def write_to_file(self, filename="material_index.dat", plot=True):
-        """
-        Write the refractive index profile to file.
+    def write_to_file(self, filename="material_index.dat") -> None:
+        """Write the refractive index profile to file.
 
         Args:
             filename (str): The nominal filename the refractive
                 index data should be saved to.
-            plot (bool): `True` if plots should be generates,
-                otherwise `False`.  Default is `True`.
         """
 
         with open(filename, "w") as fs:
@@ -265,33 +262,34 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
                 n_str = ",".join([str(v) for v in n_row])
                 fs.write(n_str + "\n")
 
-        if plot:
-            filename_image_prefix, _ = os.path.splitext(filename)
-            filename_image = filename_image_prefix + ".png"
-            args = {
-                "title": "Refractive Index Profile",
-                "x_pts": self.x_pts,
-                "y_pts": self.y_pts,
-                "x_min": self.x_min,
-                "x_max": self.x_max,
-                "y_min": self.y_min,
-                "y_max": self.y_max,
-                "filename_data": filename,
-                "filename_image": filename_image,
-            }
+    def plot(self, filename="material_index.dat") -> None:
+        self.write_to_file(filename=filename)
+        filename_image_prefix, _ = os.path.splitext(filename)
+        filename_image = filename_image_prefix + ".png"
+        args = {
+            "title": "Refractive Index Profile",
+            "x_pts": self.x_pts,
+            "y_pts": self.y_pts,
+            "x_min": self.x_min,
+            "x_max": self.x_max,
+            "y_min": self.y_min,
+            "y_max": self.y_max,
+            "filename_data": filename,
+            "filename_image": filename_image,
+        }
 
-            heatmap = np.loadtxt(args["filename_data"], delimiter=",")
-            plt.clf()
-            plt.title(args["title"])
-            plt.xlabel("$x$")
-            plt.ylabel("$y$")
-            plt.imshow(
-                np.flipud(heatmap),
-                extent=(args["x_min"], args["x_max"], args["y_min"], args["y_max"]),
-                aspect="auto",
-            )
-            plt.colorbar()
-            plt.savefig(filename_image)
+        heatmap = np.loadtxt(args["filename_data"], delimiter=",")
+        plt.clf()
+        plt.title(args["title"])
+        plt.xlabel("$x$")
+        plt.ylabel("$y$")
+        plt.imshow(
+            np.flipud(heatmap),
+            extent=(args["x_min"], args["x_max"], args["y_min"], args["y_max"]),
+            aspect="auto",
+        )
+        plt.colorbar()
+        plt.savefig(filename_image)
 
     def __str__(self) -> str:
         return self.name
