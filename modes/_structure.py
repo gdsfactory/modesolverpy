@@ -113,7 +113,7 @@ class RidgeWaveguide(sb.Slabs):
 
     def _repr_html_(self):
         """Plot index profile in matplotlib when using jupyter notebooks."""
-        self.write_to_file()
+        self.plot()
 
 
 class WgArray(sb.Slabs):
@@ -188,4 +188,4 @@ class WgArray(sb.Slabs):
 
     def _repr_html_(self):
         """Plot index profile in matplotlib when using jupyter notebooks."""
-        self.write_to_file()
+        self.plot()

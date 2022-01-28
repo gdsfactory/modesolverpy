@@ -44,7 +44,7 @@ def test_mode_solver_full_vectorial_multi_clad(overwrite: bool) -> None:
 def _full(
     n_modes: int = 2,
     wg: Optional[RidgeWaveguide] = None,
-    plot: bool = True,
+    plot_index: bool = True,
     **wg_kwargs
 ) -> ModeSolverFullyVectorial:
     """Returns mode solver and
@@ -59,6 +59,9 @@ def _full(
 
     wg = wg or waveguide(**wg_kwargs)
 
+    if plot_index:
+        wg.plot()
+
     mode_solver = ModeSolverFullyVectorial(n_modes)
     mode_solver.wg = wg
     return mode_solver
@@ -68,6 +71,7 @@ def mode_solver_full(
     n_modes: int = 2,
     overwrite: bool = False,
     plot: bool = False,
+    plot_index: bool = True,
     logscale: bool = False,
     wg: Optional[RidgeWaveguide] = None,
     fields_to_write: Tuple[str, ...] = (
@@ -80,13 +84,13 @@ def mode_solver_full(
     ),
     **wg_kwargs
 ) -> ModeSolverFullyVectorial:
-    """
-    returns full vectorial mode solver with the computed modes
+    """Return full vectorial mode solver with the computed modes
 
     Args:
         n_modes: 2
         overwrite: whether to run again even if it finds the modes in CONFIG.cache
         plot: plot modes
+        plot_index: plots index profile
         logscale: plots mode in logscale
         wg: waveguide
         fields_to_write:
@@ -105,15 +109,15 @@ def mode_solver_full(
         angle: 90 sidewall angle (degrees)
 
     .. plot::
-      :include-source:
+        :include-source:
 
-      import modes as ms
+        import modes as ms
 
-      s = ms.mode_solver_full(plot=True, n_modes=1, width=0.5, thickness=0.22)
-      print(s.results.keys())
+        s = ms.mode_solver_full(plot=True, n_modes=1, width=0.5, thickness=0.22)
+        print(s.results.keys())
 
     """
-    mode_solver = _full(n_modes=n_modes, wg=wg, plot=plot, **wg_kwargs)
+    mode_solver = _full(n_modes=n_modes, wg=wg, plot_index=plot_index, **wg_kwargs)
     settings = {k: clean_value(v) for k, v in mode_solver.settings.items()}
     jsonpath = get_modes_jsonpath(mode_solver)
     filepath = jsonpath.with_suffix(".dat")

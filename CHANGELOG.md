@@ -1,7 +1,9 @@
 
 # CHANGELOG
 
-## next release
+## 1.0.5
+
+- add n_slab as an optional. Defaults to n_wg
 
 
 ## 1.0.3
