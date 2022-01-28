@@ -48,10 +48,8 @@ def _full(
     plot_profile: bool = False,
     **wg_kwargs
 ) -> ModeSolverFullyVectorial:
-    """
-    returns mode solver with mode_solver.wg
+    """Returns mode solver and
     writes waveguide material index
-    use mode_solver_semi instead
 
     Args:
         n_modes: 2

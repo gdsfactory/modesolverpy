@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-from typing import Callable, List, Union
+from typing import Callable, List, Optional, Union
 
 import matplotlib.pylab as plt
 import numpy as np
@@ -24,6 +24,7 @@ def waveguide(
     clad_thickness: List[float] = [0.5],
     n_sub: Union[Callable, float] = sio2,
     n_wg: Union[Callable, float] = si,
+    n_slab: Optional[Union[Callable, float]] = None,
     n_clads: List[Union[Callable, float]] = [sio2],
     wavelength: float = 1.55,
     angle: float = 90.0,
@@ -41,6 +42,7 @@ def waveguide(
         clad_thickness: [0.5]  List of claddings (top simulation margin)
         n_sub: substrate index material
         n_wg: core waveguide index material
+        n_slab: optional slab index. Defaults to n_wg.
         n_clads: list of cladding refractive index or function [sio2]
         wavelength: 1.55 wavelength (um)
         angle: 90 sidewall angle (degrees)
@@ -93,6 +95,9 @@ def waveguide(
     n_sub = n_sub(wavelength) if callable(n_sub) else n_sub
     n_clad = [n_clad(wavelength) if callable(n_clad) else n_clad for n_clad in n_clads]
 
+    n_slab = n_slab or n_wg
+    n_slab = n_slab(wavelength) if callable(n_slab) else n_slab
+
     film_thickness = thickness
     thickness = film_thickness - slab_thickness
 
@@ -126,6 +131,7 @@ def waveguide_array(
     clad_thickness: List[float] = [0.5],
     n_sub: Callable = sio2,
     n_wg: Callable = si,
+    n_slab: Optional[Union[Callable, float]] = None,
     n_clads: List[Callable] = [sio2],
     wavelength: float = 1.55,
     angle: float = 90.0,
@@ -160,6 +166,7 @@ def waveguide_array(
         n_sub: substrate refractive index value or function(wavelength)
         n_wg: waveguide refractive index value or function(wavelength)
         n_clads: waveguide refractive index value or function(wavelength)
+        n_slab: optional slab index. Defaults to n_wg.
         slab_thickness: slab thickness (um)
         sub_thickness: substrate thickness (um)
         clad_thickness: cladding thickness (um)
@@ -180,6 +187,9 @@ def waveguide_array(
     n_wg = n_wg(wavelength) if callable(n_wg) else n_wg
     n_sub = n_sub(wavelength) if callable(n_sub) else n_sub
     n_clad = [n_clad(wavelength) if callable(n_clad) else n_clad for n_clad in n_clads]
+
+    n_slab = n_slab or n_wg
+    n_slab = n_slab(wavelength) if callable(n_slab) else n_slab
 
     film_thickness = thickness
     thickness = film_thickness - slab_thickness
@@ -207,7 +217,7 @@ def get_waveguide_filepath(wg):
 
 
 def write_material_index(wg, filepath=None):
-    """ writes the waveguide refractive index into filepath"""
+    """writes the waveguide refractive index into filepath"""
     filepath = filepath or get_waveguide_filepath(wg)
     wg.write_to_file(filepath)
 
