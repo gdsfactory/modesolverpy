@@ -1,12 +1,15 @@
 import abc
 import os
-from typing import Callable, Dict, Union
+import pathlib
+from typing import Callable, Dict, Optional, Union
 
 import matplotlib.pylab as plt
 import numpy as np
 from numpy import float64, ndarray
 from scipy import interpolate
 from six import with_metaclass
+
+from modes.config import CONFIG
 
 StringOrNumber = Union[str, float, int]
 
@@ -249,20 +252,26 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
 
         return self.n
 
-    def write_to_file(self, filename="material_index.dat") -> None:
+    def write_to_file(
+        self, filename: str = "material_index.dat", dirpath: Optional[str] = None
+    ) -> None:
         """Write the refractive index profile to file.
 
         Args:
-            filename (str): The nominal filename the refractive
+            filename: The nominal filename the refractive
                 index data should be saved to.
+            dirpath: directory path to write the file.
         """
 
-        with open(filename, "w") as fs:
+        dirpath = dirpath or CONFIG.cache
+        filepath = pathlib.Path(dirpath) / filename
+
+        with open(filepath, "w") as fs:
             for n_row in np.abs(self.n[::-1]):
                 n_str = ",".join([str(v) for v in n_row])
                 fs.write(n_str + "\n")
 
-    def plot(self, filename="material_index.dat") -> None:
+    def plot(self, filename: str = "material_index.dat") -> None:
         self.write_to_file(filename=filename)
         filename_image_prefix, _ = os.path.splitext(filename)
         filename_image = filename_image_prefix + ".png"

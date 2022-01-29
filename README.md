@@ -13,7 +13,7 @@ The documentation for this project can be found [here](http://modes.rtfd.io).
 
 ## Examples
 
-Take a look at the jupyter notebooks
+Take a look at the jupyter notebooks in [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/joamatab/modesolverpy/HEAD)
 
 ## Installation
 
