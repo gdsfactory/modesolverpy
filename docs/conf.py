@@ -1,5 +1,5 @@
 project = "modes"
-version = "1.0.3"
+version = "1.0.4"
 copyright = "2019, Jean-Luc Tambasco"
 author = "Jean-Luc Tambasco"
 

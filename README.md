@@ -1,4 +1,4 @@
-# Modes 1.0.3
+# Modes 1.0.4
 
 Photonic mode solver with a nice interface and output.
 Based on a modified version of [EMpy](https://github.com/lbolla/EMpy) and [modesolverpy](https://github.com/jtambasco/modesolverpy)
