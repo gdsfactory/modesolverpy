@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="modes",
-    version="1.0.4",
+    version="1.0.5",
     description="Photonic mode solver.",
     url="https://modes.readthedocs.io/en/latest/",
     author="Jean-Luc Tambasco",
