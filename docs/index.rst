@@ -11,3 +11,4 @@ modes
     waveguide
     mode_solvers
     sweep
+    CHANGELOG

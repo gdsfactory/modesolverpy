@@ -4,7 +4,7 @@ setup(
     name="modes",
     version="1.0.4",
     description="Photonic mode solver.",
-    url="https://github.com/jtambasco/modesolverpy",
+    url="https://modes.readthedocs.io/en/latest/",
     author="Jean-Luc Tambasco",
     author_email="an.obscurity@gmail.com",
     license="MIT",

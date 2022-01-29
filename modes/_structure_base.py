@@ -254,7 +254,7 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
 
     def write_to_file(
         self, filename: str = "material_index.dat", dirpath: Optional[str] = None
-    ) -> None:
+    ) -> pathlib.Path:
         """Write the refractive index profile to file.
 
         Args:
@@ -270,11 +270,11 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
             for n_row in np.abs(self.n[::-1]):
                 n_str = ",".join([str(v) for v in n_row])
                 fs.write(n_str + "\n")
+        return filepath
 
     def plot(self, filename: str = "material_index.dat") -> None:
-        self.write_to_file(filename=filename)
-        filename_image_prefix, _ = os.path.splitext(filename)
-        filename_image = filename_image_prefix + ".png"
+        filepath = self.write_to_file(filename=filename)
+        filepath_image = filepath.with_suffix(".png")
         args = {
             "title": "Refractive Index Profile",
             "x_pts": self.x_pts,
@@ -283,8 +283,8 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
             "x_max": self.x_max,
             "y_min": self.y_min,
             "y_max": self.y_max,
-            "filename_data": filename,
-            "filename_image": filename_image,
+            "filename_data": filepath,
+            "filename_image": filepath_image,
         }
 
         heatmap = np.loadtxt(args["filename_data"], delimiter=",")
@@ -298,7 +298,7 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
             aspect="auto",
         )
         plt.colorbar()
-        plt.savefig(filename_image)
+        plt.savefig(filepath_image)
 
     def __str__(self) -> str:
         return self.name
@@ -770,8 +770,7 @@ class StructureAni:
         return lambda x, y: tuple(axis.n_func(x, y) for axis in self.axes)
 
     def write_to_file(self, filename="material_index.dat", plot=True):
-        """
-        Write the refractive index profile to file.
+        """Write the refractive index profile to file.
 
         Args:
             filename (str): The nominal filename the refractive
@@ -824,10 +823,9 @@ class StructureAni:
                 plt.savefig(filename_image)
 
     def change_wavelength(self, wavelength):
-        """
-        Changes the wavelength of the structure.
+        """Change structure wavelength.
 
-        This will affect the mode solver and potentially
+        This affects the mode solver and potentially
         the refractive indices used (provided functions
         were provided as refractive indices).
 
