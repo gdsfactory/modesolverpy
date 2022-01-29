@@ -78,7 +78,7 @@ def mode_solver_semi(
 
     Args:
         n_modes: 2
-        overwrite: whether to run again even if it finds the modes in CONFIG.cache
+        overwrite: whether to run again even if it finds the modes in PATH.cache
         semi_vectorial_method: 'Ey' for TM, 'Ex' for TE
         overwrite: runs even
         plot: plot modes

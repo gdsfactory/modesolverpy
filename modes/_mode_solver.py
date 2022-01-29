@@ -10,7 +10,7 @@ import tqdm
 from numpy import complex128, float64, ndarray
 from six import with_metaclass
 
-from modes.config import CONFIG
+from modes.config import PATH
 from modes.waveguide import waveguide
 
 plt.rc("image", cmap="coolwarm")
@@ -50,7 +50,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
 
     @property
     def _modes_directory(self) -> PosixPath:
-        return CONFIG.cache
+        return PATH.cache
 
     def solve_sweep_waveguide(
         self,

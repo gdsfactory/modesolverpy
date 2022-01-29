@@ -9,7 +9,7 @@ from numpy import float64, ndarray
 from scipy import interpolate
 from six import with_metaclass
 
-from modes.config import CONFIG
+from modes.config import PATH
 
 StringOrNumber = Union[str, float, int]
 
@@ -263,7 +263,7 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
             dirpath: directory path to write the file.
         """
 
-        dirpath = dirpath or CONFIG.cache
+        dirpath = dirpath or PATH.cache
         filepath = pathlib.Path(dirpath) / filename
 
         with open(filepath, "w") as fs:

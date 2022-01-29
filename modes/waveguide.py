@@ -6,7 +6,7 @@ import numpy as np
 
 from modes._structure import RidgeWaveguide, WgArray
 from modes.autoname import autoname
-from modes.config import CONFIG
+from modes.config import PATH
 from modes.materials import nitride, si, sio2
 
 WaveguideType = Union[RidgeWaveguide, WgArray]
@@ -216,7 +216,7 @@ def waveguide_array(
 
 
 def get_waveguide_filepath(wg):
-    return CONFIG.cache / f"{wg.name}.dat"
+    return PATH.cache / f"{wg.name}.dat"
 
 
 def write_material_index(wg, filepath=None):

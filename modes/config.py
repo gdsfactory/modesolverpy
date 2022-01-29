@@ -1,7 +1,6 @@
-""" package configuration
-"""
+"""package config."""
 
-__all__ = ["CONFIG"]
+__all__ = ["PATH"]
 import pathlib
 
 import matplotlib.pylab as plt
@@ -19,14 +18,14 @@ cache = home / ".local" / "cache" / "modes"
 cache.mkdir(exist_ok=True, parents=True)
 
 
-class Config:
+class Path:
     module = module_path
     repo = repo_path
     cache = home / ".local" / "cache" / "modes"
 
 
-CONFIG = Config()
+PATH = Path()
 
 
 if __name__ == "__main__":
-    print(CONFIG.repo)
+    print(PATH.repo)

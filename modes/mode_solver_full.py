@@ -88,7 +88,7 @@ def mode_solver_full(
 
     Args:
         n_modes: 2
-        overwrite: whether to run again even if it finds the modes in CONFIG.cache
+        overwrite: whether to run again even if it finds the modes in PATH.cache
         plot: plot modes
         plot_index: plots index profile
         logscale: plots mode in logscale

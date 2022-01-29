@@ -1,10 +1,13 @@
 # CHANGELOG
 
-## 1.0.5
+## 1.0.4
 
 - add n_slab as an optional. Defaults to n_wg
 - add `Structure.plot()`
 - add `plot_index` kwarg to mode_solver_full and `mode_solver_semi`
+- write_index profile to cache by default
+- add Dockerfile and binderhub link
+- rename CONFIG to PATH
 
 
 ## 1.0.3

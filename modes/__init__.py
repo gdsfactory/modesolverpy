@@ -1,6 +1,6 @@
 from modes import _analyse as fit
 from modes import design, materials
-from modes.config import CONFIG
+from modes.config import PATH
 from modes.coupling_efficiency import coupling_efficiency
 from modes.group_index import group_index
 from modes.mode_solver_full import mode_solver_full
@@ -12,7 +12,7 @@ from modes.waveguide import waveguide, waveguide_array, write_material_index
 
 __all__ = [
     "fit",
-    "CONFIG",
+    "PATH",
     "coupling_efficiency",
     "design",
     "materials",
