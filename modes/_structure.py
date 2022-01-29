@@ -77,7 +77,7 @@ class RidgeWaveguide(sb.Slabs):
         film_thickness: float = "thickness",
     ) -> None:
         if not isinstance(n_clad, Iterable):
-            raise ValueError(f"nclad not Iterable, got {n_clad}")
+            raise ValueError(f"n_clad not Iterable, got {n_clad}")
         if not isinstance(clad_thickness, Iterable):
             raise ValueError(f"clad_thickness not Iterable, got {clad_thickness}")
 
