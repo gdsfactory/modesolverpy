@@ -19,26 +19,29 @@ def group_index(
     wavelength.
 
     Args:
-        structure (Structure): The target structure to solve
-            for modes.
+        wavelength: center wavelength
         wavelength_step (float): The step to take below and
             above the nominal wavelength.  This is used for
             approximating the gradient of :math:`n_\mathrm{eff}`
             at the nominal wavelength.  Default is 0.01.
         n_modes: number of modes
-        x_step: 0.02
-        y_step: 0.02
-        thickness: 0.22
-        width: 0.5
-        slab_thickness: 0
-        sub_thickness: 0.5
-        sub_width: 2.0
-        clad_thickness: [0.5]
-        n_sub: sio2
-        n_wg: si
-        n_clads: [sio2]
-        wavelength: 1.55
-        angle: 90.0
+
+    Keyword Args:
+        wg: waveguide
+        fields_to_write: List of fields_to_write "Ex", "Ey", "Ez", "Hx", "Hy", "Hz"
+        x_step: 0.02 grid step (um)
+        y_step: 0.02 grid step (um)
+        thickness: 0.22 (um)
+        width: 0.5 (um)
+        slab_thickness: 0 (um)
+        sub_width: 2.0 related to the total simulation width
+        sub_thickness: 0.5 bottom simulation margin
+        clad_thickness: [0.5]  List of claddings (top simulation margin)
+        n_sub: sio2 substrate index material
+        n_wg: si waveguide index material
+        n_clads: list of cladding materials [sio2]
+        wavelength: 1.55 wavelength (um)
+        angle: 90 sidewall angle (degrees)
 
     Returns:
         List of the group indices found for each mode.

@@ -71,7 +71,7 @@ def mode_solver_full(
     n_modes: int = 2,
     overwrite: bool = False,
     plot: bool = False,
-    plot_index: bool = True,
+    plot_index: bool = False,
     logscale: bool = False,
     wg: Optional[RidgeWaveguide] = None,
     fields_to_write: Tuple[str, ...] = (
@@ -93,7 +93,7 @@ def mode_solver_full(
         plot_index: plots index profile
         logscale: plots mode in logscale
         wg: waveguide
-        fields_to_write:
+        fields_to_write: List of fields_to_write "Ex", "Ey", "Ez", "Hx", "Hy", "Hz"
         x_step: 0.02 grid step (um)
         y_step: 0.02 grid step (um)
         thickness: 0.22 (um)

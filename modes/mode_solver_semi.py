@@ -69,7 +69,7 @@ def mode_solver_semi(
     semi_vectorial_method: str = "Ex",
     overwrite: bool = False,
     plot: bool = False,
-    plot_index: bool = True,
+    plot_index: bool = False,
     logscale: bool = False,
     **wg_kwargs
 ) -> ModeSolverSemiVectorial:
