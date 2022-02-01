@@ -1,5 +1,9 @@
 # Modes 1.0.6
 
+[![Documentation Status](https://readthedocs.org/projects/modes/badge/?version=latest)](https://modes.readthedocs.io/en/latest/?badge=latest)
+[![pypi](https://img.shields.io/pypi/v/modes)](https://pypi.org/project/modes)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/joamatab/modesolverpy/HEAD)
+
 Photonic mode solver with a nice interface and output.
 Based on a modified version of [EMpy](https://github.com/lbolla/EMpy) and [modesolverpy](https://github.com/jtambasco/modesolverpy)
 

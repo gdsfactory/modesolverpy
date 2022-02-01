@@ -95,6 +95,8 @@ def mode_solver_full(
         logscale: plots mode in logscale
         wg: waveguide
         fields_to_write: List of fields_to_write "Ex", "Ey", "Ez", "Hx", "Hy", "Hz"
+
+    Keyword Args:
         x_step: 0.02 grid step (um)
         y_step: 0.02 grid step (um)
         thickness: 0.22 (um)
@@ -114,7 +116,7 @@ def mode_solver_full(
 
         import modes as ms
 
-        s = ms.mode_solver_full(plot=True, n_modes=1, width=0.5, thickness=0.22)
+        s = ms.mode_solver_full(plot=True, plot_index=True, n_modes=1, width=0.5, thickness=0.22)
         print(s.results.keys())
 
     """

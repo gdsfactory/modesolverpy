@@ -84,6 +84,8 @@ def mode_solver_semi(
         plot: plot modes
         plot_index: plot index profile
         logscale: plots mode in logscale
+
+    Keyword Args:
         x_step: 0.02
         y_step: 0.02
         thickness: 0.22
@@ -103,7 +105,7 @@ def mode_solver_semi(
 
       import modes as ms
 
-      m = ms.mode_solver_semi()
+      m = ms.mode_solver_semi(plot_index=True, plot=True)
       print(m.results.keys())
 
     """
