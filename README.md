@@ -17,7 +17,7 @@ Take a look at the jupyter notebooks in [![Binder](https://mybinder.org/badge_lo
 
 ## Installation
 
-[Github](https://github.com/joamatab/modesolverpy/actions) runs all the tests at least once a day for different versions of python (3.7, 3.8, 3.9)
+[Github](https://github.com/joamatab/modesolverpy/actions) runs all the tests at least once a day for different versions of python (3.8, 3.9, 3.10)
 
 You can install modes via `pip install modes`
 

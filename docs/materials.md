@@ -1,7 +1,7 @@
 
 # Materials
 
-```eval_rst
+```{eval-rst}
 .. automodule:: modes.materials
     :members:
 ```

@@ -3,14 +3,14 @@
 ## waveguide width
 
 
-```eval_rst
+```{eval-rst}
 .. autofunction:: modes.sweep_waveguide.sweep_waveguide
 ```
 
 ##  wavelength
 
 
-```eval_rst
+```{eval-rst}
 .. autofunction:: modes.sweep_wavelength.sweep_wavelength
 
 ```
@@ -19,6 +19,6 @@
 ## Group index
 
 
-```eval_rst
+```{eval-rst}
 .. autofunction:: modes.group_index.group_index
 ```

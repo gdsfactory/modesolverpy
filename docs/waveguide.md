@@ -4,7 +4,7 @@
 ## Waveguide
 
 
-```eval_rst
+```{eval-rst}
 .. autofunction:: modes.waveguide.waveguide
 ```
 
@@ -12,6 +12,6 @@
 ## Waveguide Array (coupled waveguides)
 
 
-```eval_rst
+```{eval-rst}
 .. autofunction:: modes.waveguide.waveguide_array
 ```

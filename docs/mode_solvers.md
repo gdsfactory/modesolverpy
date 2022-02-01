@@ -5,7 +5,7 @@
 
 
 
-```eval_rst
+```{eval-rst}
 .. autofunction:: modes.mode_solver_semi.mode_solver_semi
 ```
 
@@ -16,6 +16,6 @@
 
 
 
-```eval_rst
+```{eval-rst}
 .. autofunction:: modes.mode_solver_full.mode_solver_full
 ```
