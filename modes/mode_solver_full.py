@@ -9,6 +9,7 @@ from modes._structure import RidgeWaveguide
 from modes.autoname import autoname, clean_value
 from modes.get_modes_jsonpath import get_modes_jsonpath
 from modes.materials import nitride, sio2
+from modes.types import Field
 from modes.waveguide import waveguide
 
 
@@ -48,13 +49,13 @@ def _full(
     **wg_kwargs
 ) -> ModeSolverFullyVectorial:
     """Returns mode solver and
-    writes waveguide material index
+    can also plot the index profile.
 
     Args:
         n_modes: 2
         wg: waveguide object
+        plot_index: plot index profile
         wg_kwargs: for waveguide
-        plot: plot modes
     """
 
     wg = wg or waveguide(**wg_kwargs)
@@ -74,7 +75,7 @@ def mode_solver_full(
     plot_index: bool = False,
     logscale: bool = False,
     wg: Optional[RidgeWaveguide] = None,
-    fields_to_write: Tuple[str, ...] = (
+    fields_to_write: Tuple[Field, ...] = (
         "Ex",
         "Ey",
         "Ez",

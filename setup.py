@@ -8,6 +8,7 @@ setup(
     author="Jean-Luc Tambasco",
     author_email="an.obscurity@gmail.com",
     license="MIT",
+    python_requires=">=3.8",
     install_requires=[
         "matplotlib",
         "numpy",

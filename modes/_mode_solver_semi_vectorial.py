@@ -8,6 +8,7 @@ from numpy import ndarray
 from modes import _analyse as anal
 from modes import _mode_solver_lib as ms
 from modes._mode_solver import _ModeSolver
+from modes.types import SemiVectorialMethod
 
 
 class ModeSolverSemiVectorial(_ModeSolver):
@@ -42,7 +43,7 @@ class ModeSolverSemiVectorial(_ModeSolver):
         boundary: str = "0000",
         mode_profiles: bool = True,
         initial_mode_guess: Optional[float] = None,
-        semi_vectorial_method: str = "Ex",
+        semi_vectorial_method: SemiVectorialMethod = "Ex",
         wg: None = None,
     ) -> None:
         self._semi_vectorial_method = semi_vectorial_method

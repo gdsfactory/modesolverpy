@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.0.6
+
+- add type Literal for Fields to write
+- requires python>=3.8
+
 ## 1.0.4
 
 - add n_slab as an optional. Defaults to n_wg

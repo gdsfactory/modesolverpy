@@ -1,5 +1,4 @@
 import pathlib
-from pathlib import PosixPath
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 import matplotlib.pylab as plt
@@ -8,6 +7,7 @@ from numpy import complex128, float64, ndarray
 
 from modes._mode_solver import _ModeSolver
 from modes._mode_solver_lib import FDMode, _ModeSolverVectorial
+from modes.types import Field, PathType
 
 
 class ModeSolverFullyVectorial(_ModeSolver):
@@ -135,9 +135,9 @@ class ModeSolverFullyVectorial(_ModeSolver):
 
     def write_modes_to_file(
         self,
-        filename: PosixPath = "mode.dat",
+        filename: PathType = "mode.dat",
         plot: bool = True,
-        fields_to_write: Tuple[str, ...] = (
+        fields_to_write: Tuple[Field, ...] = (
             "Ex",
             "Ey",
             "Ez",
@@ -211,8 +211,8 @@ class ModeSolverFullyVectorial(_ModeSolver):
 
     def plot_modes(
         self,
-        filename: PosixPath,
-        fields_to_write: Tuple[str, ...] = (
+        filename: PathType,
+        fields_to_write: Tuple[Field, ...] = (
             "Ex",
             "Ey",
             "Ez",
