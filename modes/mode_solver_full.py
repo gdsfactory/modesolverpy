@@ -20,8 +20,7 @@ def test_mode_solver_full_vectorial(overwrite: bool) -> None:
     # neff0 = modes["n_effs"][0].real
 
     neff0 = mode_solver.results["n_effs"][0].real
-    print(neff0)
-    assert np.isclose(neff0, 2.4717079424099673)
+    assert np.isclose(neff0, 2.4717079424099673), neff0
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
@@ -37,8 +36,7 @@ def test_mode_solver_full_vectorial_multi_clad(overwrite: bool) -> None:
     # neff0 = modes["n_effs"][0].real
 
     neff0 = mode_solver.results["n_effs"][0].real
-    print(neff0)
-    assert np.isclose(neff0, 2.483481412238637)
+    assert np.isclose(neff0, 2.483481412238637), neff0
 
 
 @autoname
