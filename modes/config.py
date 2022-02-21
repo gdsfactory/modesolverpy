@@ -1,6 +1,7 @@
 """package config."""
 
 __all__ = ["PATH"]
+import hashlib
 import pathlib
 
 import matplotlib.pylab as plt
@@ -25,6 +26,21 @@ class Path:
 
 
 PATH = Path()
+
+
+def clean_value(value):
+    if isinstance(value, float) and int(value) == value:
+        value = int(value)
+        value = str(value)
+    return value
+
+
+def get_kwargs_hash(**kwargs) -> str:
+    """Returns kwargs parameters hash."""
+    kwargs_list = [f"{key}={clean_value(kwargs[key])}" for key in sorted(kwargs.keys())]
+    kwargs_string = "_".join(kwargs_list)
+    kwargs_hash = hashlib.md5(kwargs_string.encode()).hexdigest()[:8]
+    return kwargs_hash
 
 
 if __name__ == "__main__":

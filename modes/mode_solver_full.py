@@ -1,15 +1,16 @@
-import json
+import pathlib
 from typing import Optional, Tuple
 
+import h5py
 import numpy as np
 import pytest
 
 from modes._mode_solver_full_vectorial import ModeSolverFullyVectorial
 from modes._structure import RidgeWaveguide
-from modes.autoname import autoname, clean_value
-from modes.get_modes_jsonpath import get_modes_jsonpath
+from modes.autoname import autoname
+from modes.config import PATH, get_kwargs_hash
 from modes.materials import nitride, sio2
-from modes.types import Field
+from modes.types import Field, PathType
 from modes.waveguide import waveguide
 
 
@@ -42,21 +43,19 @@ def test_mode_solver_full_vectorial_multi_clad(overwrite: bool) -> None:
 @autoname
 def _full(
     n_modes: int = 2,
-    wg: Optional[RidgeWaveguide] = None,
     plot_index: bool = True,
-    **wg_kwargs
+    **wg_kwargs,
 ) -> ModeSolverFullyVectorial:
     """Returns mode solver and
     can also plot the index profile.
 
     Args:
         n_modes: 2
-        wg: waveguide object
         plot_index: plot index profile
         wg_kwargs: for waveguide
     """
 
-    wg = wg or waveguide(**wg_kwargs)
+    wg = waveguide(**wg_kwargs)
 
     if plot_index:
         wg.plot()
@@ -81,7 +80,8 @@ def mode_solver_full(
         "Hy",
         "Hz",
     ),
-    **wg_kwargs
+    cache: Optional[PathType] = PATH.cache,
+    **wg_kwargs,
 ) -> ModeSolverFullyVectorial:
     """Return full vectorial mode solver with the computed modes
 
@@ -119,76 +119,45 @@ def mode_solver_full(
 
     """
     mode_solver = _full(n_modes=n_modes, wg=wg, plot_index=plot_index, **wg_kwargs)
-    settings = {k: clean_value(v) for k, v in mode_solver.settings.items()}
-    jsonpath = get_modes_jsonpath(mode_solver)
-    filepath = jsonpath.with_suffix(".dat")
+    # settings = {k: clean_value(v) for k, v in mode_solver.settings.items()}
+    # jsonpath = get_modes_jsonpath(mode_solver)
+    # filepath = jsonpath.with_suffix(".dat")
 
-    if overwrite or not jsonpath.exists():
-        r = mode_solver.solve()
-        n_effs_real = r["n_effs"].real.tolist()
-        n_effs_imag = r["n_effs"].imag.tolist()
-        modes = r["modes"]
+    h = get_kwargs_hash(
+        fields_to_write=fields_to_write,
+        n_modes=n_modes,
+        **wg_kwargs,
+    )
+    filepath = cache / f"{h}.hdf5"
 
-        modes_real = [
-            {k: v.real.tolist() for k, v in mode.fields.items()} for mode in modes
-        ]
-        modes_imag = [
-            {k: v.imag.tolist() for k, v in mode.fields.items()} for mode in modes
-        ]
+    if cache:
+        cache = pathlib.Path(cache)
+        cache.mkdir(exist_ok=True, parents=True)
 
-        d = dict(
-            n_effs_real=n_effs_real,
-            n_effs_imag=n_effs_imag,
-            modes_real=modes_real,
-            modes_imag=modes_imag,
-            n_modes=len(n_effs_real),
-            settings=settings,
-            mode_types=mode_solver._get_mode_types(),
-            fraction_te=mode_solver.fraction_te,
-            fraction_tm=mode_solver.fraction_tm,
+        if overwrite or not filepath.exists():
+            print(f"Writing modes to {str(filepath)!r}")
+            r = mode_solver.solve()
+            f = h5py.File(filepath, "w")
+            f["modes"] = [mode["fields"] for mode in r["modes"]]
+            f["n_effs"] = r["n_effs"]
+            f["mode_types"] = mode_solver._get_mode_types()
+            f["fraction_te"] = mode_solver.fraction_te
+            f["fraction_tm"] = mode_solver.fraction_tm
+            f.close()
+
+        else:
+            print(f"Loading modes from {str(filepath)!r}")
+            f = h5py.File(filepath, "r")
+            mode_solver.modes = f["modes"]
+            mode_solver.n_effs = f["n_effs"]
+            mode_solver.mode_types = f["mode_types"]
+            mode_solver.fraction_te = f["fraction_te"]
+            mode_solver.fraction_tm = f["fraction_tm"]
+
+    if plot:
+        mode_solver.plot_modes(
+            filepath, fields_to_write=fields_to_write, logscale=logscale
         )
-
-        with open(jsonpath, "w") as f:
-            f.write(json.dumps(d))
-
-        mode_solver.write_modes_to_file(
-            filepath, plot=plot, fields_to_write=fields_to_write, logscale=logscale
-        )
-
-        r["settings"] = settings
-
-    else:
-        d = json.loads(open(jsonpath).read())
-        modes_real = d["modes_real"]
-        modes_imag = d["modes_imag"]
-        modes_cache = [
-            {k: np.array(np.array(mr[k]) + 1j * np.array(mi[k])) for k in mr.keys()}
-            for mr, mi in zip(modes_real, modes_imag)
-        ]
-        n_effs_real = d["n_effs_real"]
-        n_effs_imag = d["n_effs_imag"]
-        n_effs_cache = [
-            np.array(np.array(mr) + 1j * np.array(mi))
-            for mr, mi in zip(n_effs_real, n_effs_imag)
-        ]
-
-        mode_solver.mode_types = mode_types = d["mode_types"]
-        mode_solver.fraction_tm = fraction_tm = d["fraction_tm"]
-        mode_solver.fraction_te = fraction_te = d["fraction_te"]
-
-        r = dict(
-            modes=modes_cache,
-            n_effs=n_effs_cache,
-            mode_types=mode_types,
-            fraction_te=fraction_te,
-            fraction_tm=fraction_tm,
-        )
-        mode_solver.modes = r["modes"]
-        mode_solver.n_effs = r["n_effs"]
-        if plot:
-            mode_solver.plot_modes(
-                filepath, fields_to_write=fields_to_write, logscale=logscale
-            )
 
     mode_solver.results = r
     return mode_solver

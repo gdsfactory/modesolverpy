@@ -356,7 +356,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         self,
         field_name: str,
         mode_number: int,
-        filename_mode: str,
+        filename_mode: Optional[str] = None,
         n_eff: Optional[Union[complex128, ndarray]] = None,
         subtitle: str = "",
         e2_x: Union[float, float64] = 0.0,

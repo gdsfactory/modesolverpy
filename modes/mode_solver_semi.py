@@ -1,11 +1,14 @@
-import json
+import pathlib
+from typing import Optional
 
+import h5py
 import numpy as np
 import pytest
 
 from modes._mode_solver_semi_vectorial import ModeSolverSemiVectorial
-from modes.autoname import autoname, clean_value
-from modes.get_modes_jsonpath import get_modes_jsonpath
+from modes.autoname import autoname
+from modes.config import PATH, get_kwargs_hash
+from modes.types import PathType
 from modes.waveguide import waveguide
 
 
@@ -28,7 +31,7 @@ def _semi(
     n_modes: int = 2,
     semi_vectorial_method: str = "Ex",
     plot_index: bool = False,
-    **wg_kwargs
+    **wg_kwargs,
 ) -> ModeSolverSemiVectorial:
     """
     returns mode solver with mode_solver.wg
@@ -63,7 +66,8 @@ def mode_solver_semi(
     plot: bool = False,
     plot_index: bool = False,
     logscale: bool = False,
-    **wg_kwargs
+    cache: Optional[PathType] = PATH.cache,
+    **wg_kwargs,
 ) -> ModeSolverSemiVectorial:
     """
     returns semi vectorial mode solver with the computed modes
@@ -105,64 +109,44 @@ def mode_solver_semi(
         n_modes=n_modes,
         semi_vectorial_method=semi_vectorial_method,
         plot_index=plot_index,
-        **wg_kwargs
+        **wg_kwargs,
     )
-    settings = {k: clean_value(v) for k, v in mode_solver.settings.items()}
-    jsonpath = get_modes_jsonpath(mode_solver)
-    filepath = jsonpath.with_suffix(".dat")
 
-    if overwrite or not jsonpath.exists():
-        r = mode_solver.solve()
-        n_effs_real = r["n_effs"].real.tolist()
-        n_effs_imag = r["n_effs"].imag.tolist()
-        modes = r["modes"]
-        modes_real = [mode.real.tolist() for mode in modes]
-        modes_imag = [mode.imag.tolist() for mode in modes]
+    # settings = {k: clean_value(v) for k, v in mode_solver.settings.items()}
 
-        d = dict(
-            n_effs_real=n_effs_real,
-            n_effs_imag=n_effs_imag,
-            modes_real=modes_real,
-            modes_imag=modes_imag,
-            n_modes=len(n_effs_real),
-            settings=settings,
-        )
+    h = get_kwargs_hash(
+        n_modes=n_modes,
+        **wg_kwargs,
+    )
+    filepath = cache / f"{h}.hdf5"
 
-        with open(jsonpath, "w") as f:
-            f.write(json.dumps(d))
-        mode_solver.write_modes_to_file(filepath, plot=plot, logscale=logscale)
+    if cache:
+        cache = pathlib.Path(cache)
+        cache.mkdir(exist_ok=True, parents=True)
 
-        r["settings"] = settings
+        if overwrite or not filepath.exists():
+            print(f"Writing modes to {str(filepath)!r}")
+            r = mode_solver.solve()
+            f = h5py.File(filepath, "w")
+            f["modes"] = r["modes"]
+            f["n_effs"] = r["n_effs"]
+            f.close()
+
+        else:
+            print(f"Loading modes from {str(filepath)!r}")
+            f = h5py.File(filepath, "r")
+            mode_solver.modes = f["modes"]
+            mode_solver.n_effs = f["n_effs"]
 
     else:
-        d = json.loads(open(jsonpath).read())
-        modes_real = d["modes_real"]
-        modes_imag = d["modes_imag"]
-        modes = [
-            np.array(np.array(mr) + 1j * np.array(mi))
-            for mr, mi in zip(modes_real, modes_imag)
-        ]
-        n_effs_real = d["n_effs_real"]
-        n_effs_imag = d["n_effs_imag"]
-        n_effs = [
-            np.array(np.array(mr) + 1j * np.array(mi))
-            for mr, mi in zip(n_effs_real, n_effs_imag)
-        ]
-        r = dict(modes=modes, n_effs=n_effs)
-        mode_solver.modes = r["modes"]
-        mode_solver.n_effs = r["n_effs"]
-        if plot:
-            mode_solver.plot_modes(filepath, logscale=logscale)
+        r = mode_solver.solve()
 
-    mode_solver.results = r
+    if plot:
+        mode_solver.write_modes_to_file(logscale=logscale)
+        mode_solver.plot_modes(logscale=logscale)
+
+    # mode_solver.results = r
     return mode_solver
-
-
-# def load_mode(mode_solver):
-#     filepath = get_modes_filepath(mode_solver)
-#     jsonpath = filepath.with_suffix(".json")
-#     data = np.loadtxt(filepath, delimiter=",").T
-#     return data
 
 
 if __name__ == "__main__":
@@ -172,6 +156,7 @@ if __name__ == "__main__":
     # test_mode_solver_semi_vectorial_te(overwrite=False)
     # test_mode_solver_semi_vectorial_tm(overwrite=True)
     # test_mode_solver_semi_vectorial_tm(overwrite=False)
+    # m = mode_solver_semi(plot=True, logscale=True)
 
-    mode_solver_semi(plot=True, logscale=True)
+    m = mode_solver_semi(plot=True)
     plt.show()

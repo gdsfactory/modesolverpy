@@ -90,7 +90,6 @@ class ModeSolverSemiVectorial(_ModeSolver):
     def write_modes_to_file(
         self,
         filename: PosixPath = "mode.dat",
-        plot: bool = True,
         analyse: bool = True,
         logscale: bool = False,
     ) -> List[ndarray]:
@@ -115,14 +114,11 @@ class ModeSolverSemiVectorial(_ModeSolver):
             and mode field profiles (if solved for).
         """
 
-        for i, mode in enumerate(self._ms.modes):
+        for i, mode in enumerate(self.modes):
             filename_mode = self._get_mode_filename(
                 self._semi_vectorial_method, i, filename
             )
             self._write_mode_to_file(np.real(mode), filename_mode)
-        if plot:
-            self.plot_modes(filename=filename, analyse=analyse, logscale=logscale)
-
         return self.modes
 
     def plot_modes(

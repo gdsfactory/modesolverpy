@@ -7,7 +7,7 @@ from numpy import complex128, float64, ndarray
 
 from modes._mode_solver import _ModeSolver
 from modes._mode_solver_lib import FDMode, _ModeSolverVectorial
-from modes.types import Field, PathType
+from modes.types import Field, Mode, PathType
 
 
 class ModeSolverFullyVectorial(_ModeSolver):
@@ -67,16 +67,25 @@ class ModeSolverFullyVectorial(_ModeSolver):
         self.n_effs = self._ms.neff
 
         r = {"n_effs": self.n_effs}
-        r["modes"] = self.modes = self._ms.modes
 
-        self.overlaps, self.fraction_te, self.fraction_tm = self._get_overlaps(
-            self.modes
-        )
-        self.mode_types = self._get_mode_types()
+        modes = {}
+        for i, (mode, neff) in enumerate(zip(self._ms.modes, self._ms.neff)):
+            modes[i] = Mode(
+                mode_number=i,
+                wavelength=wavelength,
+                neff=neff.real,
+                E=np.array([mode.Ex, mode.Ey, mode.Ez]),
+                H=np.array([mode.Hx, mode.Hy, mode.Hz]),
+                eps=self.wg.eps,
+                y=self.wg.x,
+                z=self.wg.y,
+            )
 
-        self._initial_mode_guess = None
-
-        self.n_effs_te, self.n_effs_tm = self._sort_neffs(self._ms.neff)
+        r["modes"] = self.modes = modes
+        # self.overlaps, self.fraction_te, self.fraction_tm = self._get_overlaps(modes)
+        # self.mode_types = self._get_mode_types()
+        # self._initial_mode_guess = None
+        # self.n_effs_te, self.n_effs_tm = self._sort_neffs(self._ms.neff)
 
         return r
 
@@ -222,7 +231,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
         ),
         logscale: bool = False,
     ) -> None:
-        """ works only for cached modes """
+        """works only for cached modes"""
         # Mode field plots.
         filename = pathlib.Path(filename)
         for i, mode in enumerate(self.modes):
@@ -249,3 +258,6 @@ if __name__ == "__main__":
     from modes.waveguide import waveguide
 
     ms = ModeSolverFullyVectorial(n_eigs=1, wg=waveguide())
+    ms.solve()
+    m0 = ms.modes[0]
+    m0.plot_e()
