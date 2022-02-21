@@ -12,23 +12,15 @@ from modes.waveguide import waveguide
 @pytest.mark.parametrize("overwrite", [True, False])
 def test_mode_solver_semi_vectorial_te(overwrite: bool) -> None:
     mode_solver = mode_solver_semi(overwrite=overwrite)
-    # modes = mode_solver.solve()
-    # neff0 = modes["n_effs"][0].real
-
     neff0 = mode_solver.results["n_effs"][0].real
-    print(neff0)
-    assert np.isclose(neff0, 2.507954410087166)
+    assert np.isclose(neff0, 2.507954410087166), neff0
 
 
 @pytest.mark.parametrize("overwrite", [True, False])
 def test_mode_solver_semi_vectorial_tm(overwrite: bool) -> None:
     mode_solver = mode_solver_semi(semi_vectorial_method="Ey", overwrite=overwrite)
-    # modes = mode_solver.solve()
-    # neff0 = modes["n_effs"][0].real
-
     neff0 = mode_solver.results["n_effs"][0].real
-    print(neff0)
-    assert np.isclose(neff0, 1.859555511265503)
+    assert np.isclose(neff0, 1.859555511265503), neff0
 
 
 @autoname
