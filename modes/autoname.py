@@ -12,11 +12,11 @@ def get_component_name(component_type: str, **kwargs) -> str:
     name = component_type
 
     if kwargs:
-        name += "_" + dict2name(**kwargs)
+        name += f"_{dict2name(**kwargs)}"
 
     # If the name is too long, fall back on hashing the longuest arguments
     if len(name) > MAX_NAME_LENGTH:
-        name = "{}_{}".format(component_type, hashlib.md5(name.encode()).hexdigest())
+        name = f"{component_type}_{hashlib.md5(name.encode()).hexdigest()}"
 
     return name
 
@@ -82,10 +82,7 @@ def join_first_letters(name: str) -> str:
 
 def dict2name(prefix: str = "", **kwargs) -> str:
     """ returns name from a dict """
-    if prefix:
-        label = [prefix]
-    else:
-        label = []
+    label = [prefix] if prefix else []
     for key in sorted(kwargs):
         value = kwargs[key]
         key = join_first_letters(key)

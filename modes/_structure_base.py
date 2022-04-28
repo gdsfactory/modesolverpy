@@ -117,30 +117,32 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
         """
         np.array: The grid points in x.
         """
-        if (
-            None not in (self.x_min, self.x_max, self.x_step)
-            and self.x_min != self.x_max
-        ):
-            x = np.arange(
-                self.x_min, self.x_max + self.x_step - self.y_step * 0.1, self.x_step
+        return (
+            np.arange(
+                self.x_min,
+                self.x_max + self.x_step - self.y_step * 0.1,
+                self.x_step,
             )
-        else:
-            x = np.array([])
-        return x
+            if (
+                None not in (self.x_min, self.x_max, self.x_step)
+                and self.x_min != self.x_max
+            )
+            else np.array([])
+        )
 
     @property
     def y(self) -> ndarray:
         """
         np.array: The grid points in y.
         """
-        if (
-            None not in (self.y_min, self.y_max, self.y_step)
-            and self.y_min != self.y_max
-        ):
-            y = np.arange(self.y_min, self.y_max - self.y_step * 0.1, self.y_step)
-        else:
-            y = np.array([])
-        return y
+        return (
+            np.arange(self.y_min, self.y_max - self.y_step * 0.1, self.y_step)
+            if (
+                None not in (self.y_min, self.y_max, self.y_step)
+                and self.y_min != self.y_max
+            )
+            else np.array([])
+        )
 
     @property
     def eps(self) -> ndarray:
@@ -159,8 +161,7 @@ class _AbstractStructure(with_metaclass(abc.ABCMeta)):
         """
         interp_real = interpolate.interp2d(self.x, self.y, self.eps.real)
         interp_imag = interpolate.interp2d(self.x, self.y, self.eps.imag)
-        interp = lambda x, y: interp_real(x, y) + 1.0j * interp_imag(x, y)
-        return interp
+        return lambda x, y: interp_real(x, y) + 1.0j * interp_imag(x, y)
 
     @property
     def n_func(self):
@@ -578,11 +579,7 @@ class Slab(Structure):
         """
         self._mat_params.append([x_min, x_max, n, angle])
 
-        if not callable(n):
-            n_mat = lambda wl: n
-        else:
-            n_mat = n
-
+        n_mat = n if callable(n) else (lambda wl: n)
         Structure._add_material(
             self, x_min, self.y_min, x_max, self.y_max, n_mat(self._wl), angle
         )
@@ -651,16 +648,8 @@ class StructureAni:
             )
             struct_dummy._wl = self.xx._wl
 
-        if structure_xy:
-            self.xy = structure_xy
-        else:
-            self.xy = struct_dummy
-
-        if structure_yx:
-            self.yx = structure_yx
-        else:
-            self.yx = struct_dummy
-
+        self.xy = structure_xy or struct_dummy
+        self.yx = structure_yx or struct_dummy
         assert self.xx._wl == self.xy._wl == self.yx._wl == self.yy._wl == self.zz._wl
 
         self._wl = structure_xx._wl
@@ -730,36 +719,35 @@ class StructureAni:
 
     @property
     def x(self):
-        if (
-            None not in (self.xx.x_min, self.xx.x_max, self.xx.x_step)
-            and self.xx.x_min != self.xx.x_max
-        ):
-            x = np.arange(
+        return (
+            np.arange(
                 self.xx.x_min,
                 self.xx.x_max + self.xx.x_step - self.xx.y_step * 0.1,
                 self.xx.x_step,
             )
-        else:
-            x = np.array([])
-        return x
+            if (
+                None not in (self.xx.x_min, self.xx.x_max, self.xx.x_step)
+                and self.xx.x_min != self.xx.x_max
+            )
+            else np.array([])
+        )
 
     @property
     def y(self):
-        if (
-            None not in (self.xx.y_min, self.xx.y_max, self.xx.y_step)
-            and self.xx.y_min != self.xx.y_max
-        ):
-            y = np.arange(
+        return (
+            np.arange(
                 self.xx.y_min, self.xx.y_max - self.xx.y_step * 0.1, self.xx.y_step
             )
-        else:
-            y = np.array([])
-        return y
+            if (
+                None not in (self.xx.y_min, self.xx.y_max, self.xx.y_step)
+                and self.xx.y_min != self.xx.y_max
+            )
+            else np.array([])
+        )
 
     @property
     def eps(self):
-        eps_ani = [a.n ** 2 for a in self.axes]
-        return eps_ani
+        return [a.n ** 2 for a in self.axes]
 
     @property
     def eps_func(self):
@@ -792,9 +780,9 @@ class StructureAni:
 
             if plot:
                 filename_image_prefix, _ = os.path.splitext(fn)
-                filename_image = filename_image_prefix + ".png"
+                filename_image = f"{filename_image_prefix}.png"
                 args = {
-                    "title": "Refractive Index Profile: %s" % name,
+                    "title": f"Refractive Index Profile: {name}",
                     "x_pts": self.xx.x_pts,
                     "y_pts": self.xx.y_pts,
                     "x_min": self.xx.x_min,
@@ -804,6 +792,7 @@ class StructureAni:
                     "filename_data": fn,
                     "filename_image": filename_image,
                 }
+
                 heatmap = np.loadtxt(args["filename_data"], delimiter=",")
                 plt.clf()
                 plt.title(args["title"])

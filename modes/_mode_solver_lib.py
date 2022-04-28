@@ -96,7 +96,7 @@ class _ModeSolverSemiVectorial:
         method: str = "Ex",
     ) -> None:
         # Polarisation bug fix.
-        assert method in ("Ex", "Ey"), "Invalid polarisation method."
+        assert method in {"Ex", "Ey"}, "Invalid polarisation method."
         if method == "Ex":
             method = "Ey"
         elif method == "Ey":
@@ -281,9 +281,7 @@ class _ModeSolverSemiVectorial:
         J = numpy.r_[iall, i_e, i_w, i_n, i_s]
         V = numpy.r_[Ap[iall], Ae[i_w], Aw[i_e], An[i_s], As[i_n]]
 
-        A = coo_matrix((V, (I, J))).tocsr()
-
-        return A
+        return coo_matrix((V, (I, J))).tocsr()
 
     def solve(
         self,
@@ -326,25 +324,22 @@ class _ModeSolverSemiVectorial:
         idx = numpy.flipud(numpy.argsort(neff))
         self.neff = neff[idx]
         if mode_profiles:
-            tmp = []
-            for i in idx:
-                tmp.append(phi[i])
-
-            if self.method == "scalar":
-                self.phi = tmp
-            elif self.method == "Ex":
+            tmp = [phi[i] for i in idx]
+            if self.method == "Ex":
                 self.Ex = tmp
             elif self.method == "Ey":
                 self.Ey = tmp
+            elif self.method == "scalar":
+                self.phi = tmp
             self.modes = tmp
 
         return self
 
     def __str__(self):
-        descr = (
-            "Semi-Vectorial Finite Difference Modesolver\n\tmethod: %s\n" % self.method
+        return (
+            "Semi-Vectorial Finite Difference Modesolver\n\tmethod: %s\n"
+            % self.method
         )
-        return descr
 
 
 class _ModeSolverVectorial:

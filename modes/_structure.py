@@ -184,7 +184,7 @@ class WgArray(sb.Slabs):
             self.add_slab(hc, nc)
 
     def __repr__(self) -> str:
-        return f"{[width for width in self.widths]} x {self.thickness} um, n_wg = {self.n_wg}, n_clad = {self.n_clad}"
+        return f"{list(self.widths)} x {self.thickness} um, n_wg = {self.n_wg}, n_clad = {self.n_clad}"
 
     def _repr_html_(self):
         """Plot index profile in matplotlib when using jupyter notebooks."""

@@ -72,9 +72,10 @@ def group_index(
         msc._modes_directory / f"_ng_{msc.name}_{wavelength}_{wavelength_step}.dat"
     )
 
-    n_gs = []
-    for n_ctr, n_bck, n_frw in zip(n_ctrs, n_bcks, n_frws):
-        n_gs.append(n_ctr - wavelength * (n_frw - n_bck) / (2 * wavelength_step))
+    n_gs = [
+        n_ctr - wavelength * (n_frw - n_bck) / (2 * wavelength_step)
+        for n_ctr, n_bck, n_frw in zip(n_ctrs, n_bcks, n_frws)
+    ]
 
     with open(filename, "w") as fs:
         fs.write("# Mode idx, Group index\n")

@@ -24,10 +24,9 @@ def _make_gaussian(x_pts, y_pts, mfd, x_offset=0, y_offset=0):
 def _overlap(mode, gaussian):
     mode_1 = mode
     mode_2 = np.sqrt(gaussian)  # square-root for E-field (not power)
-    eta = np.abs(np.sum(np.conj(mode_1) * mode_2)) ** 2 / (
+    return np.abs(np.sum(np.conj(mode_1) * mode_2)) ** 2 / (
         np.sum(np.abs(mode_1) ** 2) * np.sum(np.abs(mode_2) ** 2)
     )
-    return eta
 
 
 def reflection(n1: float, n2: float) -> float:
@@ -41,8 +40,7 @@ def reflection(n1: float, n2: float) -> float:
     Returns:
         float: The percentage of reflected power.
     """
-    r = abs((n1 - n2) / (n1 + n2)) ** 2
-    return r
+    return abs((n1 - n2) / (n1 + n2)) ** 2
 
 
 def transmission(n1: float, n2: float):

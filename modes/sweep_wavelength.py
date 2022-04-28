@@ -64,8 +64,7 @@ def sweep_wavelength(
         )
         plt.ylabel("$n_{eff}$")
 
-    results = dict(n_effs=n_effs, fractions_te=fractions_te)
-    return results
+    return dict(n_effs=n_effs, fractions_te=fractions_te)
 
 
 @pytest.mark.parametrize("overwrite", [True, False])

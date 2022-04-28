@@ -101,7 +101,7 @@ def sweep_waveguide(
 
     with open(filename_fraction_te, "w") as fs:
         header = "fraction te"
-        fs.write("# param sweep," + header + "\n")
+        fs.write(f"# param sweep,{header}" + "\n")
         for param, fte in zip(sweep_param_list, fractions_te):
             txt = "%.6f," % param
             txt += ",".join("%.2f" % f for f in fte)
@@ -109,7 +109,7 @@ def sweep_waveguide(
 
     with open(filename_fraction_tm, "w") as fs:
         header = "fraction tm"
-        fs.write("# param sweep," + header + "\n")
+        fs.write(f"# param sweep,{header}" + "\n")
         for param, ftm in zip(sweep_param_list, fractions_tm):
             txt = "%.6f," % param
             txt += ",".join("%.2f" % f for f in ftm)

@@ -84,7 +84,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
         mode_types = []
         labels = {0: "qTE", 1: "qTM", 2: "qTE/qTM"}
         for overlap in self.overlaps:
-            idx = np.argmax(overlap[0:3])
+            idx = np.argmax(overlap[:3])
             mode_types.append((labels[idx], np.round(overlap[idx], 2)))
         return mode_types
 
@@ -187,7 +187,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
 
         # Mode field plots.
         for i, (mode, areas) in enumerate(zip(self.modes, self.overlaps)):
-            filename_full = filename.parent / (filename.stem + f"_{i}.dat")
+            filename_full = filename.parent / f"{filename.stem}_{i}.dat"
 
             for (field_name, field_profile), area in zip(mode.fields.items(), areas):
                 if field_name in fields_to_write:
@@ -226,7 +226,7 @@ class ModeSolverFullyVectorial(_ModeSolver):
         # Mode field plots.
         filename = pathlib.Path(filename)
         for i, mode in enumerate(self.modes):
-            filename_full = filename.parent / (filename.stem + f"_{i}.dat")
+            filename_full = filename.parent / f"{filename.stem}_{i}.dat"
 
             for field_name, field_profile in mode.items():
                 if field_name in fields_to_write:

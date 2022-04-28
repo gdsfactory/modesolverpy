@@ -22,8 +22,7 @@ def directional_coupler_lc(
     wavelength_m = wavelength_nm * 1.0e-9
     dn_eff = (n_eff_1 - n_eff_2).real
     lc_m = wavelength_m / (np.pi * dn_eff) * np.arcsin(np.sqrt(power_ratio))
-    lc_um = lc_m * 1.0e6
-    return lc_um
+    return lc_m * 1.0e6
 
 
 def grating_coupler_period(
@@ -49,20 +48,15 @@ def grating_coupler_period(
     beta = n_eff.real * k0
     n_inc = n_clad
 
-    grating_period = (2.0 * np.pi * diffration_order) / (
+    return (2.0 * np.pi * diffration_order) / (
         beta - k0 * n_inc * np.sin(np.radians(incidence_angle_deg))
     )
-
-    return grating_period
 
 
 def loss(n, wavelength: float) -> float:
     """Return dB/um loss for a n propagation constant imaginary part."""
     kappa = n.imag
-    alpha = (
-        4.34 * 4 * np.pi * np.abs(kappa) / wavelength
-    )  # 4.34 = 10*np.log10(np.e) -> [dB/m] = 4.34 [/m]
-    return alpha  # [db/um] if working in [um]
+    return 4.34 * 4 * np.pi * np.abs(kappa) / wavelength
 
 
 def qpm_wavenumber(
@@ -75,18 +69,17 @@ def qpm_wavenumber(
     k_idl = idl_n * pi2 / idl_l
     k_qpm = pi2 / period_qpm
 
-    if type == "forward":
+    if type == "backward":
+        sgn_1 = -1
+        sgn_2 = -1
+
+    elif type == "forward":
         sgn_1 = 1
         sgn_2 = 1
     elif type == "forward_backward":
         sgn_1 = 1
         sgn_2 = -1
-    elif type == "backward":
-        sgn_1 = -1
-        sgn_2 = -1
-
-    k_mismatch = k_idl * sgn_1 + k_sig * sgn_2 + k_qpm - k_pmp
-    return k_mismatch
+    return k_idl * sgn_1 + k_sig * sgn_2 + k_qpm - k_pmp
 
 
 def qpm_period(pmp_n, pmp_l, sig_n, sig_l, idl_n, idl_l, type="forward"):
@@ -96,19 +89,18 @@ def qpm_period(pmp_n, pmp_l, sig_n, sig_l, idl_n, idl_l, type="forward"):
     k_sig = sig_n * pi2 / sig_l
     k_idl = idl_n * pi2 / idl_l
 
-    if type == "forward":
+    if type == "backward":
+        sgn_1 = -1
+        sgn_2 = -1
+
+    elif type == "forward":
         sgn_1 = 1
         sgn_2 = 1
     elif type == "forward_backward":
         sgn_1 = 1
         sgn_2 = -1
-    elif type == "backward":
-        sgn_1 = -1
-        sgn_2 = -1
-
     k_qpm = k_pmp - k_idl * sgn_1 - k_sig * sgn_2
-    l_qpm = pi2 / k_qpm
-    return l_qpm
+    return pi2 / k_qpm
 
 
 def test_design() -> None:

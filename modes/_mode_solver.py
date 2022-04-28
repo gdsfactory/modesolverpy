@@ -27,7 +27,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         n_eff_guess: Optional[float] = None,
         wg: None = None,
     ) -> None:
-        self._n_eigs = int(n_eigs)
+        self._n_eigs = n_eigs
         self._tol = tol
         self._boundary = boundary
         self._mode_profiles = mode_profiles
@@ -43,7 +43,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         self.wg = wg or waveguide()
         self.name = "mode_solver"
 
-        self._path = os.path.dirname(sys.modules[__name__].__file__) + "/"
+        self._path = f"{os.path.dirname(sys.modules[__name__].__file__)}/"
 
     def get_neff(self, mode: int = 0) -> float:
         return np.real(self.n_effs[mode])
@@ -101,24 +101,24 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
                 n_effs, self._modes_directory + filename, sweep_param_list
             )
 
-            with open(self._modes_directory + "mode_types.dat", "w") as fs:
+            with open(f"{self._modes_directory}mode_types.dat", "w") as fs:
                 header = ",".join("Mode%i" % i for i, _ in enumerate(mode_types[0]))
-                fs.write("# " + header + "\n")
+                fs.write(f"# {header}" + "\n")
                 for mt in mode_types:
                     txt = ",".join("%s %.2f" % pair for pair in mt)
                     fs.write(txt + "\n")
 
-            with open(self._modes_directory + "fraction_te.dat", "w") as fs:
+            with open(f"{self._modes_directory}fraction_te.dat", "w") as fs:
                 header = "fraction te"
-                fs.write("# param sweep," + header + "\n")
+                fs.write(f"# param sweep,{header}" + "\n")
                 for param, fte in zip(sweep_param_list, fractions_te):
                     txt = "%.6f," % param
                     txt += ",".join("%.2f" % f for f in fte)
                     fs.write(txt + "\n")
 
-            with open(self._modes_directory + "fraction_tm.dat", "w") as fs:
+            with open(f"{self._modes_directory}fraction_tm.dat", "w") as fs:
                 header = "fraction tm"
-                fs.write("# param sweep," + header + "\n")
+                fs.write(f"# param sweep,{header}" + "\n")
                 for param, ftm in zip(sweep_param_list, fractions_tm):
                     txt = "%.6f," % param
                     txt += ",".join("%.2f" % f for f in ftm)
@@ -130,31 +130,34 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
                 y_label = "$n_{eff}$"
                 self._plot_n_effs(
                     self._modes_directory + filename,
-                    self._modes_directory + "fraction_te.dat",
+                    f"{self._modes_directory}fraction_te.dat",
                     x_label,
                     y_label,
                     title,
                 )
 
+
                 plt.figure()
-                title = "TE Fraction vs %s" % x_label
+                title = f"TE Fraction vs {x_label}"
                 self._plot_fraction(
-                    self._modes_directory + "fraction_te.dat",
+                    f"{self._modes_directory}fraction_te.dat",
                     x_label,
                     "TE Fraction [%]",
                     title,
                     fraction_mode_list,
                 )
 
+
                 plt.figure()
-                title = "TM Fraction vs %s" % x_label
+                title = f"TM Fraction vs {x_label}"
                 self._plot_fraction(
-                    self._modes_directory + "fraction_tm.dat",
+                    f"{self._modes_directory}fraction_tm.dat",
                     x_label,
                     "TM Fraction [%]",
                     title,
                     fraction_mode_list,
                 )
+
 
         return n_effs
 
@@ -198,11 +201,12 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
                 title = "$n_{eff}$ vs Wavelength"
                 self._plot_n_effs(
                     self._modes_directory + filename,
-                    self._modes_directory + "fraction_te.dat",
+                    f"{self._modes_directory}fraction_te.dat",
                     "Wavelength",
                     "n_{eff}",
                     title,
                 )
+
                 plt.ylabel("$n_{eff}$")
 
         return n_effs
@@ -238,9 +242,10 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         self.solve(structure)
         n_frws = self.n_effs
 
-        n_gs = []
-        for n_ctr, n_bck, n_frw in zip(n_ctrs, n_bcks, n_frws):
-            n_gs.append(n_ctr - wl_nom * (n_frw - n_bck) / (2 * wavelength_step))
+        n_gs = [
+            n_ctr - wl_nom * (n_frw - n_bck) / (2 * wavelength_step)
+            for n_ctr, n_bck, n_frw in zip(n_ctrs, n_bcks, n_frws)
+        ]
 
         if filename:
             with open(self._modes_directory + filename, "w") as fs:
@@ -254,10 +259,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         self, field_name: str, mode_number: int, filename: PosixPath
     ) -> str:
         filename_prefix, filename_ext = os.path.splitext(filename)
-        filename_mode = (
-            filename_prefix + "_" + field_name + "_" + str(mode_number) + filename_ext
-        )
-        return filename_mode
+        return f"{filename_prefix}_{field_name}_{mode_number}{filename_ext}"
 
     def _write_n_effs_to_file(
         self,
@@ -268,10 +270,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         with open(filename, "w") as fs:
             fs.write("# Sweep param, mode 1, mode 2, ...\n")
             for i, n_eff in enumerate(n_effs):
-                if x_vals is not None:
-                    line_start = str(x_vals[i]) + ","
-                else:
-                    line_start = ""
+                line_start = f"{str(x_vals[i])}," if x_vals is not None else ""
                 line = ",".join([str(np.round(n, 3)) for n in n_eff])
                 fs.write(line_start + line + "\n")
         return n_effs
@@ -302,7 +301,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         }
 
         filename_image_prefix, _ = os.path.splitext(filename_n_effs)
-        filename_image = filename_image_prefix + ".png"
+        filename_image = f"{filename_image_prefix}.png"
         args["filename_image"] = filename_image
 
         data = np.loadtxt(args["filename_data"], delimiter=",").T
@@ -338,7 +337,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         }
 
         filename_image_prefix, _ = os.path.splitext(filename_fraction)
-        filename_image = filename_image_prefix + ".png"
+        filename_image = f"{filename_image_prefix}.png"
         args["filename_image"] = filename_image
 
         data = np.loadtxt(args["filename_data"], delimiter=",").T
@@ -374,7 +373,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         if wavelength:
             title += r", $\lambda = %s " % r"{:.3f} \mu$m".format(wavelength)
         if area:
-            title += ", $A_%s$: " % field_name[1] + "{:.1f}%".format(area)
+            title += f", $A_{field_name[1]}$: " + "{:.1f}%".format(area)
 
         if subtitle:
             title2 = "\n$%s$" % subtitle
@@ -398,7 +397,7 @@ class _ModeSolver(with_metaclass(abc.ABCMeta)):
         }
 
         filename_image_prefix, _ = os.path.splitext(filename_mode)
-        filename_image = filename_image_prefix + ".png"
+        filename_image = f"{filename_image_prefix}.png"
         args["filename_image"] = filename_image
 
         heatmap = np.loadtxt(filename_mode, delimiter=",")
